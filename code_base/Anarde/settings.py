@@ -76,11 +76,11 @@ WSGI_APPLICATION = 'Anarde.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'anarde',
-        'USER': 'root',
-        'PASSWORD': 'softcorner',
-        'HOST': '127.0.0.1',
-        'PORT': '3306'
+        'NAME': '<db_name>',
+        'USER': '<user_name>',
+        'PASSWORD': '<pwd>',
+        'HOST': '<host_ip>',
+        'PORT': '<mysql_port>'
 #default-character-set = utf8
 
     }
