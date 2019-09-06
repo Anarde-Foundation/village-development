@@ -2,9 +2,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.contrib.auth.models import Group
-group = forms.ModelChoiceField(queryset=Group.objects.all(),
-                                   required=True)
-print ('===========',group)
+
 CHOICES= [
     ('Admin', 'Admin'),
     ('Anarde_user', 'Anarde user'),
