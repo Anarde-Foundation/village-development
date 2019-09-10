@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h1>Location Details</h1>
+<h2>Name: {{object.location_name}}</h2>
+Date of intervention: {{ object.date_of_intervention }}<br>
+Exit date: {{ object.exit_date }}
+{% endblock %}

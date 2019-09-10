@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Locations</h2>
+<table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Details</th>
+        <th>Update </th>
+        <th>Delete </th>
+      </tr>
+    </thead>
+    <tbody>
+{% if location %}
+{% for l in location %}
+<tr>
+    <td>{{l.location_name}}</td>
+    <td>  <a href="{% url "location_view" l.location_id %}">view</a></td>
+    <td> <a href="{% url "location_edit" l.location_id %}">edit</a></td>
+    <td> <a href="{% url "location_delete" l.location_id %}">delete</a></td>
+
+    {% endfor %}
+</tr>
+{% endif %}
+</tbody>
+</table>
+<a href="{% url "location_new" %}">Add New Location</a>
+
+{% endblock %}
+<!--  <h2>Location list</h2>-->
+<!--      {% if location %}-->
+<!--      <ol>-->
+<!--          {% for l in location %}-->
+<!--          <li> <a href="/location/update_location/">{{l.location_name}}</a></li>-->
+<!--          {% endfor %}-->
+<!--      </ol>-->
+<!--      {% endif %}-->

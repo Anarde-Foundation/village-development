@@ -6,6 +6,9 @@
 {% block content %}
 {% if user.is_authenticated %}
   Hi {{ user.username }}!
+  <li><a href="/location/add_location/">Add a New Location</a></li>
+  <li><a href="/location/">List Locations</a></li>
+
   <p><a href="{% url 'logout' %}">logout</a></p>
 {% else %}
   <p>You are not logged in</p>
