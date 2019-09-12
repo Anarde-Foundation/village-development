@@ -9,6 +9,7 @@ class survey(models.Model):
     survey_type_code_id = models.ForeignKey('common.code', null=False, blank=False, db_column='survey_type_code_id',
                                             related_name='fk_survey_type_code_id', on_delete=models.PROTECT)
 
+    kobo_form_id = models.IntegerField(null=False,blank=False)
     location_name = models.CharField(max_length=255, null=False)
     publish_date = models.DateField(null=False)
 
