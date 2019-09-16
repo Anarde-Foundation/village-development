@@ -12,7 +12,7 @@ class LocationForm(ModelForm):
 
     date_of_intervention = forms.DateField(required=True,label='Date of intervention', initial=datetime.now,
                                            widget=forms.SelectDateWidget(years=YEARS))
-    exit_date = forms.DateField(required=False,label='Exit date',widget=forms.SelectDateWidget(empty_label="Nothing"))
+    exit_date = forms.DateField(required=False,label='Exit date',widget=forms.SelectDateWidget(empty_label="----"))
 
     class Meta:
         model = location
@@ -28,24 +28,29 @@ def location_list(request, template_name='list_locations.html'):
 def location_view(request, pk, template_name='location_detail.html'):
     locations= get_object_or_404(location, pk=pk)
     return render(request, template_name, {'object':locations})
+
 @login_required
 def location_create(request, template_name='location_create.html'):
     if request.method == 'POST':
         form = LocationForm(request.POST)
+        # form.cleaned_data['date_of_intervention']= datetime.now()
         if form.is_valid():
             info =form.save()
             info.created_by = request.user
             info.modified_by = request.user
             info.save()
-            return redirect('/home')
+            return redirect('/location/')
+        else:
+            print(form.errors)
     else:
+
         form = LocationForm
     return render(request, template_name, {'form':form})
 
 @login_required
-def location_update(request, pk, template_name='location_create.html'):
+def location_update(request, pk, template_name='location_update.html'):
+    locations = get_object_or_404(location, pk=pk)
     if request.method == 'POST':
-        locations= get_object_or_404(location, pk=pk)
 
         form = LocationForm(request.POST, instance=locations)
         if form.is_valid():
@@ -53,14 +58,18 @@ def location_update(request, pk, template_name='location_create.html'):
             info.created_by = request.user
             info.modified_by = request.user
             info.save()
-            return redirect('/home')
+            return redirect('/location/')
+        else:
+            print(form.errors)
     else:
         form = LocationForm
-    return render(request, template_name, {'form':form})
+    return render(request, template_name, {'form':form, 'location':locations})
 
+@login_required
 def location_delete(request, pk, template_name='location_delete.html'):
     locations= get_object_or_404(location, pk=pk)
     if request.method=='POST':
         locations.delete()
-        return redirect('/home')
+        return redirect('/location/')
+
     return render(request, template_name, {'object':locations})

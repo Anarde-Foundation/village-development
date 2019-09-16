@@ -1,9 +1,33 @@
-{% extends 'base.html' %}
+{% extends 'home.html' %}
+{% block page-title %}
+Locations Details
+{% endblock %}
+ {% block page-title-path %}
+<ol class="breadcrumb text-right">
+                            <li><a href="/location">Locations</a></li>
+                            <li class="active">Details</li>
+</ol>
+{% endblock %}
+{% block right-pane-content %}
+<div class="card">
+    <div class="card-header">
+        <strong class="card-title">Location Details</strong>
+    </div>
+    <div class="card-body">
+         <div class="row">
+             <div class="col-sm-12 col-md-6" >
+                 <li><h2>Name: {{object.location_name}}</h2></li>
+                 <li>Date of intervention: {{ object.date_of_intervention }}</li>
+                 <li>Exit date: {{ object.exit_date }}</li>
+             </div>
+         </div>
+         <div class="row">
+             <a class="col-sm-12 col-md-12">
+                 <a href="{% url "location_edit" object.location_id %}"> <button type="button" style='margin-right:8px' class="btn btn-info  btn-sm">Edit</button></a>
+                 <a href="{% url "location_new" %}"> <button type="button" style='margin-right:8px'class="btn btn-info btn-sm">Survey list</button></a>
+                 <a href="{% url "location_delete" object.location_id %}"><button type="button" style='margin-right:8px' class="btn btn-danger btn-sm">Delete</button></a>
+             </div>
+         </div>
 
-{% block content %}
 
-<h1>Location Details</h1>
-<h2>Name: {{object.location_name}}</h2>
-Date of intervention: {{ object.date_of_intervention }}<br>
-Exit date: {{ object.exit_date }}
 {% endblock %}

@@ -25,10 +25,6 @@ urlpatterns = [
     path('accounts/', include('django.contrib.auth.urls')),
     path('home', login_required(TemplateView.as_view(template_name="home.html"))),
     path('location/', include('location.urls')),
-    path('survey/', include('survey_form.urls'))
-
-    # path("login", .login_request, name="login"),
-    # path('user/signup/', user_views.signup, name='signup'),
-
+    path('survey/', include('survey_form.urls')),
 
 ]

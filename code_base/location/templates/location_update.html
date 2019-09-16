@@ -1,0 +1,70 @@
+{% extends 'home.html' %}
+{% block page-title %}
+Add location
+{% endblock %}
+ {% block page-title-path %}
+<ol class="breadcrumb text-right">
+                            <li><a href="/location/">Locations</a></li>
+                            <li><a href="/location/">Details</a></li>
+                            <li class="active">Update location</li>
+                        </ol>
+{% endblock %}
+
+
+
+{% block right-pane-content %}
+<div class="content mt-3">
+            <div class="animated fadeIn">
+                <div class="row">
+
+                    <div class="col-md-12">
+                      <div class="card">
+                            <div class="card-header">New location
+                                <strong class="card-title"></strong>
+                            </div>
+                            <div class="card-body">
+                                <div id="pay-invoice">
+                                    <div class="card-body">
+                                        <div class="card-title">
+                                            <h3 class="text-center">Location information</h3>
+                                        </div>
+                                        <hr>
+                                        <form  method="post" action="">
+                                        {% csrf_token %}
+                                            <div class="form-group has-success">
+                                              {{ form.location_name.label_tag }}
+
+                                                <input id="{{form.location_name.id_for_lable}}" name="{{ form.location_name.html_name }}"
+                                                       placeholder="{{location.location_name}}" type="text" class="form-control" aria-required="true" aria-invalid="false" >
+                                                <span class="help-block field-validation-valid" data-valmsg-for="cc-name" data-valmsg-replace="true"></span>
+
+
+                                            <div class="form-group">
+                                                {{ form.date_of_intervention.label_tag }}
+                                                        {{form.date_of_intervention}}
+                                                <small class="form-text text-muted">If no change enter previous date :{{location.date_of_intervention}}</small>
+                                            </div>
+                                            <div class="form-group">
+                                                {{ form.exit_date.label_tag }}
+                                                        {{form.exit_date}}
+                                                 <small class="form-text text-muted">select '----' for active location</small>
+                                                 <small class="form-text text-muted">If no change enter previous date: {{location.exit_date}}</small>
+                                            </div>
+                                            <div>
+                                                <button id="payment-button" type="submit" class="btn btn-lg btn-info btn-block">
+                                                    <span id="payment-button-amount">Submit</span>
+                                                </button>
+                                            </div>
+                                            {% for error in form.errors %}
+                                            <p class="text-danger">please enter valid {{ error }} (if not new enter previous)</p>
+                                          {% endfor %}
+                                            </div>
+                                        </form>
+
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+{% endblock %}
