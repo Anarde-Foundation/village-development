@@ -35,7 +35,7 @@ Add location
                                               {{ form.location_name.label_tag }}
 
                                                 <input id="{{form.location_name.id_for_lable}}" name="{{ form.location_name.html_name }}"
-                                                       placeholder="{{location.location_name}}" type="text" class="form-control" aria-required="true" aria-invalid="false" >
+                                                       value="{{form.location_name.value}}" type="text" class="form-control" aria-required="true" aria-invalid="false" >
                                                 <span class="help-block field-validation-valid" data-valmsg-for="cc-name" data-valmsg-replace="true"></span>
 
 

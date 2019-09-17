@@ -33,7 +33,6 @@ def location_view(request, pk, template_name='location_detail.html'):
 def location_create(request, template_name='location_create.html'):
     if request.method == 'POST':
         form = LocationForm(request.POST)
-        # form.cleaned_data['date_of_intervention']= datetime.now()
         if form.is_valid():
             info =form.save()
             info.created_by = request.user
@@ -47,22 +46,22 @@ def location_create(request, template_name='location_create.html'):
         form = LocationForm
     return render(request, template_name, {'form':form})
 
+
 @login_required
 def location_update(request, pk, template_name='location_update.html'):
     locations = get_object_or_404(location, pk=pk)
+    form = LocationForm(instance=locations)
     if request.method == 'POST':
-
         form = LocationForm(request.POST, instance=locations)
         if form.is_valid():
             info = form.save()
-            info.created_by = request.user
             info.modified_by = request.user
             info.save()
             return redirect('/location/')
         else:
             print(form.errors)
-    else:
-        form = LocationForm
+    # else:
+    #     form = LocationForm
     return render(request, template_name, {'form':form, 'location':locations})
 
 @login_required
