@@ -1,33 +1,52 @@
-{% extends 'home.html' %}
-{% block page-title %}
-Locations Details
-{% endblock %}
- {% block page-title-path %}
-<ol class="breadcrumb text-right">
-                            <li><a href="/location">Locations</a></li>
-                            <li class="active">Details</li>
-</ol>
-{% endblock %}
-{% block right-pane-content %}
-<div class="card">
-    <div class="card-header">
-        <strong class="card-title">Location Details</strong>
+    {% extends 'home.html' %}
+    {% block page-title %}
+    Locations Details
+    {% endblock %}
+     {% block page-title-path %}
+    <ol class="breadcrumb text-right">
+        <li><a href="/location">Locations</a></li>
+        <li class="active">Details</li>
+    </ol>
+    {% endblock %}
+    {% block right-pane-content %}
+    <div class="card">
+
+        <div class="card-body">
+             <div class="container">
+                 <div class="row">
+                     <div class="col-sm-12 col-md-12" >
+                         <h3 class="card-title">{{object.location_name}}
+                             <a href='{% url "location_edit" object.location_id %}' class="text-danger" title="Edit location details">
+                                 <i class="fa fa-pencil-square-o px-3"></i>
+                             </a>
+                         </h3>
+                     </div>
+                 </div>
+                 <div class="row">
+                     <div class="col-3">
+                         <dl>
+                             <dt>Date of intervention</dt>
+                             <dd>{{ object.date_of_intervention }}</dd>
+                        </dl>
+                     </div>
+                     <div class="col-3">
+                         <dl>
+                             <dt>Exit date</dt>
+                             <dd>{{ object.exit_date }}</dd>
+                        </dl>
+                     </div>
+                 </div>
+             </div>
+        </div>
+         <div class="card-footer d-none">
+             <div class="container">
+                 <div class="row">
+                     <div class="col-12">
+                         <a href='{% url "location_new" %}' class="btn btn-info">View surveys conducted</a>
+                         <a href='{% url "location_delete" object.location_id %}' class="btn btn-danger">Delete</a>
+                     </div>
+                 </div>
+             </div>
+         </div>
     </div>
-    <div class="card-body">
-         <div class="row">
-             <div class="col-sm-12 col-md-6" >
-                 <li><h2>Name: {{object.location_name}}</h2></li>
-                 <li>Date of intervention: {{ object.date_of_intervention }}</li>
-                 <li>Exit date: {{ object.exit_date }}</li>
-             </div>
-         </div>
-         <div class="row">
-             <a class="col-sm-12 col-md-12">
-                 <a href="{% url "location_edit" object.location_id %}"> <button type="button" style='margin-right:8px' class="btn btn-info  btn-sm">Edit</button></a>
-                 <a href="{% url "location_new" %}"> <button type="button" style='margin-right:8px'class="btn btn-info btn-sm">Survey list</button></a>
-                 <a href="{% url "location_delete" object.location_id %}"><button type="button" style='margin-right:8px' class="btn btn-danger btn-sm">Delete</button></a>
-             </div>
-         </div>
-
-
-{% endblock %}
+    {% endblock %}
