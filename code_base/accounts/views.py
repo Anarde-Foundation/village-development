@@ -1,11 +1,12 @@
 
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.views.generic import UpdateView
 from django.contrib.auth.models import User, Group
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login
-from .forms import UsersRegisterForm
-#
+from .forms import UsersRegisterForm, UpdateUserForm
+from django.contrib.auth.decorators import login_required
+from django_datatables_view.base_datatable_view import BaseDatatableView
+from django.views.generic import TemplateView
 # Create your views here.
 
 def register_view(request):
@@ -16,7 +17,14 @@ def register_view(request):
             username = form.cleaned_data.get('username')
             raw_password = form.cleaned_data.get('password1')
             group = form.cleaned_data.get('groups')
-            user.save()
+            if group != "Admin":
+                user.is_active = False
+                user.save()
+            else:
+                user.is_superuser = True
+                user.is_staff = True
+                user.save()
+
             group = Group.objects.get(name=group)
             user.groups.add(group)
             user = authenticate(username=username, password=raw_password)
@@ -26,25 +34,47 @@ def register_view(request):
         form = UsersRegisterForm()
     return render(request, 'signup.html', {'form': form})
 
-def login_request(request):
-    print('login entered ...........................')
+
+
+
+def update_view(request, pk, template_name='user_update.html'):
+    UserForUpdate = get_object_or_404(User, pk=pk)
+    form = UpdateUserForm(instance=UserForUpdate)
     if request.method == 'POST':
-        form = AuthenticationForm(request=request, data=request.POST)
-        print('login request ...........................')
+        form = UpdateUserForm(request.POST, instance=UserForUpdate)
         if form.is_valid():
-            username = form.cleaned_data.get('username')
-            password = form.cleaned_data.get('password')
-            user = authenticate(username=username, password=password)
-            print(username)
-            print(password)
-            if user is not None:
-                login(request, user)
-                # messages.info(request, f"You are now logged in as {username}")
-                return redirect('templates/home')
-    form = AuthenticationForm()
-    return render(request=request,
-                  template_name="registration/login.html",
-                  context={"form": form})
+            user = form.save()
+            # active_status = form.cleaned_data.get('active')
+            # user.is_active = active_status
+            return redirect('/accounts/user_list')
+    # else:
+    #     form = UsersRegisterForm()
+    return render(request, template_name, {'form':form, 'user':UserForUpdate})
+
+
+@login_required
+def wherenext(request):
+    """Simple redirector to figure out where the user goes next."""
+    if request.user.is_superuser:
+        return redirect('/admin')
+
+    else:
+        return redirect('templates/home')
+
+class user_list(TemplateView):
+    template_name = 'user_list.html'
+
+
+class user_listJson(BaseDatatableView):
+    model = User
+    columns = ['id', 'username', 'is_staff', 'is_active']
+    order_columns  = ['id', 'username', 'is_staff', 'is_active']
+
+    # def render_column(self, row, column):
+    #     # i recommend change 'flat_house.house_block.block_name' to 'address'
+    #     if column == 'Username':
+    #         return '<a href="update_user">link</a>' % row.username
+
 
 
 

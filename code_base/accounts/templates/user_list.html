@@ -1,0 +1,59 @@
+{% extends 'home.html' %}
+{% block right-pane-content %}
+<!--Right panel - start here -->
+
+<div class="card">
+    <div class="card-header">
+        <div class="col-md-10">
+            <strong class="card-title">User List</strong>
+        </div>
+        <div class="col-md-2" right="align">
+            <a href="{% url "register" %}"><button type="button" class="btn btn-secondary">Add New User</button></a>
+        </div>
+    </div>
+    <div class="card-body">
+        <table id="user_list" class="table table-striped table-bordered" width="100%">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>User Name</th>
+                    <th>Staff Status </th>
+                    <th>Active Status</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for user in UserForUpdate %}
+                <tr class='clickable-row'> <a href="{% url "user_update" user.id %}"></a>
+
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+<!-- Right panel - ends here -->
+{% endblock %}
+
+{% block page_script %}
+<script type="text/javascript">
+    $(document).ready(function() {
+        //alert('in ready function');
+        $("#user_list").DataTable({
+            "searching": true,
+            "processing": true,
+            "serverSide": true,
+            "stateSave": true,
+            "ajax": '{% url "user_list_json" %}',
+
+        });
+        var table = $('#user_list').DataTable();
+        $('#user_list tbody').on('click', 'tr', function () {
+        var data = table.row( this ).data();
+        var url =
+         window.location.href = "user_update/" + data[0]
+    } );
+
+    } );
+
+</script>
+{% endblock %}
