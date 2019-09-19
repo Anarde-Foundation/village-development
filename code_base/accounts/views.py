@@ -6,7 +6,8 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login
 from .forms import UsersRegisterForm
 from django.contrib.auth.decorators import login_required
-
+from django_datatables_view.base_datatable_view import BaseDatatableView
+from django.views.generic import TemplateView
 # Create your views here.
 
 def register_view(request):
@@ -22,6 +23,7 @@ def register_view(request):
                 user.save()
             else:
                 user.is_superuser = True
+                user.is_staff = True
                 user.save()
 
             group = Group.objects.get(name=group)
@@ -33,26 +35,6 @@ def register_view(request):
         form = UsersRegisterForm()
     return render(request, 'signup.html', {'form': form})
 
-# def login_request(request):
-#     print('login entered ...........................')
-#     if request.method == 'POST':
-#         form = AuthenticationForm(request=request, data=request.POST)
-#         print('login request ...........................')
-#         if form.is_valid():
-#             username = form.cleaned_data.get('username')
-#             password = form.cleaned_data.get('password')
-#             user = authenticate(username=username, password=password)
-#             print(username)
-#             print(password)
-#             if user is not None:
-#                 login(request, user)
-#                 # messages.info(request, f"You are now logged in as {username}")
-#                 return redirect('templates/home')
-#     form = AuthenticationForm()
-#     return render(request=request,
-#                   template_name="registration/login.html",
-#                   context={"form": form})
-
 
 @login_required
 def wherenext(request):
@@ -62,3 +44,14 @@ def wherenext(request):
 
     else:
         return redirect('templates/home')
+
+class user_list(TemplateView):
+    template_name = 'user_list.html'
+
+
+class user_listJson(BaseDatatableView):
+    model = User
+    columns = ['id', 'username', 'date_joined ', 'is_staff', 'is_active']
+    order_columns  = ['id', 'username', 'date_joined ', 'is_staff', 'is_active']
+
+
