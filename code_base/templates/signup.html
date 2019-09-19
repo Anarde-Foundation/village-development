@@ -1,22 +1,67 @@
 {% extends 'base.html' %}
 
+​
+
 {% block content %}
+
   <h2>Sign up</h2>
+
 <div class="sufee-login d-flex align-content-center flex-wrap">
+
         <div class="container">
+
             <div class="login-content">
+
                 <div class="login-logo">
+
                     <a href="index.html">
+
                         <img class="align-content" src="/static/images/logo.png" alt="">
+
                     </a>
+
                 </div>
+
                 <div class="login-form">
+
       <form method="post">
+
       {% csrf_token %}
 
-    {{ form.as_p }}
-    <button type="submit" class="btn btn-success btn-flat m-b-30 m-t-30">Sign up</button>
-  </form>
-                </div></div></div></div>
-{% endblock %}
+      {% for field in form %}
 
+        <div class="form-group">
+
+            {{ field.label_tag }}
+
+            <input class="form-control" id="{{ field.id_for_label }}"
+
+               maxlength="30" placeholder="User name"
+
+               name="{{ field.html_name }}" type="text" />
+
+            {% if field.help_text %}
+
+              <small class="form-text text-muted">{{ field.help_text }}</small>
+
+            {% endif %}
+
+            {% for error in field.errors %}
+
+              <p class="text-danger">{{ error }}</p>
+
+            {% endfor %}
+
+        </div>
+
+    {% endfor %}
+
+​
+
+    <button type="submit" class="btn btn-success btn-flat m-b-30 m-t-30">Sign up</button>
+
+  </form>
+
+                </div></div></div></div>
+
+{% endblock %}

@@ -1,10 +1,9 @@
 
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.views.generic import UpdateView
 from django.contrib.auth.models import User, Group
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login
-from .forms import UsersRegisterForm
+from .forms import UsersRegisterForm, UpdateUserForm
 from django.contrib.auth.decorators import login_required
 from django_datatables_view.base_datatable_view import BaseDatatableView
 from django.views.generic import TemplateView
@@ -36,6 +35,23 @@ def register_view(request):
     return render(request, 'signup.html', {'form': form})
 
 
+
+
+def update_view(request, pk, template_name='user_update.html'):
+    UserForUpdate = get_object_or_404(User, pk=pk)
+    form = UpdateUserForm(instance=UserForUpdate)
+    if request.method == 'POST':
+        form = UpdateUserForm(request.POST, instance=UserForUpdate)
+        if form.is_valid():
+            user = form.save()
+            # active_status = form.cleaned_data.get('active')
+            # user.is_active = active_status
+            return redirect('/accounts/user_list')
+    # else:
+    #     form = UsersRegisterForm()
+    return render(request, template_name, {'form':form, 'user':UserForUpdate})
+
+
 @login_required
 def wherenext(request):
     """Simple redirector to figure out where the user goes next."""
@@ -51,7 +67,14 @@ class user_list(TemplateView):
 
 class user_listJson(BaseDatatableView):
     model = User
-    columns = ['id', 'username', 'date_joined ', 'is_staff', 'is_active']
-    order_columns  = ['id', 'username', 'date_joined ', 'is_staff', 'is_active']
+    columns = ['id', 'username', 'is_staff', 'is_active']
+    order_columns  = ['id', 'username', 'is_staff', 'is_active']
+
+    # def render_column(self, row, column):
+    #     # i recommend change 'flat_house.house_block.block_name' to 'address'
+    #     if column == 'Username':
+    #         return '<a href="update_user">link</a>' % row.username
+
+
 
 
