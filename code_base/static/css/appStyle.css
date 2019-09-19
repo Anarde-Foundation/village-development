@@ -1,0 +1,21 @@
+dt {
+    font-weight: normal;
+    color: #6c757d !important;
+}
+dd {
+    font-weight:700;
+    color: #6c757d !important;
+}
+.chosen-container-single .chosen-single {
+    padding: .375rem .75rem;
+    height: 36px;
+    border: 1px solid #ced4da;
+    background: none !important;
+    line-height: 1.5;
+}
+.chosen-container-single .chosen-single div b {
+    background-position-y: 7px !important;
+}
+.form-group {
+    margin-bottom: 2rem;
+}
