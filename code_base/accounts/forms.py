@@ -11,9 +11,8 @@ CHOICES= [
     ]
 
 class UsersRegisterForm(UserCreationForm):
-    first_name = forms.CharField(max_length=30, required=False, help_text='Optional.')
-    last_name = forms.CharField(max_length=30, required=False, help_text='Optional.')
+
     groups = forms.CharField(label='User role', widget=forms.Select(choices=CHOICES))
     class Meta:
         model = User
-        fields = ('username', 'first_name', 'last_name', 'groups', 'password1', 'password2', )
+        fields = ('username', 'groups', 'password1', 'password2', )
