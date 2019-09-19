@@ -10,7 +10,6 @@ jQuery(document).ready(function($) {
 
 	jQuery('.selectpicker').selectpicker;
 
-
 	$('#menuToggle').on('click', function(event) {
 		$('body').toggleClass('open');
 	});
