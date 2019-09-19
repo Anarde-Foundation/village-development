@@ -15,6 +15,11 @@ class location(models.Model):
     modified_by = models.ForeignKey(User, null=True, db_column='modified_by', related_name='fk_location_mby',
                                     on_delete=models.PROTECT)
     modified_on = models.DateTimeField(default=datetime.now)
+
+    def __str__(self):
+        return "%s" % (self.location_name)
+
+
     class Meta:
         db_table = 'loc_location'
         get_latest_by = 'location_id'
