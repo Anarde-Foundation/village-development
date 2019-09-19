@@ -10,9 +10,12 @@ class LocationForm(ModelForm):
     YEARS = [x for x in range(1990, 2021)]
     location_name = forms.CharField(required= True,label='Location name', max_length=100)
 
-    date_of_intervention = forms.DateField(required=True,label='Date of intervention', initial=datetime.now,
-                                           widget=forms.SelectDateWidget(years=YEARS))
-    exit_date = forms.DateField(required=False,label='Exit date',widget=forms.SelectDateWidget(empty_label="----"))
+    date_of_intervention = forms.DateField(required=True,
+                                           label='Date of intervention',
+                                           widget=forms.SelectDateWidget(empty_label="", years=YEARS))
+    exit_date = forms.DateField(required=False,
+                                label='Exit date',
+                                widget=forms.SelectDateWidget(empty_label=""))
 
     class Meta:
         model = location
@@ -49,20 +52,25 @@ def location_create(request, template_name='location_create.html'):
 
 @login_required
 def location_update(request, pk, template_name='location_update.html'):
-    locations = get_object_or_404(location, pk=pk)
-    form = LocationForm(instance=locations)
+    locationForUpdate = get_object_or_404(location, pk=pk)
+    form = LocationForm(instance=locationForUpdate)
     if request.method == 'POST':
-        form = LocationForm(request.POST, instance=locations)
+        print(request.POST)
+        if 'cancel' in request.POST:
+            print('cancelling request')
+            return redirect('/location/view/'+ str(pk))
+
+        form = LocationForm(request.POST, instance=locationForUpdate)
         if form.is_valid():
             info = form.save()
             info.modified_by = request.user
             info.save()
-            return redirect('/location/')
+            return redirect('/location/view/'+ str(pk))
         else:
             print(form.errors)
     # else:
     #     form = LocationForm
-    return render(request, template_name, {'form':form, 'location':locations})
+    return render(request, template_name, {'form':form, 'location':locationForUpdate})
 
 @login_required
 def location_delete(request, pk, template_name='location_delete.html'):

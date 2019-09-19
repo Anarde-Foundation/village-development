@@ -2,69 +2,77 @@
 {% block page-title %}
 Add location
 {% endblock %}
- {% block page-title-path %}
+{% block page-title-path %}
 <ol class="breadcrumb text-right">
-                            <li><a href="/location/">Locations</a></li>
-                            <li><a href="/location/">Details</a></li>
-                            <li class="active">Update location</li>
-                        </ol>
+    <li><a href="/location/">Locations</a></li>
+    <li><a href="/location/">Details</a></li>
+    <li class="active">Update location</li>
+</ol>
 {% endblock %}
 
 
 
 {% block right-pane-content %}
 <div class="content mt-3">
-            <div class="animated fadeIn">
-                <div class="row">
-
-                    <div class="col-md-12">
-                      <div class="card">
-                            <div class="card-header">New location
-                                <strong class="card-title"></strong>
+    <div class="animated fadeIn">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-body px-3 py-4">
+                        <form  method="post" action="">
+                            {% csrf_token %}
+                            <div class="form-group col-lg-12 col-md-12 col-sm-12">
+                                <label class="form-control-label" for="{{form.location_name.id_for_label}}">Location name</label>
+                                <input id="{{form.location_name.id_for_label}}" name="{{ form.location_name.html_name }}"
+                                       value="{{form.location_name.value}}" type="text" class="form-control" aria-required="true"
+                                        placeholder="Enter location name "
+                                       aria-invalid="false" >
                             </div>
-                            <div class="card-body">
-                                <div id="pay-invoice">
-                                    <div class="card-body">
-                                        <div class="card-title">
-                                            <h3 class="text-center">Location information</h3>
-                                        </div>
-                                        <hr>
-                                        <form  method="post" action="">
-                                        {% csrf_token %}
-                                            <div class="form-group has-success">
-                                              {{ form.location_name.label_tag }}
-
-                                                <input id="{{form.location_name.id_for_lable}}" name="{{ form.location_name.html_name }}"
-                                                       value="{{form.location_name.value}}" type="text" class="form-control" aria-required="true" aria-invalid="false" >
-                                                <span class="help-block field-validation-valid" data-valmsg-for="cc-name" data-valmsg-replace="true"></span>
-
-
-                                            <div class="form-group">
-                                                {{ form.date_of_intervention.label_tag }}
-                                                        {{form.date_of_intervention}}
-                                                <small class="form-text text-muted">If no change enter previous date :{{location.date_of_intervention}}</small>
-                                            </div>
-                                            <div class="form-group">
-                                                {{ form.exit_date.label_tag }}
-                                                        {{form.exit_date}}
-                                                 <small class="form-text text-muted">select '----' for active location</small>
-                                                 <small class="form-text text-muted">If no change enter previous date: {{location.exit_date}}</small>
-                                            </div>
-                                            <div>
-                                                <button id="payment-button" type="submit" class="btn btn-lg btn-info btn-block">
-                                                    <span id="payment-button-amount">Submit</span>
-                                                </button>
-                                            </div>
-                                            {% for error in form.errors %}
-                                            <p class="text-danger">please enter valid {{ error }} (if not new enter previous)</p>
-                                          {% endfor %}
-                                            </div>
-                                        </form>
-
-                                    </div>
-                                </div>
-
+                            <div class="form-group col-lg-6 col-md-6 col-sm-12 date-picker">
+                                <label class="form-control-label">Date of intervention</label><br/>
+                                {{form.date_of_intervention}}
+                                <small class="form-text text-muted d-none">If no change enter previous date :{{location.date_of_intervention}}</small>
                             </div>
-                        </div>
+                            <div class="form-group col-lg-6 col-md-6 col-sm-12 date-picker">
+                                <label class="form-control-label">Exit Date</label><br/>
+                                {{form.exit_date}}
+                                <small class="form-text text-muted d-none">select '----' for active location</small>
+                                <small class="form-text text-muted d-none">If no change enter previous date: {{location.exit_date}}</small>
+                            </div>
+                            <div class="col-lg-12 col-md-12 col-sm-12">
+                                <button id="btnSave" type="submit" value="Update" class="btn btn-danger">Save Location</button>
+                                <button id="btnCancel" type="submit" value="cancel" class="ml-2 btn btn-outline-danger">Cancel</button>
+                            </div>
+                            {% for error in form.errors %}
+                            <p class="text-danger">please enter valid {{ error }} (if not new enter previous)</p>
+                            {% endfor %}
+                    </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
 
+{% endblock %} <!-- end of right-pane-content -->
+
+{% block page_script %}
+<script type="text/javascript">
+    jQuery(document).ready(function($) {
+
+        /*set default text for empty option*/
+        $('.date-picker select[id $="_month"]').find('option:eq(0)[selected]').html('Select Month');
+        $('.date-picker select[id $="_day"]').find('option:eq(0)[selected]').html('Day');
+        $('.date-picker select[id $="_year"]').find('option:eq(0)[selected]').html('Year');
+
+        $('#id_date_of_intervention_month').chosen({width: "45%"});
+        $('#id_date_of_intervention_day').chosen({width: "25%"});
+        $('#id_date_of_intervention_year').chosen({width: "30%"});
+
+        $('#id_exit_date_month').chosen({width: "45%"});
+        $('#id_exit_date_day').chosen({width: "25%"});
+        $('#id_exit_date_year').chosen({width: "30%"});
+    });
+</script>
 {% endblock %}

@@ -1,62 +1,64 @@
 {% extends 'home.html' %}
+
 {% block page-title %}
-Add location
-{% endblock %}
- {% block page-title-path %}
+    Add location
+{% endblock %} <!-- end of block page-title -->
+
+{% block page-title-path %}
 <ol class="breadcrumb text-right">
-                            <li><a href="/location/">Locations</a></li>
-                            <li class="active">Add location</li>
-                        </ol>
-{% endblock %}
+    <li><a href="/location/">Locations</a></li>
+    <li class="active">Add location</li>
+</ol>
+{% endblock %} <!-- end of block page-title-path -->
 
 
 
 {% block right-pane-content %}
 <div class="content mt-3">
-            <div class="animated fadeIn">
-                <div class="row">
+    <div class="animated fadeIn">
 
-                    <div class="col-md-12">
-                      <div class="card">
-                          <div class="card-header">New location
-                                <strong class="card-title"></strong>
-                          </div>
-                          <div class="card-body">
-                              <div id="pay-invoice">
-                                  <div class="card-body">
-                                      <div class="card-title">
-                                          <h3 class="text-center">Location information</h3>
-                                      </div>
-                                      <hr>
-                                      <form  method="post" action="">
-                                        {% csrf_token %}
-                                          <div class="form-group has-success">
-                                              {{ form.location_name.label_tag }}
-
-                                                <input id="{{form.location_name.id_for_lable}}" name="{{ form.location_name.html_name }}"
-                                                       type="text" class="form-control" data-val="true" data-val-required="Please enter the name "
-                                                       aria-required="true" aria-invalid="false" >
-                                                <span class="help-block field-validation-valid" data-valmsg-for="cc-name" data-valmsg-replace="true"></span>
-                                          </div>
-
-                                          <div class="form-group">
-                                                {{ form.date_of_intervention.label_tag }}
-                                                        {{form.date_of_intervention}}
-                                          </div>
-                                          <div>
-                                            <button id="payment-button" type="submit" class="btn btn-lg btn-info btn-block">
-                                                <span id="payment-button-amount">Submit</span>
-                                            </button>
-                                          </div>
-                                          {% for error in field.errors %}
-                                            <p class="text-danger">{{ error }}</p>
-                                          {% endfor %}
-                                        </form>
-
-                                    </div>
-                                </div>
-
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-body  px-3 py-4">
+                        <form  method="post" action="">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label class="form-control-label">Location name</label>
+                                <input id="{{form.location_name.id_for_lable}}" name="{{ form.location_name.html_name }}"
+                                       type="text" class="form-control" data-val="true" placeholder="Enter location name "
+                                       aria-required="true" aria-invalid="false" >
                             </div>
-                        </div>
 
+                            <div class="form-group">
+                                <label class="form-control-label">Date of intervention</label><br/>
+                                {{form.date_of_intervention}}
+                            </div>
+                            <div>
+                                <button id="payment-button" type="submit" class="btn btn-lg btn-info btn-block">
+                                    <span id="payment-button-amount">Submit</span>
+                                </button>
+                            </div>
+                            {% for error in field.errors %}
+                            <p class="text-danger">{{ error }}</p>
+                            {% endfor %}
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %} <!-- end of right-pane-content -->
+
+{% block page_script %}
+<script type="text/javascript">
+    jQuery(document).ready(function($) {
+        $('#id_date_of_intervention_month').chosen({width: "15%"});
+        $('#id_date_of_intervention_day').chosen({width: "8%"});
+        $('#id_date_of_intervention_year').chosen({width: "10%"});
+    });
+</script>
 {% endblock %}
