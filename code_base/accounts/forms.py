@@ -11,9 +11,18 @@ CHOICES= [
     ]
 
 class UsersRegisterForm(UserCreationForm):
-    first_name = forms.CharField(max_length=30, required=False, help_text='Optional.')
-    last_name = forms.CharField(max_length=30, required=False, help_text='Optional.')
+
     groups = forms.CharField(label='User role', widget=forms.Select(choices=CHOICES))
     class Meta:
         model = User
-        fields = ('username', 'first_name', 'last_name', 'groups', 'password1', 'password2', )
+        fields = ('username', 'groups', 'password1', 'password2', )
+
+class UpdateUserForm(forms.ModelForm):
+    User_CHOICES = [
+        ('1', 'True'),
+        ('0', 'False'),
+    ]
+    is_active = forms.CharField(label='Active_status', widget=forms.Select(choices=User_CHOICES))
+    class Meta:
+         model = User
+         fields = ('username', 'is_active')
