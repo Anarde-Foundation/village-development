@@ -9,43 +9,68 @@ Locations
                         </ol>
 {% endblock %}
 {% block right-pane-content %}
- <div class="card">
-     <div class="card-header">
-         <div class="col-md-10">
-            <strong class="card-title">Location List</strong>
-         </div>
-        <div class="col-md-2" right="align">
-            <a href="{% url "location_new" %}"><button type="button" class="btn btn-secondary">Add new location</button></a>
+
+<!--Right panel - start here -->
+
+<div class="card">
+    <div class="card-header bg-info text-white">
+        <div class="col-md-10">
+            <h5 class="card-title">Locations Intervened</h5>
         </div>
-     </div>
-        <div class="card-body">
-            <div id="bootstrap-data-table-export_wrapper" class="dataTables_wrapper dt-bootstrap4 no-footer">
-                <div class="row">
-                    <div class="col-sm-12 col-md-12" >
-                    <div id="bootstrap-data-table-export_filter" right="align" class="dataTables_filter"><label>Search:
-                        <input type="search" class="form-control form-control-sm" placeholder="" aria-controls="bootstrap-data-table-export">
-                    </label>
-                    </div>
-                    </div>
-                </div>
-                <div class="row">
-                <div class="col-sm-12">
-                <table id="bootstrap-data-table-export" class="table table-striped table-bordered">
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    {% if location %}
-                    {% for l in location %}
-                    <tr>
-                        <td>  <a href="{% url "location_view" l.location_id %}">{{l.location_name}}</a></td>
-                         {% endfor %}
-                    </tr>
-                    {% endif %}
-                    </tbody>
-                </table>
-                </div>
-                </div>
+        <div class="col-md-2">
+            <a href="{% url 'location_new' %}" class="pull-right"><button type="button" class="btn btn-light btn-sm"><i class="fa fa-plus"></i></button></a>
+        </div>
+    </div>
+    <div class="card-body">
+        <table id="location_list" class="table table-striped table-bordered" width="100%">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Intervention date</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+</div>
+<!-- Right panel - ends here -->
+
+{% endblock %}
+
+
+{% block page_script %}
+<script type="text/javascript">
+
+    /* Init datatable */
+    var initDatatable = function($) {
+        $("#location_list").DataTable({
+            "searching": true,
+            "processing": true,
+            "serverSide": false,
+            "1stateSave": true,
+            "colReorder": true,
+            "paging":true,
+            "responsive": true,
+            "ajax": {
+                 "processing": true,
+                 "url": '{% url "get_location_list_for_datatable" %}',
+                 "dataSrc": ""
+             },
+             "columns":[
+                {data: 'fields.location_name'},
+                {data: 'fields.date_of_intervention'},
+             ]
+        });
+    }
+
+    /* init this page */
+    var initLocationListView = function ($) {
+        initDatatable($);
+    }
+
+    /* int this page */
+    jQuery(document).ready(initLocationListView($));
+
+</script>
 {% endblock %}

@@ -93,3 +93,11 @@ def location_get_survey_list(request):
     data = serializers.serialize('json', survey_list)
     print (data)
     return HttpResponse(data, content_type='application/json')
+
+@login_required
+def get_location_list_for_datatable(request):
+    location_list = location.objects.all()
+    data = serializers.serialize('json', location_list)
+    return HttpResponse(data, content_type='application/json')
+
+
