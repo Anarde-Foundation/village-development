@@ -1,10 +1,10 @@
 {% extends 'base.html' %}
 
-​
-
 {% block content %}
+<div class="login-logo">
+    <h2>User Registration</h2>
+</div>
 
-  <h2>Sign up</h2>
 
 <div class="sufee-login d-flex align-content-center flex-wrap">
 
@@ -28,17 +28,26 @@
 
       {% csrf_token %}
 
-      {% for field in form %}
-
         <div class="form-group">
-
-            {{ field.label_tag }}
-
-            <input class="form-control" id="{{ field.id_for_label }}"
-
-               maxlength="30" placeholder="User name"
-
-               name="{{ field.html_name }}" type="text" />
+            {{ form.username.label_tag }}
+            <input class="form-control" id="{{ form.username.id_for_label }}"
+                   maxlength="30" placeholder="User name"
+                   name="{{ form.username.html_name }}" type="text" />
+        </div>
+        <div class="form-group">
+            <label class="form-control-label">User group</label><br/>
+            {{form.groups}}
+        </div>
+        <div class="form-group">
+            <label>Password</label>
+            <input type="password" class="form-control" placeholder="Password"
+            name="{{ form.password1.html_name }}" value="{{ form.password1.value }}" >
+        </div>
+        <div class="form-group">
+            <label>Confirm password</label>
+            <input type="password" class="form-control" placeholder="Password"
+            name="{{ form.password2.html_name }}" value="{{ form.password2.value }}" >
+        </div>
 
             {% if field.help_text %}
 
@@ -51,13 +60,6 @@
               <p class="text-danger">{{ error }}</p>
 
             {% endfor %}
-
-        </div>
-
-    {% endfor %}
-
-​
-
     <button type="submit" class="btn btn-success btn-flat m-b-30 m-t-30">Sign up</button>
 
   </form>

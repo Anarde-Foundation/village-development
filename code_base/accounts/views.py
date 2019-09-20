@@ -67,8 +67,8 @@ class user_list(TemplateView):
 
 class user_listJson(BaseDatatableView):
     model = User
-    columns = ['id', 'username', 'is_staff', 'is_active']
-    order_columns  = ['id', 'username', 'is_staff', 'is_active']
+    columns = ['id', 'username','date_joined', 'last_login', 'is_staff', 'is_active']
+    order_columns  = ['id', 'username', 'date_joined', 'last_login','is_staff', 'is_active']
 
     # def render_column(self, row, column):
     #     # i recommend change 'flat_house.house_block.block_name' to 'address'
