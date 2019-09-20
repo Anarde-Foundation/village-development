@@ -43,23 +43,20 @@ Add Survey
             </div>
             <div class="row form-group">
                 <div class="col col-md-3">
-                    <label for='' class="form-control-label">{{ form.kobo_form_id.label_tag }}</label>
+                    <label for='' class="form-control-label">Kobo Form name</label>
                     <!--<label for="select" class="form-control-label">{{ form.kobo_form_id.label_tag }}</label>-->
                 </div>
                 <div class="col-12 col-md-5">
                     {{form.kobo_form_id}}
-                    <!--<select name='{{form.kobo_form_name}}' id='{{form.kobo_form_name}}' >
-                        <option value={{form.kobo_form_name}}></option>
-                    </select>-->
                 </div>
             </div>
             <div class="row form-group">
                 <div class="col col-md-3">
-                    <label for="email-input" class="form-control-label"> {{ form.survey_name.label_tag }}</label>
+                    <label for="{{form.survey_name.id_for_label}}" class="form-control-label"> Survey Name</label>
                 </div>
                 <div class="col-12 col-md-5">
                     <input id="{{form.survey_name.id_for_label}}" name="{{ form.survey_name.html_name }}"
-                           type="text" class="form-control" data-val="true" data-val-required="Please enter the name "
+                           type="text" class="form-control font-size=13px" data-val="true" data-val-required="Please enter the name "
                            aria-required="true" aria-invalid="false" >
                     <!--<small class="help-block form-text">Please enter your email</small>-->
                 </div>
@@ -104,7 +101,7 @@ Add Survey
 {% block page_script %}
 <script type="text/javascript">
    jQuery(document).ready(function($) {
-       $('select').chosen({width:'90%'});
+       $('select').chosen({width:'100%'});
 
    });
 </script>
