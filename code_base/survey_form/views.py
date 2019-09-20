@@ -13,7 +13,7 @@ from django.forms import ModelForm
 import re
 import requests
 import json
-from utils.configurator import kobo_constants
+from utils.configuration import kobo_constants
 from common.models import code
 from location.models import location
 from .models import survey, survey_question, survey_question_options
