@@ -12,5 +12,6 @@ urlpatterns = [
     path('new', views.location_create, name='location_new'),
     path('edit/<int:pk>', views.location_update, name='location_edit'),
     path('delete/<int:pk>', views.location_delete, name='location_delete'),
+    path('survey_list', views.location_get_survey_list, name='location_survey_list')
 ]
 
