@@ -5,6 +5,9 @@ from django.utils.timezone import datetime
 from django import forms
 
 from django.forms import ModelForm
+from  survey_form.models import survey #../../survey_form/models import survey
+from django.http import HttpResponse
+from django.core import serializers
 
 class LocationForm(ModelForm):
     YEARS = [x for x in range(1990, 2021)]
@@ -80,3 +83,21 @@ def location_delete(request, pk, template_name='location_delete.html'):
         return redirect('/location/')
 
     return render(request, template_name, {'object':locations})
+
+@login_required
+def location_get_survey_list(request):
+    # Refer link https://dev.to/codeshard/datatables-and-django-finally-with-ajax
+    survey_list = survey.objects.all()
+    print('list is .................................................')
+    #return render (request, {'survey_list': survey_list})
+    data = serializers.serialize('json', survey_list)
+    print (data)
+    return HttpResponse(data, content_type='application/json')
+
+@login_required
+def get_location_list_for_datatable(request):
+    location_list = location.objects.all()
+    data = serializers.serialize('json', location_list)
+    return HttpResponse(data, content_type='application/json')
+
+

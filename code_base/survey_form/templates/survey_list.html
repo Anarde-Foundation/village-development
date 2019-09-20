@@ -3,12 +3,12 @@
 <!--Right panel - start here -->
 
 <div class="card">
-    <div class="card-header">
+    <div class="card-header bg-info text-white">
         <div class="col-md-10">
-            <strong class="card-title">Survey List</strong>
+            <h5 class="card-title">Survey List</h5>
         </div>
-        <div class="col-md-2" right="align">
-            <a href="{% url "survey_new" %}"><button type="button" class="btn btn-secondary">Add New Survey</button></a>
+        <div class="col-md-2">
+            <a href="{% url 'survey_new' %}" class="pull-right"><button type="button" class="btn btn-light btn-sm"><i class="fa fa-plus"></i></button></a>
         </div>
     </div>
     <div class="card-body">
@@ -24,37 +24,6 @@
                 </tr>
             </thead>
             <tbody>
-                <!--{% if survey %}
-                    {% for s in survey %}
-                        <tr>
-                        <td>{{s.survey_id}}</td>
-                        <td>{{s.survey_name}}</a></td>
-                        <td> {{s.survey_type_code_id}}</td>
-                        <td> {{s.publish_date}}</td>
-                        <td> {{s.created_by}}</td>
-
-                            {% endfor %}
-                    </tr>
-                {% endif %}
-                <tr>
-                    <td>Tiger Nixon</td>
-                    <td>System Architect</td>
-                    <td>Edinburgh</td>
-                    <td>$320,800</td>
-                </tr>
-                <tr>
-                    <td>Garrett Winters</td>
-                    <td>Accountant</td>
-                    <td>Tokyo</td>
-                    <td>$170,750</td>
-                </tr>
-                <tr>
-                    <td>Ashton Cox</td>
-                    <td>Junior Technical Author</td>
-                    <td>San Francisco</td>
-                    <td>$86,000</td>
-                </tr>-->
-
             </tbody>
         </table>
     </div>
@@ -64,7 +33,7 @@
 
 {% block page_script %}
 <script type="text/javascript">
-    $(document).ready(function() {
+    jQuery(document).ready(function($) {
         //alert('in ready function');
         $("#survey_list").DataTable({
             "searching": true,

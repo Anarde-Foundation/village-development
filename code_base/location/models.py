@@ -16,8 +16,8 @@ class location(models.Model):
                                     on_delete=models.PROTECT)
     modified_on = models.DateTimeField(default=datetime.now)
 
-    def __str__(self):
-        return "%s" % (self.location_name)
+    # def __str__(self):
+    #     return "%s" % (self.location_name)
 
 
     class Meta:
