@@ -1,0 +1,71 @@
+{% extends 'home.html' %}
+{% block page-title %}
+User Registration
+{% endblock %}
+{% block page-title-path %}
+<ol class="breadcrumb text-right">
+    <li><a href="/accounts/user_list">User list</a></li>
+    <li class="active">Add User</li>
+</ol>
+{% endblock %}
+
+{% block right-pane-content %}
+
+<div class="content mt-3">
+    <div class="animated fadeIn">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-body px-3 py-4">
+                        <form method="post" action="">
+                            {% csrf_token %}
+                            <div class="form-group col-lg-12 col-md-12 col-sm-12">
+                                <label class="form-control-label" for="{{form.username.id_for_label}}">Username</label>
+                                <input id="{{form.username.id_for_label}}" name="{{ form.username.html_name }}"
+                                       type="text" class="form-control" aria-required="true"
+                                       placeholder="Enter username "
+                                       aria-invalid="false">
+                                 {% for error in form.username.errors %}
+                                <p class="text-danger">{{error}}</p>
+                                {% endfor %}
+                            </div>
+                            <div class="form-group col-lg-6 col-md-6 col-sm-12 ">
+                                <label class="form-control-label">User Group</label><br/>
+                                {{form.groups}}
+                            </div>
+                            <div class="form-group col-lg-12 col-md-12 col-sm-12">
+                                <label class="form-control-label">Password</label>
+                                <input type="password" class="form-control" placeholder="Password"
+                               name="{{ form.password1.html_name }}" value="{{ form.password1.value }}">
+                                <small class="form-text text-muted">{{form.password1.help_text }}</small>
+                                {% for error in form.password1.errors %}
+                                <p class="text-danger">{{error}}</p>
+                                {% endfor %}
+                            </div>
+                            <div class="form-group col-lg-12 col-md-12 col-sm-12">
+                                <label class="form-control-label">Confirm
+                                    password</label>
+                                <input type="password" class="form-control" placeholder="Password"
+                               name="{{ form.password2.html_name }}" value="{{ form.password2.value }}">
+                                {% for error in form.password2.errors %}
+                                <p class="text-danger">{{error}}</p>
+                                {% endfor %}
+                            </div>
+                            <div class="col-lg-12 col-md-12 col-sm-12">
+                                <button id="btnSave" type="submit" value="Update" class="btn btn-info">Save
+                                    Information
+                                </button>
+                                <button id="btnCancel" type="submit" value="cancel" class="ml-2 btn btn-outline-danger">
+                                    Cancel
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+{% endblock %}

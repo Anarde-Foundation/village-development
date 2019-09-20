@@ -8,62 +8,65 @@
 
 <div class="sufee-login d-flex align-content-center flex-wrap">
 
-        <div class="container">
+    <div class="container">
 
-            <div class="login-content">
+        <div class="login-content">
 
-                <div class="login-logo">
+            <div class="login-logo">
 
-                    <a href="index.html">
+                <a href="index.html">
 
-                        <img class="align-content" src="/static/images/logo.png" alt="">
+                    <img class="align-content" src="/static/images/logo.png" alt="">
 
-                    </a>
+                </a>
 
-                </div>
+            </div>
 
-                <div class="login-form">
+            <div class="login-form">
 
-      <form method="post">
+                <form method="post">
 
-      {% csrf_token %}
+                    {% csrf_token %}
 
-        <div class="form-group">
-            {{ form.username.label_tag }}
-            <input class="form-control" id="{{ form.username.id_for_label }}"
-                   maxlength="30" placeholder="User name"
-                   name="{{ form.username.html_name }}" type="text" />
+                    <div class="form-group">
+                        {{ form.username.label_tag }}
+                        <input class="form-control" id="{{ form.username.id_for_label }}"
+                               maxlength="30" placeholder="User name"
+                               name="{{ form.username.html_name }}" type="text"/>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-control-label">User group</label><br/>
+                        {{form.groups}}
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" class="form-control" placeholder="Password"
+                               name="{{ form.password1.html_name }}" value="{{ form.password1.value }}">
+                    </div>
+                    <div class="form-group">
+                        <label>Confirm password</label>
+                        <input type="password" class="form-control" placeholder="Password"
+                               name="{{ form.password2.html_name }}" value="{{ form.password2.value }}">
+                    </div>
+
+                    {% if field.help_text %}
+
+                    <small class="form-text text-muted">{{ field.help_text }}</small>
+
+                    {% endif %}
+
+                    {% for error in field.errors %}
+
+                    <p class="text-danger">{{ error }}</p>
+
+                    {% endfor %}
+                    <button type="submit" class="btn btn-success btn-flat m-b-30 m-t-30">Sign up</button>
+
+                </form>
+
+            </div>
         </div>
-        <div class="form-group">
-            <label class="form-control-label">User group</label><br/>
-            {{form.groups}}
-        </div>
-        <div class="form-group">
-            <label>Password</label>
-            <input type="password" class="form-control" placeholder="Password"
-            name="{{ form.password1.html_name }}" value="{{ form.password1.value }}" >
-        </div>
-        <div class="form-group">
-            <label>Confirm password</label>
-            <input type="password" class="form-control" placeholder="Password"
-            name="{{ form.password2.html_name }}" value="{{ form.password2.value }}" >
-        </div>
-
-            {% if field.help_text %}
-
-              <small class="form-text text-muted">{{ field.help_text }}</small>
-
-            {% endif %}
-
-            {% for error in field.errors %}
-
-              <p class="text-danger">{{ error }}</p>
-
-            {% endfor %}
-    <button type="submit" class="btn btn-success btn-flat m-b-30 m-t-30">Sign up</button>
-
-  </form>
-
-                </div></div></div></div>
+    </div>
+</div>
 
 {% endblock %}

@@ -7,6 +7,7 @@ from .forms import UsersRegisterForm, UpdateUserForm
 from django.contrib.auth.decorators import login_required
 from django_datatables_view.base_datatable_view import BaseDatatableView
 from django.views.generic import TemplateView
+from django.contrib.auth.decorators import user_passes_test
 # Create your views here.
 
 def register_view(request):
@@ -34,13 +35,43 @@ def register_view(request):
         form = UsersRegisterForm()
     return render(request, 'signup.html', {'form': form})
 
+@login_required
+#@user_passes_test(lambda u: u.is_superuser)
+def add_user(request, template_name='user_add_new.html'):
+    if request.method == 'POST':
+        form = UsersRegisterForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            username = form.cleaned_data.get('username')
+            raw_password = form.cleaned_data.get('password1')
+            group = form.cleaned_data.get('groups')
+            if group != "Admin":
+                user.save()
+            else:
+                user.is_superuser = True
+                user.is_staff = True
+                user.save()
 
+            group = Group.objects.get(name=group)
+            user.groups.add(group)
+            return redirect('/accounts/user_list')
+        else:
+            print(form.errors)
+    else:
+        form = UsersRegisterForm()
+    return render(request, template_name, {'form': form})
 
-
+@login_required
+# @user_passes_test(lambda u: u.is_superuser)
 def update_view(request, pk, template_name='user_update.html'):
     UserForUpdate = get_object_or_404(User, pk=pk)
     form = UpdateUserForm(instance=UserForUpdate)
     if request.method == 'POST':
+        print(request.POST)
+        if 'cancel' in request.POST:
+            print('cancelling request')
+            return redirect('/location/view/' + str(pk))
+
         form = UpdateUserForm(request.POST, instance=UserForUpdate)
         if form.is_valid():
             user = form.save()
@@ -67,8 +98,8 @@ class user_list(TemplateView):
 
 class user_listJson(BaseDatatableView):
     model = User
-    columns = ['id', 'username','date_joined', 'last_login', 'is_staff', 'is_active']
-    order_columns  = ['id', 'username', 'date_joined', 'last_login','is_staff', 'is_active']
+    columns = ['id', 'username','date_joined', 'last_login','is_active']
+    order_columns  = ['id', 'username', 'date_joined', 'last_login', 'is_active']
 
     # def render_column(self, row, column):
     #     # i recommend change 'flat_house.house_block.block_name' to 'address'
