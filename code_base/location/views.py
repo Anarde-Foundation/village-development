@@ -5,7 +5,7 @@ from django.utils.timezone import datetime
 from django import forms
 
 from django.forms import ModelForm
-from  survey_form.models import survey #../../survey_form/models import survey
+from survey_form.models import survey
 from django.http import HttpResponse
 from django.core import serializers
 
