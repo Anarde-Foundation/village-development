@@ -11,12 +11,12 @@ User list
 <!--Right panel - start here -->
 
 <div class="card">
-    <div class="card-header">
+    <div class="card-header bg-info text-white">
         <div class="col-md-10">
-            <strong class="card-title">User list</strong>
+            <h5 class="card-title">User List</h5>
         </div>
-        <div class="col-md-2" right="align">
-            <a href="{% url "account_create" %}"><button type="button" class="btn btn-secondary">Add new user</button></a>
+        <div class="col-md-2">
+            <a href="{% url 'account_create' %}" class="pull-right"><button type="button" class="btn btn-light btn-sm"><i class="fa fa-plus"></i></button></a>
         </div>
     </div>
     <div class="card-body">
