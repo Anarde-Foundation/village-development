@@ -1,0 +1,54 @@
+{% extends 'home.html' %}
+{% block page-title %}
+Edit domain
+{% endblock %}
+{% block page-title-path %}
+<ol class="breadcrumb text-right">
+    <li><a href="domain/">Domains</a></li>
+    <li class="active">Edit domain</li>
+</ol>
+{% endblock %}
+
+
+{% block right-pane-content %}
+<div class="content mt-3">
+    <div class="animated fadeIn">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-body px-3 py-4">
+                        <form method="post" action="">
+                            {% csrf_token %}
+                            <div class="form-group col-lg-12 col-md-12 col-sm-12">
+                                <label class="form-control-label" for="{{form.domain_name.id_for_label}}">Domain name</label>
+                               <input id="{{form.domain_name.id_for_label}}" name="{{ form.domain_name.html_name }}"
+                                       value="{{form.domain_name.value}}" type="text" class="form-control" aria-required="true"
+                                        placeholder="Enter domain name "
+                                       aria-invalid="false" >
+                            </div>
+                            <div class="form-group col-lg-12 col-md-12 col-sm-12">
+                                <label class="form-control-label" for="{{form.description.id_for_label}}">Description</label>
+                               <input id="{{form.description.id_for_label}}" name="{{ form.description.html_name }}"
+                                       value="{{form.description.value}}" type="text" class="form-control"
+                                        placeholder="Enter domain description "
+                                       aria-invalid="false" >
+                            </div>
+
+                            <div class="col-lg-12 col-md-12 col-sm-12">
+                                <button id="btnSave" type="submit" value="Update" class="btn btn-info">Save Domain</button>
+                                <button id="btnDelete" type="submit" value="Delete" class="btn btn-outline-info">Delete</button>
+                                <button id="btnCancel" type="submit" value="cancel" class="ml-2 btn btn-outline-info">Cancel</button>
+                            </div>
+                            {% for error in form.errors %}
+                            <p class="text-danger">{{ error }} </p>
+                            {% endfor %}
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+{% endblock %} <!-- end of right-pane-content -->

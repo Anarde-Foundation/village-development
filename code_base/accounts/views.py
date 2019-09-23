@@ -91,11 +91,6 @@ class account_list(TemplateView):
     template_name = 'account_list.html'
 
 
-class account_listJson(BaseDatatableView):
-    model = User
-    columns = [ 'username','date_joined', 'last_login','is_active']
-    order_columns  = [ 'username', 'date_joined', 'last_login', 'is_active']
-
 @login_required
 def get_user_list_for_datatable(request):
     location_list = User.objects.all()
