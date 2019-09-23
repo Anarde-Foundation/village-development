@@ -26,7 +26,7 @@ class LocationForm(ModelForm):
 
 
 @login_required
-def location_list(request, template_name='list_locations.html'):
+def location_list(request, template_name='location_list.html'):
     location_list = location.objects.all()
     return render(request, template_name, {'location': location_list})
 
