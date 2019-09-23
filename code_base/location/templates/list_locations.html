@@ -42,9 +42,10 @@ Locations
 {% block page_script %}
 <script type="text/javascript">
 
+    var table;
     /* Init datatable */
     var initDatatable = function($) {
-        $("#location_list").DataTable({
+        table = $("#location_list").DataTable({
             "searching": true,
             "processing": true,
             "serverSide": false,
@@ -62,12 +63,21 @@ Locations
                 {data: 'fields.date_of_intervention'},
              ]
         });
-    }
+    };
+
+    var onLocationRowClick = function () {
+        var data = table.row( this ).data();
+        var url = 'view/' + data.pk;
+        navigateToUrl(url);
+    };
 
     /* init this page */
     var initLocationListView = function ($) {
         initDatatable($);
-    }
+
+        // bind row click event
+        $('#location_list tbody').on('click', 'tr', onLocationRowClick);
+    };
 
     /* int this page */
     jQuery(document).ready(initLocationListView($));
