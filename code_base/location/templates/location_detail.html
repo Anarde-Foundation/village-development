@@ -1,6 +1,6 @@
 {% extends 'home.html' %}
 {% block page-title %}
-Locations Details
+Locations details
 {% endblock %}
 {% block page-title-path %}
 <ol class="breadcrumb text-right">
@@ -22,16 +22,20 @@ Locations Details
                 </div>
             </div>
             <div class="row">
-                <div class="col-3">
+                <div class="col-lg-3 col-md-3 col-sm-12">
                     <dl>
                         <dt>Date of intervention</dt>
                         <dd>{{ object.date_of_intervention }}</dd>
                     </dl>
                 </div>
-                <div class="col-3">
+                <div class="col-lg-3 col-md-3 col-sm-12">
                     <dl>
                         <dt>Exit date</dt>
+                        {% if  object.exit_date == None %}
+                        <dd> - </dd>
+                        {% else %}
                         <dd>{{ object.exit_date }}</dd>
+                        {% endif %}
                     </dl>
                 </div>
             </div>

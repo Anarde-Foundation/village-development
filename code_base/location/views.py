@@ -39,8 +39,10 @@ def location_view(request, pk, template_name='location_detail.html'):
 def location_create(request, template_name='location_create.html'):
     if request.method == 'POST':
         form = LocationForm(request.POST)
+        print(request.POST)
         if form.is_valid():
-            info =form.save()
+            print('form valid.............')
+            info = form.save()
             info.created_by = request.user
             info.modified_by = request.user
             info.save()
@@ -48,7 +50,6 @@ def location_create(request, template_name='location_create.html'):
         else:
             print(form.errors)
     else:
-
         form = LocationForm
     return render(request, template_name, {'form':form})
 
@@ -58,11 +59,6 @@ def location_update(request, pk, template_name='location_update.html'):
     locationForUpdate = get_object_or_404(location, pk=pk)
     form = LocationForm(instance=locationForUpdate)
     if request.method == 'POST':
-        print(request.POST)
-        if 'cancel' in request.POST:
-            print('cancelling request')
-            return redirect('/location/view/'+ str(pk))
-
         form = LocationForm(request.POST, instance=locationForUpdate)
         if form.is_valid():
             info = form.save()
@@ -73,6 +69,7 @@ def location_update(request, pk, template_name='location_update.html'):
             print(form.errors)
     # else:
     #     form = LocationForm
+    form.pk = pk
     return render(request, template_name, {'form':form, 'location':locationForUpdate})
 
 @login_required
