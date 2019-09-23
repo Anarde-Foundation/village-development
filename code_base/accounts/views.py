@@ -40,7 +40,7 @@ def register_view(request):
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
-def add_user(request, template_name='user_add_new.html'):
+def account_create(request, template_name='account_create.html'):
     if request.method == 'POST':
         form = UsersRegisterForm(request.POST)
         if form.is_valid():
@@ -57,7 +57,7 @@ def add_user(request, template_name='user_add_new.html'):
 
             group = Group.objects.get(name=group)
             user.groups.add(group)
-            return redirect('/accounts/user_list')
+            return redirect('/accounts/account_list')
         else:
             print(form.errors)
     else:
@@ -66,32 +66,32 @@ def add_user(request, template_name='user_add_new.html'):
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
-def update_view(request, pk, template_name='user_update.html'):
+def account_update(request, pk, template_name='account_update.html'):
     UserForUpdate = get_object_or_404(User, pk=pk)
     form = UpdateUserForm(instance=UserForUpdate)
     if request.method == 'POST':
         print(request.POST)
         if 'cancel' in request.POST:
             print('cancelling request')
-            return redirect('/location/view/' + str(pk))
+            return redirect('/account/account_list/' + str(pk))
 
         form = UpdateUserForm(request.POST, instance=UserForUpdate)
         if form.is_valid():
             user = form.save()
             # active_status = form.cleaned_data.get('active')
             # user.is_active = active_status
-            return redirect('/accounts/user_list')
+            return redirect('/accounts/account_list')
     # else:
     #     form = UsersRegisterForm()
     return render(request, template_name, {'form':form, 'user':UserForUpdate})
 
 
 
-class user_list(TemplateView):
-    template_name = 'user_list.html'
+class account_list(TemplateView):
+    template_name = 'account_list.html'
 
 
-class user_listJson(BaseDatatableView):
+class account_listJson(BaseDatatableView):
     model = User
     columns = [ 'username','date_joined', 'last_login','is_active']
     order_columns  = [ 'username', 'date_joined', 'last_login', 'is_active']

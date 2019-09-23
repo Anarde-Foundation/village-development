@@ -16,7 +16,7 @@ User list
             <strong class="card-title">User list</strong>
         </div>
         <div class="col-md-2" right="align">
-            <a href="{% url "user_add" %}"><button type="button" class="btn btn-secondary">Add new user</button></a>
+            <a href="{% url "account_create" %}"><button type="button" class="btn btn-secondary">Add new user</button></a>
         </div>
     </div>
     <div class="card-body">
@@ -67,7 +67,7 @@ User list
     };
     var onUserRowClick = function () {
         var data = table.row( this ).data();
-        var url = 'user_update/' + data.pk;
+        var url = 'account_update/' + data.pk;
         navigateToUrl(url);
     };
 
