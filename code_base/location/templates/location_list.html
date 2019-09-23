@@ -22,11 +22,12 @@ Locations
         </div>
     </div>
     <div class="card-body">
-        <table id="location_list" class="table table-striped table-bordered" width="100%">
+        <table id="location_list" class="table table-striped table-bordered table-row-clickable" width="100%">
             <thead>
                 <tr>
                     <th>Name</th>
                     <th>Intervention date</th>
+                    <th>Exit Date</th>
                 </tr>
             </thead>
             <tbody>
@@ -43,32 +44,39 @@ Locations
 <script type="text/javascript">
 
     var table;
+
     /* Init datatable */
     var initDatatable = function($) {
         table = $("#location_list").DataTable({
             "searching": true,
             "processing": true,
             "serverSide": false,
-            "1stateSave": true,
+            "stateSave": true,
             "colReorder": true,
             "paging":true,
             "responsive": true,
             "ajax": {
                  "processing": true,
                  "url": '{% url "get_location_list_for_datatable" %}',
-                 "dataSrc": ""
+                 "dataSrc": function (json) {
+                    console.log('in cb....');
+                    console.log(json);
+                    return json;
+                 }
              },
              "columns":[
                 {data: 'fields.location_name'},
-                {data: 'fields.date_of_intervention'},
+                {data: 'fields.date_of_intervention', render: appUtils.formatDatatableDate },
+                {data: 'fields.exit_date', defaultContent:'-', render: appUtils.formatDatatableDate }, //defaultContent is required to render null values
              ]
         });
     };
 
     var onLocationRowClick = function () {
         var data = table.row( this ).data();
+
         var url = 'view/' + data.pk;
-        navigateToUrl(url);
+        appUtils.navigateToUrl(url);
     };
 
     /* init this page */

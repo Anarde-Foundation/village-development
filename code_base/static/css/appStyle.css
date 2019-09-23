@@ -22,3 +22,6 @@ dd {
 .form-group {
     margin-bottom: 2rem;
 }
+.table-row-clickable tbody tr {
+    cursor: pointer;
+}
