@@ -1,6 +1,6 @@
 {% extends 'home.html' %}
 {% block page-title %}
-Add location
+Update location
 {% endblock %}
 {% block page-title-path %}
 <ol class="breadcrumb text-right">
@@ -27,26 +27,29 @@ Add location
                                        value="{{form.location_name.value}}" type="text" class="form-control" aria-required="true"
                                         placeholder="Enter location name "
                                        aria-invalid="false" >
+                                {% for error in form.location_name.errors %}
+                                    <small class="form-text text-danger">{{error}}</small>
+                                {% endfor %}
                             </div>
                             <div class="form-group col-lg-6 col-md-6 col-sm-12 date-picker">
                                 <label class="form-control-label">Date of intervention</label><br/>
                                 {{form.date_of_intervention}}
-                                <small class="form-text text-muted d-none">If no change enter previous date :{{location.date_of_intervention}}</small>
+                                {% for error in form.date_of_intervention.errors %}
+                                    <small class="form-text text-danger">{{error}}</small>
+                                {% endfor %}
                             </div>
                             <div class="form-group col-lg-6 col-md-6 col-sm-12 date-picker">
                                 <label class="form-control-label">Exit Date</label><br/>
                                 {{form.exit_date}}
-                                <small class="form-text text-muted d-none">select '----' for active location</small>
-                                <small class="form-text text-muted d-none">If no change enter previous date: {{location.exit_date}}</small>
+                                {% for error in form.exit_date.errors %}
+                                    <small class="form-text text-danger">{{error}}</small>
+                                {% endfor %}
                             </div>
                             <div class="col-lg-12 col-md-12 col-sm-12">
                                 <button id="btnSave" type="submit" value="Update" class="btn btn-info">Save Location</button>
-                                <button id="btnCancel" type="submit" value="cancel" class="ml-2 btn btn-outline-info">Cancel</button>
+                                <a href="{% url 'location_view' form.pk %}"  id="btnCancel" value="cancel" class="ml-2 btn btn-outline-info">Cancel</a>
                             </div>
-                            {% for error in form.errors %}
-                            <p class="text-danger">please enter valid {{ error }} (if not new enter previous)</p>
-                            {% endfor %}
-                    </form>
+                        </form>
                     </div>
                 </div>
             </div>
