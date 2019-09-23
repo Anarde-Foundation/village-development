@@ -1,0 +1,36 @@
+{% extends 'home.html' %}
+{% block page-title %}
+Domain Details
+{% endblock %}
+{% block page-title-path %}
+<ol class="breadcrumb text-right">
+    <li><a href="/domain">Domains</a></li>
+    <li class="active">Details</li>
+</ol>
+{% endblock %}
+{% block right-pane-content %}
+<div class="card">
+    <div class="card-body">
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-12 col-md-12" >
+                    <h3 class="card-title">{{object.domain_name}}
+                        <a href='{% url "domain_update" object.domain_id %}' class="text-info" title="Edit domain details">
+                            <i class="fa fa-pencil-square-o px-3"></i>
+                        </a>
+                    </h3>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12 col-md-12" >
+                    <dl>
+                        <dt>Description</dt>
+                        <dd>{{ object.description }}</dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

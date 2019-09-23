@@ -26,5 +26,6 @@ urlpatterns = [
     path('home', login_required(TemplateView.as_view(template_name="home.html"))),
     path('location/', include('location.urls')),
     path('survey/', include('survey_form.urls')),
+    path('domain/', include('domain.urls')),
 
 ]
