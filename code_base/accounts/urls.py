@@ -11,7 +11,7 @@ urlpatterns = [
     path('user_new/',views.add_user, name='user_add'),
     path('user_update/<int:pk>',views.update_view, name='user_update'),
     path('user_list', views.user_list.as_view(), name='user_list'),
-    path('user_json',views.user_listJson.as_view(), name='user_list_json'),
+    path('get_user_list_for_datatable',views.get_user_list_for_datatable, name='get_user_list_for_datatable'),
 
 
 

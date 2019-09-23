@@ -8,6 +8,9 @@ from django.contrib.auth.decorators import login_required
 from django_datatables_view.base_datatable_view import BaseDatatableView
 from django.views.generic import TemplateView
 from django.contrib.auth.decorators import user_passes_test
+from django.http import HttpResponse
+from django.core import serializers
+
 # Create your views here.
 
 def register_view(request):
@@ -36,7 +39,7 @@ def register_view(request):
     return render(request, 'signup.html', {'form': form})
 
 @login_required
-#@user_passes_test(lambda u: u.is_superuser)
+@user_passes_test(lambda u: u.is_superuser)
 def add_user(request, template_name='user_add_new.html'):
     if request.method == 'POST':
         form = UsersRegisterForm(request.POST)
@@ -62,7 +65,7 @@ def add_user(request, template_name='user_add_new.html'):
     return render(request, template_name, {'form': form})
 
 @login_required
-# @user_passes_test(lambda u: u.is_superuser)
+@user_passes_test(lambda u: u.is_superuser)
 def update_view(request, pk, template_name='user_update.html'):
     UserForUpdate = get_object_or_404(User, pk=pk)
     form = UpdateUserForm(instance=UserForUpdate)
@@ -83,14 +86,6 @@ def update_view(request, pk, template_name='user_update.html'):
     return render(request, template_name, {'form':form, 'user':UserForUpdate})
 
 
-@login_required
-def wherenext(request):
-    """Simple redirector to figure out where the user goes next."""
-    if request.user.is_superuser:
-        return redirect('/admin')
-
-    else:
-        return redirect('templates/home')
 
 class user_list(TemplateView):
     template_name = 'user_list.html'
@@ -98,13 +93,15 @@ class user_list(TemplateView):
 
 class user_listJson(BaseDatatableView):
     model = User
-    columns = ['id', 'username','date_joined', 'last_login','is_active']
-    order_columns  = ['id', 'username', 'date_joined', 'last_login', 'is_active']
+    columns = [ 'username','date_joined', 'last_login','is_active']
+    order_columns  = [ 'username', 'date_joined', 'last_login', 'is_active']
 
-    # def render_column(self, row, column):
-    #     # i recommend change 'flat_house.house_block.block_name' to 'address'
-    #     if column == 'Username':
-    #         return '<a href="update_user">link</a>' % row.username
+@login_required
+def get_user_list_for_datatable(request):
+    location_list = User.objects.all()
+    data = serializers.serialize('json', location_list)
+    return HttpResponse(data, content_type='application/json')
+
 
 
 
