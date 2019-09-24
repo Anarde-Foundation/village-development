@@ -24,6 +24,9 @@ class code(models.Model):
     created_on = models.DateTimeField(auto_now_add=True)
     modified_on = models.DateTimeField(auto_now=True)
 
+    def natural_key(self):
+        return self.code_name
+
     def __str__(self):
         return "%s" % (self.code_name)
 

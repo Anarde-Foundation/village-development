@@ -1,0 +1,88 @@
+{% extends 'home.html' %}
+{% block page-title %}
+Update Survey
+{% endblock %}
+{% block page-title-path %}
+<ol class="breadcrumb text-right">
+    <li><a href="/survey/">Surveys</a></li>
+    <li><a href="/survey/">Details</a></li>
+    <li class="active">Update Survey</li>
+</ol>
+{% endblock %}
+
+{% block right-pane-content %}
+<div class="content mt-3">
+    <div class="animated fadeIn">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-body px-3 py-4">
+                        <form  method="post" action="">
+                            {% csrf_token %}
+                            <div class="row form-group">
+                                <div class="col col-md-3">
+                                    <label for="" class="form-control-label">{{ form.location_id.label_tag }}</label>
+                                </div>
+
+                                <div class="col-12 col-md-5" >
+                                    {{form.location_id}}
+                                </div>
+                            </div>
+                            <div class="row form-group">
+                                <div class="col col-md-3">
+                                    <label for='' class="form-control-label">Kobo Form name</label>
+                                </div>
+                                <div class="col-12 col-md-5">
+                                    {{form.kobo_form_id}}
+                                </div>
+                            </div>
+                            <div class="row form-group">
+                                <div class="col col-md-3">
+                                    <label for="{{form.survey_name.id_for_label}}" class="form-control-label"> Survey Name</label>
+                                </div>
+                                <div class="col-12 col-md-5">
+                                    <input id="{{form.survey_name.id_for_label}}" name="{{ form.survey_name.html_name }}"
+                                           value="{{form.survey_name.value}}"
+                                           type="text" class="form-control" data-val="true" data-val-required="Please enter the name "
+                                           aria-required="true" aria-invalid="false" >
+                                    <!--<small class="help-block form-text">Please enter your email</small>-->
+                                </div>
+                            </div>
+
+                            <div class="row form-group">
+                                <div class="col col-md-3">
+                                    <label for="" class="form-control-label">{{ form.survey_type_code_id.label_tag }}</label>
+                                </div>
+                                <div class="col-12 col-md-5">
+                                    {{form.survey_type_code_id}}
+                                </div>
+                            </div>
+
+                            <div class="row form-group">
+                                <div class="col col-md-12">
+                                    <button id="create-button" type="submit" class="btn btn-lg btn-info btn-block">
+                                        <span id="create-button-amount">Submit</span>
+                                    </button>
+                                </div>
+                            </div>
+                            {% for error in field.errors %}
+                            <p class="text-danger">{{ error }}</p>
+                            {% endfor %}
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %} <!-- end of right-pane-content -->
+
+{% block page_script %}
+<script type="text/javascript">
+    jQuery(document).ready(function($) {
+        $('select').chosen({width:'100%'});
+    });
+</script>
+{% endblock %}
