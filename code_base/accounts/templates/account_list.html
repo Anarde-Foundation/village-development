@@ -68,7 +68,7 @@ User list
     var onUserRowClick = function () {
         var data = table.row( this ).data();
         var url = 'account_update/' + data.pk;
-        navigateToUrl(url);
+        appUtils.navigateToUrl(url);
     };
 
      /* init this page */
