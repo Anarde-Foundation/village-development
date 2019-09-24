@@ -49,16 +49,16 @@ Survey Details
             </div>
         </div>
     </div>
-    <div class="card-footer">
+    <div class="card-footer bg-light">
         <!--<div class="container">-->
-            <div class="row form-group">
+            <div class="row">
                 <div class="col-md-3">
-                    <button id="create-button" type="submit" class="btn btn-md btn-info btn-block">
-                        <span id="create-button-amount">Pull Survey Data</span>
+                    <button id="create-button" type="submit" class="btn btn-md btn-info">
+                        <span id="create-button-amount">Pull survey data from Kobo form</span>
                     </button>
                 </div>
                 <div class="col-md-3">
-                    <a href='{% url "survey_delete" object.survey_id %}' class="btn btn-danger">Delete Survey</a>
+                    <a href='{% url "survey_delete" object.survey_id %}' class="btn btn-danger">Delete survey</a>
                 </div>
             </div>
        <!-- </div>-->
@@ -92,25 +92,6 @@ Survey Details
 
 {% block page_script %}
 <script type="text/javascript">
-    //jQuery(document).ready(function($) {
-        console.log('In ready of location detail');
-        //alert('in ready function');
-        $("#survey_data").DataTable({
-            "searching": true,
-            "processing": true,
-            "serverSide": true,
-            "stateSave": true,
-            "ajax": {
-                 "processing": true,
-                 "url": '{% url "location_survey_list" %}',
-                 "dataSrc": ""
-             },
-             "columns":[
-                {data: 'fields.survey_name'},
-                {data: 'fields.publish_date'}
 
-             ]
-        });
-    } );
 </script>
 {% endblock %}

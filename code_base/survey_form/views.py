@@ -143,4 +143,5 @@ def survey_update(request, pk, template_name='survey_update.html'):
             print(form.errors)
     # else:
     #     form = LocationForm
+    form.pk = pk
     return render(request, template_name, {'form':form, 'survey':surveyForUpdate})

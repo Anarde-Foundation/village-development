@@ -17,10 +17,10 @@ User Registration
             <div class="col-md-12">
                 <div class="card">
                     <div class="card-body px-3 py-4">
-                        <form method="post" action="">
+                        <form method="post" action="" class="row">
                             {% csrf_token %}
                             <!--User name-->
-                            <div class="form-group col-lg-12 col-md-12 col-sm-12">
+                            <div class="form-group col-lg-6 col-md-6 col-sm-12">
                                 <label class="form-control-label" for="{{form.username.id_for_label}}">Username</label>
                                 <input id="{{form.username.id_for_label}}" name="{{ form.username.html_name }}"
                                        type="text" class="form-control" aria-required="true"
@@ -32,7 +32,7 @@ User Registration
                             </div>
 
                              <!--User group-->
-                            <div class="form-group col-lg-12 col-md-12 col-sm-12">
+                            <div class="form-group col-lg-6 col-md-6 col-sm-12">
                                 <label class="form-control-label">User Group</label><br/>
                                 {{form.groups}}
                             </div>
@@ -42,7 +42,7 @@ User Registration
                             <div class="form-group col-lg-6 col-md-6 col-sm-12 mb-0">
                                 <label class="form-control-label">Password</label>
                                 <input type="password" class="form-control" placeholder="Password"
-                                    name="{{ form.password1.html_name }}" value="{{ form.password1.value }}">
+                                    name="{{ form.password1.html_name }}" value1="{{ form.password1.value }}">
                                 {% for error in form.password1.errors %}
                                 <p class="text-danger form-text ">{{error}}</p>
                                 {% endfor %}
@@ -52,24 +52,20 @@ User Registration
                             <div class="form-group col-lg-6 col-md-6 col-sm-12 mb-0">
                                 <label class="form-control-label">Confirm password</label>
                                 <input type="password" class="form-control" placeholder="Password"
-                               name="{{ form.password2.html_name }}" value="{{ form.password2.value }}">
+                               name="{{ form.password2.html_name }}" value1="{{ form.password2.value }}">
                                 {% for error in form.password2.errors %}
                                 <p class="text-danger form-text">{{error}}</p>
                                 {% endfor %}
                             </div>
 
                             <!--Help text-->
-                            <div class="form-group col-lg-12 col-md-12 col-sm-12 pl-4">
-                                 <small class="form-text text-muted">{{form.password1.help_text }}</small>
+                            <div class="form-group col-lg-12 col-md-12 col-sm-12">
+                                 <small class="form-text text-muted pl-4">{{form.password1.help_text }}</small>
                             </div>
 
                             <div class="col-lg-12 col-md-12 col-sm-12">
-                                <button id="btnSave" type="submit" value="Update" class="btn btn-info">Save
-                                    Information
-                                </button>
-                                <button id="btnCancel" type="submit" value="cancel" class="ml-2 btn btn-outline-info">
-                                    Cancel
-                                </button>
+                                <button id="btnSave" type="submit" value="Update" class="btn btn-info">Add</button>
+                                <a href="{% url 'account_list' %}"  id="btnCancel" value="cancel" class="ml-2 btn btn-outline-info">Cancel</a>
                             </div>
                         </form>
                     </div>
