@@ -2,7 +2,7 @@ from django.db import models
 from django.utils.timezone import datetime
 from  django.contrib.auth.models import User
 
-# Create your models here.
+
 class location(models.Model):
     location_id = models.BigAutoField(primary_key=True)
     location_name = models.CharField(max_length=255, null=False)
@@ -16,8 +16,11 @@ class location(models.Model):
                                     on_delete=models.PROTECT)
     modified_on = models.DateTimeField(default=datetime.now)
 
-    # def __str__(self):
-    #     return "%s" % (self.location_name)
+    def natural_key(self):
+        return self.location_name
+
+    def __str__(self):
+        return "%s" % (self.location_name)
 
 
     class Meta:
