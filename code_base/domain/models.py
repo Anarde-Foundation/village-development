@@ -22,7 +22,7 @@ class domain(models.Model):
 
 
     class Meta:
-        db_table = 'dom_domain'
+        db_table = 'com_domain'
         get_latest_by = 'domain_id'
 
 
