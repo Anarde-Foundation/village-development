@@ -84,7 +84,7 @@ def location_delete(request, pk, template_name='location_delete.html'):
 @login_required
 def location_get_survey_list(request):
     # Refer link https://dev.to/codeshard/datatables-and-django-finally-with-ajax
-    survey_list = survey.objects.all()
+    survey_list = survey.objects.filter(location_id=1)
     print('list is .................................................')
     #return render (request, {'survey_list': survey_list})
     data = serializers.serialize('json', survey_list)

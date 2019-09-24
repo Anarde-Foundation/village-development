@@ -86,8 +86,11 @@ Locations details
         $("#location_survey_list").DataTable({
             "searching": true,
             "processing": true,
-            "serverSide": true,
+            "serverSide": false,
             "stateSave": true,
+            "colReorder": true,
+            "paging":true,
+            "responsive": true,
             "ajax": {
                  "processing": true,
                  "url": '{% url "location_survey_list" %}',
