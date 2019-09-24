@@ -15,12 +15,12 @@
         <table id="survey_list" class="table table-striped table-bordered" width="100%">
             <thead>
                 <tr>
-                    <th>ID</th>
+                    <!--<th>ID</th>-->
                     <th>Name</th>
                     <th>Type </th>
                     <th>Publish Date </th>
                     <th>Created By</th>
-                    <th>location</th>
+                    <th>Location</th>
                 </tr>
             </thead>
             <tbody>
@@ -33,16 +33,50 @@
 
 {% block page_script %}
 <script type="text/javascript">
-    jQuery(document).ready(function($) {
-        //alert('in ready function');
-        $("#survey_list").DataTable({
+
+    var table;
+    /* Init datatable */
+    var initDatatable = function($) {
+        table= $("#survey_list").DataTable({
             "searching": true,
             "processing": true,
-            "serverSide": true,
-            "stateSave": true,
-            "ajax": '{% url "survey_list_json" %}',
-
+            "serverSide": false,
+            "1stateSave": true,
+            "colReorder": true,
+            "paging":true,
+            "responsive": true,
+            "ajax": {
+                 "processing": true,
+                 "url": '{% url "get_survey_list_for_datatable" %}',
+                 "dataSrc": ""
+             },
+            "columns":[
+                {data: 'fields.survey_name'},
+                {data: 'fields.survey_type_code_id'},
+                {data: 'fields.publish_date'},
+                {data: 'fields.created_by'},
+                {data: 'fields.location_id'}
+            ]
         });
-    } );
+    }
+
+    var onSurveyRowClick = function () {
+        var data = table.row( this ).data();
+        var url = 'view/' + data.pk;
+        appUtils.navigateToUrl(url);
+    };
+
+    /* init this page */
+    var initSurveyListView = function ($) {
+        initDatatable($);
+
+        // bind row click event
+        $('#survey_list tbody').on('click', 'tr', onSurveyRowClick);
+    }
+
+    /* int this page */
+    jQuery(document).ready(initSurveyListView($));
+
+
 </script>
 {% endblock %}
