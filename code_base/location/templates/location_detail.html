@@ -65,7 +65,9 @@ Locations details
                         <thead>
                         <tr>
                             <th>Name</th>
-                            <th>Publish Date</th>
+                            <th>Type </th>
+                            <th>Created By</th>
+                            <th>Publish Date </th>
                         </tr>
                         </thead>
                         <tbody></tbody></table>
@@ -93,13 +95,14 @@ Locations details
             "responsive": true,
             "ajax": {
                  "processing": true,
-                 "url": '{% url "location_survey_list" %}',
+                 "url": '{% url "get_location_survey_list_for_datatable" object.location_id %}',
                  "dataSrc": ""
              },
              "columns":[
                 {data: 'fields.survey_name'},
-                {data: 'fields.publish_date'}
-
+                {data: 'fields.survey_type_code_id'},
+                {data: 'fields.created_by'},
+                {data: 'fields.publish_date', render: appUtils.formatDatatableDate}
              ]
         });
     } );

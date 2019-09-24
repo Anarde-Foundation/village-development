@@ -24,9 +24,9 @@ User list
             <thead>
                 <tr>
                     <th>User Name</th>
-                    <th>Date Joined</th>
-                    <th>Last Login</th>
-                    <th>Active Status</th>
+                    <th>Joining date</th>
+                    <th>Last login date</th>
+                    <th>Is Active?</th>
                 </tr>
             </thead>
             <tbody>
@@ -41,7 +41,16 @@ User list
 
 {% block page_script %}
 <script type="text/javascript">
-     var table;
+    var table;
+
+    var showUserStatus = function(data, type, row) {
+        if (data == null) return '';
+        if (data == true)
+            return '<i class="fa fa-check px-3"></i>';
+        else
+            return '';
+    };
+
     /* Init datatable */
     var initDatatable = function($) {
      table = $("#user_list").DataTable({
@@ -59,9 +68,9 @@ User list
              },
             "columns":[
                 {data: 'fields.username'},
-                {data: 'fields.date_joined'},
-                {data: 'fields.last_login'},
-                {data: 'fields.is_active'},
+                {data: 'fields.date_joined', render: appUtils.formatDatatableDateTime},
+                {data: 'fields.last_login', render: appUtils.formatDatatableDateTime},
+                {data: 'fields.is_active', render: showUserStatus},
              ]
         });
     };

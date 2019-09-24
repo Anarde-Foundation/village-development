@@ -17,10 +17,10 @@
                 <tr>
                     <!--<th>ID</th>-->
                     <th>Name</th>
-                    <th>Type </th>
-                    <th>Publish Date </th>
-                    <th>Created By</th>
                     <th>Location</th>
+                    <th>Type </th>
+                    <th>Created By</th>
+                    <th>Publish Date </th>
                 </tr>
             </thead>
             <tbody>
@@ -52,10 +52,10 @@
              },
             "columns":[
                 {data: 'fields.survey_name'},
+                {data: 'fields.location_id'},
                 {data: 'fields.survey_type_code_id'},
-                {data: 'fields.publish_date'},
                 {data: 'fields.created_by'},
-                {data: 'fields.location_id'}
+                {data: 'fields.publish_date', render: appUtils.formatDatatableDate}
             ]
         });
     }
