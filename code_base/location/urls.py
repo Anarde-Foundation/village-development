@@ -12,7 +12,7 @@ urlpatterns = [
     path('new', views.location_create, name='location_new'),
     path('edit/<int:pk>', views.location_update, name='location_edit'),
     path('delete/<int:pk>', views.location_delete, name='location_delete'),
-    path('survey_list', views.location_get_survey_list, name='location_survey_list'),
+    path('survey_list/<int:pk>', views.get_location_survey_list_for_datatable, name='get_location_survey_list_for_datatable'),
     path('get_location_list_for_datatable', views.get_location_list_for_datatable, name='get_location_list_for_datatable')
 ]
 

@@ -34,6 +34,8 @@ def register_view(request):
             user = authenticate(username=username, password=raw_password)
             login(request, user)
             return redirect('/accounts/login')
+        else:
+            print(form.errors)
     else:
         form = UsersRegisterForm()
     return render(request, 'signup.html', {'form': form})
@@ -68,6 +70,13 @@ def account_create(request, template_name='account_create.html'):
 @user_passes_test(lambda u: u.is_superuser)
 def account_update(request, pk, template_name='account_update.html'):
     UserForUpdate = get_object_or_404(User, pk=pk)
+
+    #  Fetch names of all groups where user is part
+    groupName = ''
+    userGroups = UserForUpdate.groups.all()
+    for userGroup in userGroups:
+        groupName = groupName + userGroup.name
+
     form = UpdateUserForm(instance=UserForUpdate)
     if request.method == 'POST':
         print(request.POST)
@@ -83,7 +92,7 @@ def account_update(request, pk, template_name='account_update.html'):
             return redirect('/accounts/account_list')
     # else:
     #     form = UsersRegisterForm()
-    return render(request, template_name, {'form':form, 'user':UserForUpdate})
+    return render(request, template_name, {'form':form, 'user':UserForUpdate, 'groupName': groupName})
 
 
 

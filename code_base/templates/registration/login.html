@@ -10,7 +10,7 @@
                     </a>
                 </div>
                 <div class="login-form">
-                    <form method="post" action="{% url 'login' %}">
+                    <form method="post" action="{% url 'login' %}" class="py-4">
                         {% csrf_token %}
                         <div class="form-group">
                             {{ form.username.label_tag }}
@@ -23,13 +23,13 @@
                                 <input type="password" class="form-control" placeholder="Password"
                                 name="{{ form.password.html_name }}" value="{{ form.password.value }}" >
                         </div>
-                        <div class="checkbox">
+                        <div class="checkbox d-none">
                             <label class="pull-right">
-                                <a href="{% url 'password_reset' %}">Forgot Password?</a>
+                                <a href="{% url 'password_reset' %}" class="text-muted">Forgot Password?</a>
                             </label>
                         </div>
-                        <button type="submit" value="login" class="btn btn-success btn-flat m-b-30 m-t-30">Sign in</button>
-                        <div class="register-link m-t-15 text-center">
+                        <button type="submit" value="login" class="btn btn-info btn-lg">Sign in</button>
+                        <div class="register-link m-t-15 text-center d-none">
                             <p>Don't have account ? <a href="{% url 'register' %}"> Sign Up Here</a></p>
                         </div>
                     </form>
@@ -40,4 +40,12 @@
 
 <input type="hidden" name="next" value="{{ next }}">
 
+{% endblock %}
+
+{% block page_script %}
+<script type="text/javascript">
+    jQuery(document).ready(function($) {
+        $('body').addClass('bg-dark');
+    });
+</script>
 {% endblock %}

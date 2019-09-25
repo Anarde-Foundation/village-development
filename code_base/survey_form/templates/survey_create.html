@@ -11,69 +11,73 @@ Add Survey
 
 
 {% block right-pane-content %}
-<div class="card">
-    <div class="card-header">
-        <strong class="card-title" >New Survey</strong>
-    </div>
-    <div class="card-body card-block">
-        <div class="card-title">
-            <h3 class="text-center">Survey Information</h3>
+<div class="content mt-3">
+    <div class="animated fadeIn">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-body  px-3 py-4">
+                        <form method="post" action=""  class="form-horizontal1 row">
+                            {% csrf_token %}
+
+                            <!--Survey name-->
+                            <div class="form-group col-lg-6 col-md-6 col-sm-12">
+                                <label for="{{form.survey_name.id_for_label}}" class="form-control-label"> Survey Name</label>
+
+                                <input id="{{form.survey_name.id_for_label}}" name="{{ form.survey_name.html_name }}"
+                                       type="text" class="form-control" data-val="true" data-val-required="Please enter the name "
+                                       aria-required="true" aria-invalid="false" >
+
+                                {% for error in form.survey_name.errors %}
+                                <small class="form-text text-danger">{{error}}</small>
+                                {% endfor %}
+                            </div>
+
+
+                            <!--Location-->
+                            <div class="form-group col-lg-6 col-md-6 col-sm-12">
+                                <label class="form-control-label">Location</label>
+                                {{form.location_id}}
+                                {% for error in form.location_id.errors %}
+                                <small class="form-text text-danger">{{error}}</small>
+                                {% endfor %}
+                            </div>
+
+                            <!--Kobo form-->
+                            <div class="form-group col-lg-6 col-md-6 col-sm-12">
+                                <label class="form-control-label">Kobo Form</label>
+                                {{form.kobo_form_id}}
+                                {% for error in form.kobo_form_id.errors %}
+                                <small class="form-text text-danger">{{error}}</small>
+                                {% endfor %}
+                            </div>
+
+
+                            <!--Survey type -->
+                            <div class="form-group col-lg-6 col-md-6 col-sm-12">
+                                <label for="" class="form-control-label">Survey type</label>
+
+                                {{form.survey_type_code_id}}
+                            </div>
+
+                            <!--Buttons-->
+
+                            <div class="col-lg-12 col-md-12 col-sm-12">
+                                <button id="create-button" type="submit" class="btn btn-info">Add</button>
+                                <a href="{% url 'survey_list' %}" id="btnCancel"  class="ml-2 btn btn-outline-info">Cancel</a>
+                            </div>
+
+                            {% for error in field.errors %}
+                            <p class="text-danger">{{ error }}</p>
+                            {% endfor %}
+                        </form>
+
+                    </div>
+
+                </div>
+            </div>
         </div>
-        <hr>
-        <form method="post" action=""  class="form-horizontal">
-            {% csrf_token %}
-            <div class="row form-group">
-                <div class="col col-md-3">
-                    <label for="" class="form-control-label">{{ form.location_id.label_tag }}</label>
-                </div>
-
-                <div class="col-12 col-md-5" >
-                    {{form.location_id}}
-                </div>
-            </div>
-            <div class="row form-group">
-                <div class="col col-md-3">
-                    <label for='' class="form-control-label">Kobo Form name</label>
-                </div>
-                <div class="col-12 col-md-5">
-                    {{form.kobo_form_id}}
-                </div>
-            </div>
-            <div class="row form-group">
-                <div class="col col-md-3">
-                    <label for="{{form.survey_name.id_for_label}}" class="form-control-label"> Survey Name</label>
-                </div>
-                <div class="col-12 col-md-5">
-                    <input id="{{form.survey_name.id_for_label}}" name="{{ form.survey_name.html_name }}"
-                           type="text" class="form-control" data-val="true" data-val-required="Please enter the name "
-                           aria-required="true" aria-invalid="false" >
-                    <!--<small class="help-block form-text">Please enter your email</small>-->
-                </div>
-            </div>
-
-            <div class="row form-group">
-                <div class="col col-md-3">
-                    <label for="" class="form-control-label">{{ form.survey_type_code_id.label_tag }}</label>
-                </div>
-                <div class="col-12 col-md-5">
-                    {{form.survey_type_code_id}}
-                </div>
-            </div>
-
-            <div class="row form-group">
-                <div class="col col-md-12">
-                    <button id="create-button" type="submit" class="btn btn-lg btn-info btn-block">
-                        <span id="create-button-amount">Submit</span>
-                    </button>
-                </div>
-            </div>
-            {% for error in field.errors %}
-            <p class="text-danger">{{ error }}</p>
-            {% endfor %}
-        </form>
-
     </div>
-
 </div>
 {% endblock %}
 
