@@ -68,7 +68,7 @@ User list
              },
             "columns":[
                 {data: 'fields.username'},
-                {data: 'fields.date_joined', render: appUtils.formatDatatableDateTime},
+                {data: 'fields.date_joined', render: appUtils.formatDatatableDate},
                 {data: 'fields.last_login', render: appUtils.formatDatatableDateTime},
                 {data: 'fields.is_active', render: showUserStatus},
              ]
@@ -79,7 +79,6 @@ User list
         var url = 'account_update/' + data.pk;
         appUtils.navigateToUrl(url);
     };
-
      /* init this page */
     var initUserListView = function ($) {
         initDatatable($);
