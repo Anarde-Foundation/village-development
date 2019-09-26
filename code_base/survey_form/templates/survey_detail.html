@@ -10,59 +10,62 @@ Survey Details
 {% endblock %}
 {% block right-pane-content %}
 <div class="card">
-    <div class="card-body">
-        <div class="container">
-            <div class="row">
-                <div class="col-sm-12 col-md-12" >
-                    <h3 class="card-title">{{object.survey_name}}
-                        <a href='{% url "survey_edit" object.survey_id %}' class="text-info" title="Edit survey details">
-                            <i class="fa fa-pencil-square-o px-3"></i>
-                        </a>
-                    </h3>
+    <form method="post" action="">
+        {% csrf_token %}
+        <div class="card-body">
+            <div class="container">
+                <div class="row">
+                    <div class="col-sm-12 col-md-12" >
+                        <h3 class="card-title">{{object.survey_name}}
+                            <a href='{% url "survey_edit" object.survey_id %}' class="text-info" title="Edit survey details">
+                                <i class="fa fa-pencil-square-o px-3"></i>
+                            </a>
+                        </h3>
+                    </div>
                 </div>
-            </div>
-            <div class="row">
-                <div class="col-3">
-                    <dl>
-                        <dt>Survey Type</dt>
-                        <dd>{{ object.survey_type_code_id.code_name }}</dd>
-                    </dl>
-                </div>
-                <div class="col-3">
-                    <dl>
-                        <dt>Publish date</dt>
-                        <dd>{{ object.publish_date }}</dd>
-                    </dl>
-                </div>
-                <div class="col-3">
-                    <dl>
-                        <dt>Location</dt>
-                        <dd>{{ object.location_id.location_name }}</dd>
-                    </dl>
-                </div>
-                <div class="col-3">
-                    <dl>
-                        <dt>Survey Created by</dt>
-                        <dd>{{ object.created_by }}</dd>
-                    </dl>
+                <div class="row">
+                    <div class="col-3">
+                        <dl>
+                            <dt>Survey Type</dt>
+                            <dd>{{ object.survey_type_code_id.code_name }}</dd>
+                        </dl>
+                    </div>
+                    <div class="col-3">
+                        <dl>
+                            <dt>Publish date</dt>
+                            <dd>{{ object.publish_date }}</dd>
+                        </dl>
+                    </div>
+                    <div class="col-3">
+                        <dl>
+                            <dt>Location</dt>
+                            <dd>{{ object.location_id.location_name }}</dd>
+                        </dl>
+                    </div>
+                    <div class="col-3">
+                        <dl>
+                            <dt>Survey Created by</dt>
+                            <dd>{{ object.created_by }}</dd>
+                        </dl>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-    <div class="card-footer bg-light">
-        <!--<div class="container">-->
+        <div class="card-footer bg-light">
+            <!--<div class="container">-->
             <div class="row">
                 <div class="col-md-3">
-                    <button id="create-button" type="submit" class="btn btn-md btn-info">
-                        <span id="create-button-amount">Pull survey data from Kobo form</span>
+                    <button id="pull-data" type="submit" value="pull_kobo_data" class="btn btn-md btn-info">
+                        Pull survey data from Kobo form
                     </button>
                 </div>
                 <div class="col-md-3">
                     <a href='{% url "survey_delete" object.survey_id %}' class="btn btn-danger">Delete survey</a>
                 </div>
             </div>
-       <!-- </div>-->
-    </div>
+            <!-- </div>-->
+        </div>
+    </form>
 </div>
 <!--Display survey list -->
 <!--<div class="card">

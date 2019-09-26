@@ -17,7 +17,7 @@ Delete Survey
     <div class="card-body">
 
         <form method="post">{% csrf_token %}
-            Are you sure you want to delete "{{ object.survey_name}}" ?
+            Are you sure you want to delete {{object.survey_name}} ?
             <input type="submit" value="submit"  class="btn btn-danger "/>
         </form>
     </div>
