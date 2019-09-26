@@ -19,12 +19,28 @@ class domain(models.Model):
                                     on_delete=models.PROTECT)
     modified_on = models.DateTimeField(default=datetime.now)
 
-    # def __str__(self):
-    #     return "%s" % (self.location_name)
-
-
     class Meta:
         db_table = 'com_domain'
         get_latest_by = 'domain_id'
 
 
+class domain_program(models.Model):
+    domain_program_id = models.BigAutoField(primary_key=True)
+    program_name = models.CharField(max_length=255, null=False)
+
+
+    description = models.TextField(null=True, blank=True)
+    domain_id = models.ForeignKey(domain, null=False, db_column='domain_id', related_name='fk_domain_id',
+                                  on_delete=models.PROTECT)
+
+    created_by = models.ForeignKey(User, null=True, db_column='created_by', related_name='fk_domain_program_cby',
+                                   on_delete=models.PROTECT)
+    created_on = models.DateTimeField(default=datetime.now)
+
+    modified_by = models.ForeignKey(User, null=True, db_column='modified_by', related_name='fk_domain_program_mby',
+                                    on_delete=models.PROTECT)
+    modified_on = models.DateTimeField(default=datetime.now)
+
+    class Meta:
+        db_table = 'com_domain_program'
+        get_latest_by = 'domain_program_id'

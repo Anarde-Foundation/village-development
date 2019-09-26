@@ -1,13 +1,15 @@
 {% extends 'home.html' %}
 {% block page-title %}
-Edit domain
+Edit program
 {% endblock %}
 {% block page-title-path %}
 <ol class="breadcrumb text-right">
-    <li><a href="domain/">Domains</a></li>
-    <li class="active">Edit domain</li>
+    <li><a href="/domain/">Domains</a></li>
+    <li class="active">Edit program</li>
 </ol>
 {% endblock %}
+
+
 {% block right-pane-content %}
 <div class="content mt-3">
     <div class="animated fadeIn">
@@ -17,25 +19,21 @@ Edit domain
                     <div class="card-body px-3 py-4">
                         <form method="post" action="">
                             {% csrf_token %}
+                            <div class="form-group col-lg-6 col-md-6 col-sm-12 ">
+                                <label class="form-control-label">Domain name</label>
+                                <input type="text" disabled class="form-control" value="{{obj_domain.domain_name}}">
+                            </div>
                             <div class="form-group col-lg-6 col-md-6 col-sm-12">
-                                <label class="form-control-label" for="{{form.domain_name.id_for_label}}">Domain name</label>
-                                <input id="{{form.domain_name.id_for_label}}" name="{{ form.domain_name.html_name }}"
-                                       value="{{form.domain_name.value}}" type="text" class="form-control" aria-required="true"
-                                       placeholder="Enter domain name "
+                                <label class="form-control-label" for="{{form.program_name.id_for_label}}">Program name</label>
+                                <input id="{{form.program_name.id_for_label}}" name="{{ form.program_name.html_name }}"
+                                       value="{{ form.program_name.value }}" type="text" class="form-control" aria-required="true"
+                                       placeholder="Enter program name "
                                        aria-invalid="false" >
-                                {% for error in form.domain_name.errors %}
+                                {% for error in form.program_name.errors %}
                                 <small class="form-text text-danger">{{error}}</small>
                                 {% endfor %}
                             </div>
-                            <div class="form-group col-lg-6 col-md-6 col-sm-12">
-                                <label class="form-control-label"> Kobo group key</label>
-                                <input id="{{form.kobo_group_key.id_for_lable}}" name="{{ form.kobo_group_key.html_name }}"
-                                       value="{{form.kobo_group_key.value}}" type="text" class="form-control" data-val="true" placeholder="Enter group key "
-                                       aria-required="true" aria-invalid="false" >
-                                {% for error in form.kobo_group_key.errors %}
-                                <small class="form-text text-danger">{{error}}</small>
-                                {% endfor %}
-                            </div>
+
                             <div class="form-group col-lg-12 col-md-12 col-sm-12">
                                 <label class="form-control-label" for="{{form.description.id_for_label}}">Description</label>
                                 <input id="{{form.description.id_for_label}}" name="{{ form.description.html_name }}"
@@ -45,7 +43,7 @@ Edit domain
                             </div>
 
                             <div class="col-lg-12 col-md-12 col-sm-12">
-                                <button id="btnSave" type="submit" value="Update" class="btn btn-info">Save Domain</button>
+                                <button id="btnSave" type="submit" value="Update" class="btn btn-info">Save Program</button>
                                 <button id="btnCancel" type="submit" value="cancel" class="ml-2 btn btn-outline-info">Cancel</button>
                             </div>
 

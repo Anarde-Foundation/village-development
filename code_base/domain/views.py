@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse
 from django.template.loader import render_to_string
 from django.contrib.auth.decorators import login_required
-from domain.models import domain
+from domain.models import domain, domain_program
 from django import forms
 from django.forms import ModelForm
 from django.http import HttpResponse
@@ -52,7 +52,6 @@ def domain_create(request, template_name='domain_create.html'):
         else:
             print(form.errors)
     else:
-
         form = DomainForm
     return render(request, template_name, {'form':form})
 
@@ -61,11 +60,9 @@ def domain_update(request, pk, template_name='domain_update.html'):
     domainForUpdate = get_object_or_404(domain, pk=pk)
     form = DomainForm(instance=domainForUpdate)
     if request.method == 'POST':
-        print(request.POST)
         if 'cancel' in request.POST:
             print('cancelling request')
             return redirect('/domain/view/'+ str(pk))
-
         form = DomainForm(request.POST, instance=domainForUpdate)
         if form.is_valid():
             info = form.save()
@@ -74,17 +71,71 @@ def domain_update(request, pk, template_name='domain_update.html'):
             return redirect('/domain/view/'+ str(pk))
         else:
             print(form.errors)
-
+    form.pk = pk
     return render(request, template_name, {'form':form})
+#
+# @login_required
+# def domain_delete(request, pk):
+#     domainForDelete = get_object_or_404(domain, pk=pk)
+#     if request.method == 'POST':
+#         print("================================")
+#         # print(domainForDelete)
+#         domainForDelete.delete()
+#         print("================================")
+#         return redirect('/domain/')
+#
+#
+#     return render(request, {'object':domainForDelete})
+
+class DomainProgramForm(ModelForm):
+    class Meta:
+        model = domain_program
+        fields = ['program_name', 'description']
 
 @login_required
-def domain_delete(request, pk):
-    domainForDelete = get_object_or_404(domain, pk=pk)
-    domainForDelete.delete()
-    return redirect('/domain/')
+def get_domain_program_list_for_datatable(request, pk):
+    program_list = domain_program.objects.filter(domain_id=pk)
+    data = serializers.serialize('json', program_list, use_natural_foreign_keys=True)
+    return HttpResponse(data, content_type='application/json')
 
-def delete(request):
-    candidate = Candidates.objects.get(pk = int(request.REQUEST['id']))
-    candidate.delete()
-    payload = {'success': True}
-    return HttpResponse(json.dumps(payload), content_type='application/json')
+@login_required
+def program_view(request, pk, template_name='domain_program_detail.html'):
+    obj_program = get_object_or_404(domain_program, pk=pk)
+    return render(request, template_name, {'object':obj_program})
+
+@login_required
+def program_create(request,id, template_name='domain_program_create.html'):
+    obj_domain = get_object_or_404(domain, domain_id= id)
+    if request.method == 'POST':
+        form = DomainProgramForm(request.POST)
+        if form.is_valid():
+            info =form.save(commit=False)
+            info.domain_id = obj_domain
+            info.created_by = request.user
+            info.modified_by = request.user
+            info.save()
+            return redirect('/domain/view/'+ str(id))
+        else:
+            print(form.errors)
+    else:
+        form = DomainProgramForm
+    return render(request, template_name, {'form':form , 'object':obj_domain })
+
+@login_required
+def program_update(request, pk, template_name='domain_program_update.html'):
+    programForUpdate = get_object_or_404(domain_program, pk=pk)
+    obj_domain = domain.objects.get(domain_id = programForUpdate.domain_id.domain_id)
+    form = DomainProgramForm(instance=programForUpdate)
+    if request.method == 'POST':
+        if 'cancel' in request.POST:
+            print('cancelling request')
+            return redirect('/domain/program_view/'+ str(pk))
+        form = DomainProgramForm(request.POST, instance=programForUpdate)
+        if form.is_valid():
+            info = form.save()
+            info.modified_by = request.user
+            info.save()
+            return redirect('/domain/program_view/'+ str(pk))
+        else:
+            print(form.errors)
+    return render(request, template_name, {'form':form, 'obj_domain':obj_domain})

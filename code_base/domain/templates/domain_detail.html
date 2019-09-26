@@ -36,5 +36,77 @@ Domain Details
         </div>
     </div>
 </div>
+<!--Display program list -->
+<div class="card">
+    <div class="card-header bg-info text-white">
+        <div class="col-md-10">
+            <h5> Programs under {{object.domain_name}} domain</h5>
+        </div>
 
+        <div class="col-md-2">
+            <a href='{% url "program_create" object.domain_id %}' class="pull-right"><button type="button" class="btn btn-light btn-sm"><i class="fa fa-plus"></i></button></a>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-12 col-md-12" >
+                    <table id="domain_program_list" class="table table-striped table-bordered table-row-clickable" width="100%">
+                        <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Description</th>
+                        </tr>
+                        </thead>
+                        <tbody></tbody></table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+{% block page_script %}
+<script type="text/javascript">
+     var table;
+
+    /* Init datatable */
+    var initDatatable = function($) {
+        table = $("#domain_program_list").DataTable({
+            "searching": true,
+            "processing": true,
+            "serverSide": false,
+            "stateSave": true,
+            "colReorder": true,
+            "paging":true,
+            "responsive": true,
+            "ajax": {
+                 "processing": true,
+                 "url": '{% url "get_domain_program_list_for_datatable" object.domain_id %}',
+                 "dataSrc": ""
+             },
+             "columns":[
+                {data: 'fields.program_name'},
+                {data: 'fields.description'},
+             ]
+        });
+    };
+    var onProgramRowClick = function () {
+        var data = table.row( this ).data();
+
+        var url = '/domain/program_view/'  + data.pk;
+        appUtils.navigateToUrl(url);
+    };
+
+    /* init this page */
+    var initProgramListView = function ($) {
+        initDatatable($);
+
+        // bind row click event
+        $('#domain_program_list tbody').on('click', 'tr', onProgramRowClick);
+    };
+
+    /* int this page */
+    jQuery(document).ready(initProgramListView($));
+</script>
 {% endblock %}
