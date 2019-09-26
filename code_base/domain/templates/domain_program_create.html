@@ -1,18 +1,15 @@
 {% extends 'home.html' %}
 
 {% block page-title %}
-  Add Domain
+  Add Program
 {% endblock %} <!-- end of block page-title -->
 
 {% block page-title-path %}
 <ol class="breadcrumb text-right">
     <li><a href="/domain/">Domains</a></li>
-    <li class="active">Add domain</li>
+    <li class="active">Add program</li>
 </ol>
 {% endblock %} <!-- end of block page-title-path -->
-
-
-
 {% block right-pane-content %}
 <div class="content mt-3">
     <div class="animated fadeIn">
@@ -23,24 +20,20 @@
                     <div class="card-body  px-3 py-4">
                         <form  method="post" action="">
                             {% csrf_token %}
-                            <div class="form-group col-lg-6 col-md-6 col-sm-12">
+                            <div class="form-group col-lg-6 col-md-6 col-sm-12 ">
                                 <label class="form-control-label">Domain name</label>
-                                <input id="{{form.domain_name.id_for_lable}}" name="{{ form.domain_name.html_name }}"
-                                       type="text" class="form-control" data-val="true" placeholder="Enter domain name "
-                                       aria-required="true" aria-invalid="false" >
-                                {% for error in form.domain_name.errors %}
-                                <small class="form-text text-danger">{{error}}</small>
-                                {% endfor %}
+                                <input type="text" disabled class="form-control" value="{{object.domain_name}}">
                             </div>
                             <div class="form-group col-lg-6 col-md-6 col-sm-12">
-                                <label class="form-control-label"> Kobo group key</label>
-                                <input id="{{form.kobo_group_key.id_for_lable}}" name="{{ form.kobo_group_key.html_name }}"
-                                       type="text" class="form-control" data-val="true" placeholder="Enter kobo group key "
+                                <label class="form-control-label">Program name</label>
+                                <input id="{{form.program_name.id_for_lable}}" name="{{ form.program_name.html_name }}"
+                                       type="text" class="form-control" data-val="true" placeholder="Enter program name "
                                        aria-required="true" aria-invalid="false" >
-                                {% for error in form.kobo_group_key.errors %}
+                                {% for error in form.program_name.errors %}
                                 <small class="form-text text-danger">{{error}}</small>
                                 {% endfor %}
                             </div>
+
                             <div class="form-group col-lg-12 col-md-12 col-sm-12">
                                 <label class="form-control-label">Description</label>
                                 <input id="{{form.description.id_for_lable}}" name="{{ form.description.html_name }}"
@@ -52,7 +45,7 @@
                             <div>
                                 <div class="col-lg-12 col-md-12 col-sm-12">
                                     <button id=btnSave" type="submit" value="add" class="btn btn-info">Add</button>
-                                    <a href="{% url 'domain_list' %}" id="btnCancel"  class="ml-2 btn btn-outline-info">Cancel</a>
+                                    <button id="btnCancel" type="submit" value="cancel" class="ml-2 btn btn-outline-info">Cancel</button>
                                 </div>
                             </div>
 
@@ -66,13 +59,3 @@
 </div>
 
 {% endblock %} <!-- end of right-pane-content -->
-
-{% block page_script %}
-<script type="text/javascript">
-    jQuery(document).ready(function($) {
-        $('#id_date_of_intervention_month').chosen({width: "15%"});
-        $('#id_date_of_intervention_day').chosen({width: "8%"});
-        $('#id_date_of_intervention_year').chosen({width: "10%"});
-    });
-</script>
-{% endblock %}
