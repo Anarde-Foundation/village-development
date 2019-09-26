@@ -6,6 +6,8 @@ from  django.contrib.auth.models import User
 class domain(models.Model):
     domain_id = models.BigAutoField(primary_key=True)
     domain_name = models.CharField(max_length=255, null=False)
+    kobo_group_key = models.CharField(max_length=255, null=False)
+
     description = models.TextField(null=True, blank=True)
 
 
