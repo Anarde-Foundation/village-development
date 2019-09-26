@@ -35,6 +35,10 @@ class survey_question(models.Model):
 
     section_id = models.CharField(max_length=255, null=True)
     question_name = models.CharField(max_length=255, null=False)
+    question_label = models.CharField(max_length=255, null=False)
+
+    domain_id =models.ForeignKey('domain.domain', db_column='domain_id', null=True, related_name='fk_domain_id',
+                                  on_delete=models.PROTECT)
 
     class Meta:
         db_table = 'sur_survey_question'
@@ -48,6 +52,7 @@ class survey_question_options(models.Model):
                                            related_name='fk_survey_question_id', on_delete=models.PROTECT)
 
     option_name = models.CharField(max_length=255, null=False)
+    option_label = models.CharField(max_length=255, null=False)
 
     class Meta:
         db_table = 'sur_survey_question_options'
