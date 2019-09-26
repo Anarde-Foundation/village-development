@@ -209,7 +209,7 @@ def pull_kobo_form_data(surveyID):
 
     print(surveyID)
     kobo_form_id = surveyID.kobo_form_id
-    data_link = kobo_constants.kobo_form_link+ "/" + str(kobo_form_id) + kobo_constants.data_format
+    data_link = kobo_constants.kobo_form_link+ "/" + str(kobo_form_id) + kobo_form_constants.data_format
     print(data_link)
     survey_data = requests.get(data_link, headers={'Authorization': kobo_constants.authorization_token}).json()
     #print(json.dumps(survey_data, indent=4))
