@@ -23,11 +23,23 @@
                     <div class="card-body  px-3 py-4">
                         <form  method="post" action="">
                             {% csrf_token %}
-                            <div class="form-group">
+                            <div class="form-group col-lg-6 col-md-6 col-sm-12">
                                 <label class="form-control-label">Domain name</label>
                                 <input id="{{form.domain_name.id_for_lable}}" name="{{ form.domain_name.html_name }}"
                                        type="text" class="form-control" data-val="true" placeholder="Enter domain name "
                                        aria-required="true" aria-invalid="false" >
+                                {% for error in form.domain_name.errors %}
+                                    <p class="text-danger form-text">{{ error }} </p>
+                                 {% endfor %}
+                            </div>
+                            <div class="form-group col-lg-6 col-md-6 col-sm-12">
+                                <label class="form-control-label"> Kobo group key</label>
+                                <input id="{{form.kobo_group_key.id_for_lable}}" name="{{ form.kobo_group_key.html_name }}"
+                                       type="text" class="form-control" data-val="true" placeholder="Enter group key "
+                                       aria-required="true" aria-invalid="false" >
+                                 {% for error in form.kobo_group_key.errors %}
+                                    <p class="text-danger form-text">{{ error }} </p>
+                                 {% endfor %}
                             </div>
                             <div class="form-group">
                                 <label class="form-control-label">Description</label>
@@ -42,9 +54,7 @@
                                     <span id="payment-button-amount">Submit</span>
                                 </button>
                             </div>
-                            {% for error in field.errors %}
-                            <p class="text-danger">{{ error }}</p>
-                            {% endfor %}
+
                         </form>
 
                     </div>
