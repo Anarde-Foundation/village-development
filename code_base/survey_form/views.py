@@ -21,6 +21,7 @@ from common.models import code
 from location.models import location
 from domain.models import domain
 from .models import survey, survey_question, survey_question_options
+from survey_response import views as response_views
 
 
 class survey_list1(TemplateView):
@@ -117,6 +118,7 @@ def survey_view(request, pk, template_name='survey_detail.html'):
         #print(request.POST)
 
         pull_kobo_form_data(objsurvey)
+        response_views.pull_kobo_response_data(objsurvey)
 
     return render(request, template_name, {'object': objsurvey})
 
@@ -162,6 +164,29 @@ def get_kobo_form(request,pk):
     return render(request, {'survey': survey_id})
 
 
+def pull_kobo_form_data(surveyID):
+
+    print(surveyID)
+    kobo_form_id = surveyID.kobo_form_id
+    data_link = kobo_constants.kobo_form_link+ "/" + str(kobo_form_id) + kobo_form_constants.data_format
+    print(data_link)
+    survey_form_data = requests.get(data_link, headers={'Authorization': kobo_constants.authorization_token}).json()
+    #print(json.dumps(survey_data, indent=4))
+    survey_children = survey_form_data['children']
+    print("survey_name: ", survey_form_data['title'])
+
+    for i in range(len(survey_children)):
+        if survey_children[i]['type'] == 'group':
+            grp_name = survey_children[i]['name']
+            print("****************")
+            for j in range(len(survey_children[i]['children'])):
+                get_kobo_questions_and_options(survey_children[i]['children'], j, surveyID, grp_name)
+
+        else:
+            print("----------------")
+            get_kobo_questions_and_options(survey_children, i, surveyID)
+
+
 def get_kobo_questions_and_options(survey_children, i, surveyID, grp_name=None):
     print(grp_name)
     question_label = ""
@@ -203,27 +228,3 @@ def get_kobo_questions_and_options(survey_children, i, surveyID, grp_name=None):
                                                 option_label=option_label).save()
             else:
                 print('question exists')
-
-
-def pull_kobo_form_data(surveyID):
-
-    print(surveyID)
-    kobo_form_id = surveyID.kobo_form_id
-    data_link = kobo_constants.kobo_form_link+ "/" + str(kobo_form_id) + kobo_form_constants.data_format
-    print(data_link)
-    survey_data = requests.get(data_link, headers={'Authorization': kobo_constants.authorization_token}).json()
-    #print(json.dumps(survey_data, indent=4))
-    survey_children = survey_data['children']
-    print("survey_name: ", survey_data['title'])
-    grp_name = ""
-
-    for i in range(len(survey_children)):
-        if survey_children[i]['type'] == 'group':
-            grp_name = survey_children[i]['name']
-            print("****************")
-            for j in range(len(survey_children[i]['children'])):
-                get_kobo_questions_and_options(survey_children[i]['children'], j, surveyID,grp_name)
-
-        else:
-            print("----------------")
-            get_kobo_questions_and_options(survey_children, i,surveyID)
