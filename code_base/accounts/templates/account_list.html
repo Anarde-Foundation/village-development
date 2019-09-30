@@ -27,6 +27,7 @@ User list
                     <th>Joining date</th>
                     <th>Last login date</th>
                     <th>Is Active?</th>
+                    <th>Group</th>
                 </tr>
             </thead>
             <tbody>
@@ -50,7 +51,17 @@ User list
         else
             return '';
     };
-
+    var showUserGroup = function(data, type, row) {
+        if (data == null) return '';
+        else if (data == 1)
+            return 'Admin';
+        else if (data == 2)
+            return 'Anarde user';
+        else if (data ==3)
+            return 'Anganwadi worker';
+        else if (data ==4)
+            return 'Funder';
+    };
     /* Init datatable */
     var initDatatable = function($) {
      table = $("#user_list").DataTable({
@@ -71,6 +82,7 @@ User list
                 {data: 'fields.date_joined', render: appUtils.formatDatatableDate},
                 {data: 'fields.last_login', render: appUtils.formatDatatableDateTime},
                 {data: 'fields.is_active', render: showUserStatus},
+                {data: 'fields.groups.0', render: showUserGroup},
              ]
         });
     };
