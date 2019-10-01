@@ -158,7 +158,7 @@ def survey_view(request, pk, template_name='survey_detail.html'):
     if request.method == 'POST':
         #print(request.POST)
 
-        #pull_kobo_form_data(objsurvey)
+        pull_kobo_form_data(objsurvey)
         response_views.pull_kobo_response_data(objsurvey)
 
     return render(request, template_name, {'object': objsurvey})
