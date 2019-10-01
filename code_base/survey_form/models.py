@@ -37,8 +37,10 @@ class survey_question(models.Model):
     question_name = models.CharField(max_length=255, null=False)
     question_label = models.CharField(max_length=255, null=False)
 
-    domain_id =models.ForeignKey('domain.domain', db_column='domain_id', null=True, related_name='fk_survey_question_domain_id',
+    domain_id = models.ForeignKey('domain.domain', db_column='domain_id', null=True, related_name='fk_survey_question_domain_id',
                                   on_delete=models.PROTECT)
+
+    question_type = models.CharField(max_length=50, null=False)
 
     class Meta:
         db_table = 'sur_survey_question'

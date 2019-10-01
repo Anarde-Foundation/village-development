@@ -21,22 +21,22 @@ def pull_kobo_response_data(surveyID):
     survey_form_data = requests.get(data_link, headers={'Authorization': kobo_constants.authorization_token}).json()
     questions = survey_question.objects.filter(survey_id=surveyID).all()
     print(len(survey_form_data))
-    for i in range(len(survey_form_data)):
-        kobo_response_id = survey_form_data[i]['_id']
+    for response_entry in range(len(survey_form_data)):
+        kobo_response_id = survey_form_data[response_entry]['_id']
         print(kobo_response_id)
 
         survey_response_id = survey_response.objects.filter(kobo_response_id=kobo_response_id, survey_id=surveyID).first()
         if not survey_response_id:
             survey_response(kobo_response_id=kobo_response_id, survey_id=surveyID).save()
             survey_response_id = survey_response.objects.last()
-            list_of_keys = survey_form_data[i].keys()
+            list_of_keys = survey_form_data[response_entry].keys()
             for question in questions:
                 survey_question_response = ""
                 #survey_questionID = question.survey_question_id
-                if question.question_name in survey_form_data[i]:
+                if question.question_name in survey_form_data[response_entry]:
                     print("direct question")
-                    #print(question.question_name, " ",survey_form_data[i][question.question_name])
-                    survey_question_response = survey_form_data[i][question.question_name]
+                    #print(question.question_name, " ",survey_form_data[response_entry][question.question_name])
+                    survey_question_response = survey_form_data[response_entry][question.question_name]
 
                 else:
                     print("question in group")
@@ -45,26 +45,27 @@ def pull_kobo_response_data(surveyID):
                     for key in list_of_keys:
                         questionname = re.search(pattern, key)
                         if questionname:
-                            #print(pattern," ", survey_form_data[i][key])
-                            survey_question_response = survey_form_data[i][key]
+                            #print(pattern," ", survey_form_data[response_entry][key])
+                            survey_question_response = survey_form_data[response_entry][key]
 
                 optionID = survey_question_options.objects.filter(survey_question_id=question,
                                                                   option_name=survey_question_response).first()
-
-                if len(survey_question_response.split()) == 1 :     # for select many questions
+                question_type = question.question_type
+                if len(survey_question_response.split()) > 1 and question_type in kobo_form_constants.question_not_having_space:     # for select many questions
+                    split_responses = survey_question_response.split()
+                    for response in range(len(split_responses)):
+                        survey_response_detail(survey_question_id=question, survey_question_options_id=optionID,
+                                               survey_response_id=survey_response_id,
+                                               survey_response_value=split_responses[response]).save()
+                else:
                     survey_response_detail(survey_question_id=question, survey_question_options_id=optionID,
                                            survey_response_id=survey_response_id,
                                            survey_response_value=survey_question_response).save()
-                else:
-                    split_response = survey_question_response.split()
-                    for i in range(len(split_response)):
-                        survey_response_detail(survey_question_id=question, survey_question_options_id=optionID,
-                                               survey_response_id=survey_response_id,
-                                               survey_response_value=split_response[i]).save()
 
                 print("question ID is ", question, " option id is", optionID)
                 print("saved successfully")
         else:
             print("response exists")
-            #print(question.question_name," ",[value for key, value in survey_form_data[i].items() if question.question_name in key.lower()])
+            #print(question.question_name," ",[value for key, value in survey_form_data[response_entry].items() if question.question_name in key.lower()])
         print()
+

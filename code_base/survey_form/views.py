@@ -111,19 +111,6 @@ def survey_create(request, template_name='survey_create.html'):
 
 
 @login_required
-def survey_view(request, pk, template_name='survey_detail.html'):
-    objsurvey= get_object_or_404(survey, pk=pk)
-    print(objsurvey.kobo_form_id)
-    if request.method == 'POST':
-        #print(request.POST)
-
-        pull_kobo_form_data(objsurvey)
-        response_views.pull_kobo_response_data(objsurvey)
-
-    return render(request, template_name, {'object': objsurvey})
-
-
-@login_required
 def survey_delete(request, pk, template_name='survey_delete.html'):
     surveys=get_object_or_404(survey, pk=pk)
     if request.method=='POST':
@@ -162,6 +149,19 @@ def get_kobo_form(request,pk):
     survey_id = get_object_or_404(survey, pk=pk)
     print(survey_id)
     return render(request, {'survey': survey_id})
+
+
+@login_required
+def survey_view(request, pk, template_name='survey_detail.html'):
+    objsurvey= get_object_or_404(survey, pk=pk)
+    print(objsurvey.kobo_form_id)
+    if request.method == 'POST':
+        #print(request.POST)
+
+        #pull_kobo_form_data(objsurvey)
+        response_views.pull_kobo_response_data(objsurvey)
+
+    return render(request, template_name, {'object': objsurvey})
 
 
 def pull_kobo_form_data(surveyID):
@@ -210,8 +210,10 @@ def get_kobo_questions_and_options(survey_children, i, surveyID, grp_name=None):
                     print("question label ", survey_children[i]['label'])
                     question_label = survey_children[i]['label']
 
+                question_type = survey_children[i]['type']
                 survey_question(survey_id=surveyID, section_id=grp_name, domain_id=domainID,
-                                question_label=question_label, question_name=question_name).save()
+                                question_label=question_label, question_name=question_name,
+                                question_type=question_type).save()
 
                 if survey_children[i]['type'] in kobo_form_constants.question_type_having_options:
                     question_children = survey_children[i]['children']
