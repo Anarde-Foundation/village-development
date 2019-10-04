@@ -110,6 +110,7 @@ def survey_create(request, template_name='survey_create.html'):
     return render(request, template_name, {'form':form})
 
 
+
 @login_required
 def survey_delete(request, pk, template_name='survey_delete.html'):
     surveys=get_object_or_404(survey, pk=pk)
@@ -230,3 +231,38 @@ def get_kobo_questions_and_options(survey_children, i, surveyID, grp_name=None):
                                                 option_label=option_label).save()
             else:
                 print('question exists')
+
+def pull_kobo_form_data(surveyID):
+
+    print(surveyID)
+    kobo_form_id = surveyID.kobo_form_id
+    data_link = kobo_constants.kobo_form_link+ "/" + str(kobo_form_id) + kobo_form_constants.data_format
+    print(data_link)
+    survey_data = requests.get(data_link, headers={'Authorization': kobo_constants.authorization_token}).json()
+    #print(json.dumps(survey_data, indent=4))
+    survey_children = survey_data['children']
+    print("survey_name: ", survey_data['title'])
+    grp_name = ""
+
+    for i in range(len(survey_children)):
+        if survey_children[i]['type'] == 'group':
+            grp_name = survey_children[i]['name']
+            print("****************")
+            for j in range(len(survey_children[i]['children'])):
+                get_kobo_questions_and_options(survey_children[i]['children'], j, surveyID,grp_name)
+
+        else:
+            print("----------------")
+            get_kobo_questions_and_options(survey_children, i,surveyID)
+
+def survey_suggestion(request):
+    domain_list = domain.objects.all()
+    data1 = serializers.serialize('json', domain_list)
+    data = json.loads(data1)
+    for item in data:
+        item.update({"index": "100"})
+
+    dataf = json.dumps(data)
+
+    return HttpResponse(dataf, content_type='application/json')
+

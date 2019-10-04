@@ -59,9 +59,9 @@ Survey Details
                         Pull survey data from Kobo form
                     </button>
                 </div>
-                <div class="col-md-3">
-                    <a href='{% url "survey_delete" object.survey_id %}' class="btn btn-danger">Delete survey</a>
-                </div>
+<!--                <div class="col-md-3">-->
+<!--                    <a href='{% url "survey_delete" object.survey_id %}' class="btn btn-danger">Delete survey</a>-->
+<!--                </div>-->
             </div>
             <!-- </div>-->
         </div>
@@ -89,6 +89,32 @@ Survey Details
         </div>
     </div>
 </div>-->
+<div class="card">
+    <div class="card-header bg-info text-white">
+        <h5> Survey analysis</h5>
+    </div>
+    <div class="card-body">
+        <div class="custom-tab">
+
+            <nav>
+                <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                    <a class="nav-item nav-link active show" id="custom-nav-home-tab" data-toggle="tab" href="#custom-nav-home" role="tab" aria-controls="custom-nav-home" aria-selected="true">Data</a>
+                    <a class="nav-item nav-link" id="custom-nav-profile-tab" data-toggle="tab" href="#domain_tab" role="tab" aria-controls="custom-nav-profile" aria-selected="false">Suggestions</a>
+
+                </div>
+            </nav>
+            <div class="tab-content pl-3 pt-2" id="nav-tabContent">
+                <div class="tab-pane fade active show" id="custom-nav-home" role="tabpanel" aria-labelledby="custom-nav-home-tab">
+                    <p>Raw denim you probably haven't heard of them jean shorts Austin. Nesciunt tofu stumptown aliqua, retro synth master cleanse. Mustache cliche tempor, williamsburg carles vegan helvetica. Reprehenderit
+                        butcher retro keffiyeh dreamcatcher synth. Cosby sweater eu banh mi, irure terry richardson ex sd. Alip placeat salvia cillum iphone. Seitan alip s cardigan american apparel, butcher voluptate nisi .</p>
+                </div>
+                <div class="tab-pane fade" id="domain_tab" role="tabpanel" aria-labelledby="custom-nav-profile-tab">
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
 
 {% endblock %}
 
@@ -96,5 +122,67 @@ Survey Details
 {% block page_script %}
 <script type="text/javascript">
 
+var showDomain = function ($) {
+    var showDomainSuccessCB = function (response) {
+        console.log('In success');
+        console.log(response);
+        var allDomainHtml = '';
+        var replacedHtml = '';
+        var domainCardTemplate = '<div id ="domain_box" class="col-sm-6 col-lg-3">' +
+                        '<div  class="card text-white bg-flat-color-2">' +
+                            '<div class="card-body pb-0">' +
+                                '<div class="dropdown float-right">' +
+                                    '<button class="btn bg-transparent dropdown-toggle theme-toggle text-light" type="button" id="dropdownMenuButton1" data-toggle="dropdown">' +
+                                        '<i class="fa fa-cog"></i>' +
+                                    '</button>' +
+
+                                '</div>' +
+                                '<h4 class="mb-0">' +
+                                    '<span class="count">[vulnerability_index]</span>' +
+                                '</h4>' +
+                                '<p class="text-light">[domain_name]</p>' +
+                                '<div class="chart-wrapper px-0" style="height:70px;" height="70">' +
+                                    '<div style="position: absolute; inset: 0px; overflow: hidden; pointer-events: none; visibility: hidden; z-index: -1;" class="chartjs-size-monitor">' +
+                                        '<div class="chartjs-size-monitor-expand" style="position:absolute;left:0;top:0;right:0;bottom:0;overflow:hidden;pointer-events:none;visibility:hidden;z-index:-1;">' +
+                                            '<div style="position:absolute;width:1000000px;height:1000000px;left:0;top:0"></div>' +
+                                        '</div>' +
+                                        '<div class="chartjs-size-monitor-shrink" style="position:absolute;left:0;top:0;right:0;bottom:0;overflow:hidden;pointer-events:none;visibility:hidden;z-index:-1;">' +
+                                            '<div style="position:absolute;width:200%;height:200%;left:0; top:0"></div>' +
+                                        '</div>' +
+                                    '</div>' +
+                                '</div>' +
+                            '</div>' +
+                        '</div>' +
+                    '</div>'
+
+
+        for (index = 0; index < response.length; index++) {
+            replacedHtml = domainCardTemplate.replace('[domain_name]', response[index].fields.domain_name);
+            replacedHtml = replacedHtml.replace('[vulnerability_index]', response[index].index);
+            allDomainHtml += replacedHtml;
+        }
+
+        $('#domain_tab').html(allDomainHtml);
+
+
+    };
+
+    var showDomainErrorCB = function (response) {
+        console.log('In error');
+        console.log(response);
+    };
+
+    $.ajax({
+        url: '{% url "survey_suggestion" %}',
+        success: showDomainSuccessCB,
+        error: showDomainErrorCB
+    });
+}
+
+var initSurveryDetailView = function ($) {
+  console.log('In initSurveryDetailView');
+  $('#domain_tab').on('click',showDomain($));
+};
+jQuery(document).ready(initSurveryDetailView($));
 </script>
 {% endblock %}
