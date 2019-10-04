@@ -112,13 +112,15 @@ def survey_create(request, template_name='survey_create.html'):
 @login_required
 def survey_view(request, pk, template_name='survey_detail.html'):
     objsurvey= get_object_or_404(survey, pk=pk)
+    domain_list = domain.objects.all()
+    index = 100
     print(objsurvey.kobo_form_id)
     if request.method == 'POST':
         #print(request.POST)
 
         pull_kobo_form_data(objsurvey)
 
-    return render(request, template_name, {'object': objsurvey})
+    return render(request, template_name, {'object': objsurvey, 'objDomain': domain_list, 'index':index})
 
 
 @login_required
@@ -227,3 +229,14 @@ def pull_kobo_form_data(surveyID):
         else:
             print("----------------")
             get_kobo_questions_and_options(survey_children, i,surveyID)
+
+def survey_suggestion(request):
+    domain_list = domain.objects.all()
+    data1 = serializers.serialize('json', domain_list)
+    data = json.loads(data1)
+    for item in data:
+        item.update({"index": "100"})
+
+    dataf = json.dumps(data)
+
+    return HttpResponse(dataf, content_type='application/json')
