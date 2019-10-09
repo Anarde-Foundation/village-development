@@ -9,4 +9,4 @@ ALTER TABLE `loc_location_program` ADD CONSTRAINT `loc_location_program_modified
 ALTER TABLE `loc_location_program` ADD CONSTRAINT `loc_location_program_program_id_fk_com_domai` FOREIGN KEY (`program_id`) REFERENCES `com_domain_program` (`domain_program_id`);
 COMMIT;
 
-insert into zzz_db_script values('01-loaction-program-table-create.sql', now());
+insert into zzz_db_script values('017-loaction-program-table-create.sql', now());
