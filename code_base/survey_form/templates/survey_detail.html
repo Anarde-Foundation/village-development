@@ -105,8 +105,7 @@ Survey Details
             </nav>
             <div class="tab-content pl-3 pt-2" id="nav-tabContent">
                 <div class="tab-pane fade active show" id="custom-nav-home" role="tabpanel" aria-labelledby="custom-nav-home-tab">
-                    <p>Raw denim you probably haven't heard of them jean shorts Austin. Nesciunt tofu stumptown aliqua, retro synth master cleanse. Mustache cliche tempor, williamsburg carles vegan helvetica. Reprehenderit
-                        butcher retro keffiyeh dreamcatcher synth. Cosby sweater eu banh mi, irure terry richardson ex sd. Alip placeat salvia cillum iphone. Seitan alip s cardigan american apparel, butcher voluptate nisi .</p>
+                    <p>Survey data</p>
                 </div>
                 <div class="tab-pane fade" id="domain_tab" role="tabpanel" aria-labelledby="custom-nav-profile-tab">
                 </div>
@@ -131,12 +130,11 @@ var showDomain = function ($) {
         var domainCardTemplate = '<div id ="domain_box" class="col-sm-6 col-lg-3">' +
                         '<div  class="card text-white bg-flat-color-2">' +
                             '<div class="card-body pb-0">' +
-                                '<div class="dropdown float-right">' +
-                                    '<button class="btn bg-transparent dropdown-toggle theme-toggle text-light" type="button" id="dropdownMenuButton1" data-toggle="dropdown">' +
-                                        '<i class="fa fa-cog"></i>' +
-                                    '</button>' +
-
-                                '</div>' +
+                            '<div  class=" float-right">' +
+                                '<a [next_page]'+
+                                '<i class="ti-arrow-circle-right px-3"></i>'+
+                                '</a>'+
+                            '</div>' +
                                 '<h4 class="mb-0">' +
                                     '<span class="count">[vulnerability_index]</span>' +
                                 '</h4>' +
@@ -159,11 +157,13 @@ var showDomain = function ($) {
         for (index = 0; index < response.length; index++) {
             replacedHtml = domainCardTemplate.replace('[domain_name]', response[index].fields.domain_name);
             replacedHtml = replacedHtml.replace('[vulnerability_index]', response[index].index);
+            var domain_id = response[index].pk
+            replacedHtml = replacedHtml.replace('[next_page]', 'href="/survey/survey_program_list/'+ domain_id+'"');
             allDomainHtml += replacedHtml;
+
         }
 
         $('#domain_tab').html(allDomainHtml);
-
 
     };
 
@@ -182,7 +182,9 @@ var showDomain = function ($) {
 var initSurveryDetailView = function ($) {
   console.log('In initSurveryDetailView');
   $('#domain_tab').on('click',showDomain($));
+
 };
 jQuery(document).ready(initSurveryDetailView($));
+
 </script>
 {% endblock %}
