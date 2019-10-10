@@ -13,14 +13,16 @@ from django.forms import ModelForm
 import re
 import requests
 import json
+import jwt
 
-from utils.configuration import kobo_constants
+from utils.configuration import kobo_constants, metabase_constants
 from utils.constants import kobo_form_constants
 
 from common.models import code
 from location.models import location, location_program
 from domain.models import domain, domain_program
 from .models import survey, survey_question, survey_question_options
+from survey_response.models import survey_response, survey_response_detail
 from survey_response import views as response_views
 
 
@@ -157,12 +159,37 @@ def survey_view(request, pk, template_name='survey_detail.html'):
     objsurvey= get_object_or_404(survey, pk=pk)
     print(objsurvey.kobo_form_id)
     if request.method == 'POST':
-        #print(request.POST)
+        print(request.POST)
 
-        pull_kobo_form_data(objsurvey)
-        response_views.pull_kobo_response_data(objsurvey)
+        if 'pull-form-data' in request.POST:
+            print("kobo form data")
+            pull_kobo_form_data(objsurvey)
 
-    return render(request, template_name, {'object': objsurvey})
+        elif 'pull-response-data' in request.POST:
+            print("form response data")
+            response_views.pull_kobo_response_data(objsurvey)
+
+    show_delete_survey_button = True
+    survey_response_exists = survey_response.objects.filter(survey_id=objsurvey).first()
+    if survey_response_exists:
+        survey_response_detail_exists = survey_response_detail.objects.filter(survey_response_id =survey_response_exists).first()
+
+        if survey_response_detail_exists:
+            show_delete_survey_button = False
+
+    payload = {
+        "resource": {"dashboard": 4},
+        "params": {
+        #    "survey_id": objsurvey.survey_id
+        }
+    }
+    token = jwt.encode(payload, metabase_constants.metabase_secret_key, algorithm="HS256")
+    print(token)
+    iframeUrl = metabase_constants.metabase_site_url + "/embed/dashboard/" + token.decode() + "#bordered=false&titled=false"
+    # print(iframeUrl)
+
+    return render(request, template_name, {'object': objsurvey, 'show_delete': show_delete_survey_button,
+                                           'iframeUrl': iframeUrl})
 
 
 def pull_kobo_form_data(surveyID):
