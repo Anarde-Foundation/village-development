@@ -173,7 +173,7 @@ var showDomain = function ($) {
     };
 
     $.ajax({
-        url: '{% url "survey_suggestion" %}',
+        url: '{% url "survey_suggestion" object.survey_id %}',
         success: showDomainSuccessCB,
         error: showDomainErrorCB
     });

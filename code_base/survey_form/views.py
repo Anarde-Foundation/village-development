@@ -255,12 +255,15 @@ def pull_kobo_form_data(surveyID):
             print("----------------")
             get_kobo_questions_and_options(survey_children, i,surveyID)
 
-def survey_domain_suggestion(request):
+def survey_domain_suggestion(request, survey_id):
     domain_list = domain.objects.all()
+    obj_survey = survey.objects.get(survey_id = survey_id)
+    obj_location = location.objects.get(location_id = obj_survey.location_id.location_id)
     data_json = serializers.serialize('json', domain_list)
     data_list = json.loads(data_json)
     for item in data_list:
-        item.update({"index": "100"})
+        item.update({"index": "100"}) #static index
+        item.update({"location_id": obj_location.location_id}) # location id of conducted survey
 
     data = json.dumps(data_list)
 
@@ -289,8 +292,45 @@ def survey_program_list(request, pk, template_name='survey_program_list.html'):
 
 @login_required
 def get_location_program_list_for_datatable(request, pk):
-    program_list = domain_program.objects.filter(domain_id=pk)
-    data = serializers.serialize('json', program_list, use_natural_foreign_keys=True)
+    domain_list = domain.objects.filter(pk=pk).select_related()
+    obj_location = location_program.objects.filter(program_id__in =domain_program.objects.filter(domain_id=pk) )
+    print(obj_location)
+    program_list = domain_program.objects.filter(domain_id=pk).prefetch_related()
+    location_program_list = []
+    for program in program_list:
+        if location_program.objects.filter(program_id =program.domain_program_id).exists():
+            location_programs = location_program.objects.filter(program_id =program.domain_program_id)
+            location_program_list.append(location_programs)
+    print("+++++++++++++location_program_list++++++++++++")
+    print(location_program_list)
+    print("++++++++++++program_list+++++++++++++")
+    print(program_list)
+    suggested_program_list = list(domain_program.objects.filter(domain_id=pk).values_list(
+        "program_name", "description"
+    ).union(
+        location_program.objects.all().values_list(
+            "date_of_implementation", "location_id"
+        )))
+    # vendor = Vendor.objects.get(pk=vendor_id).prefetch_related(vendor_purchases).prefetch_related(
+    #     vendor_purchases__user)
+    #
+    # user_list = []
+    #
+    # for purchase in vendor.vendor_purchases.all():
+    #     purchase_user = {}
+    #     purchase_user["id"] = purchase.user.pk
+    #     purchase_user["email"] = purchase.user.email
+    #     purchase_user["first_name"] = purchase.user.first_name
+    #     purchase_user["last_name"] = purchase.user.last_name
+    #     user_list.append(purchase_user)
+    #
+    # result = {}
+    # result["id"] = vendor.pk
+    # result["name"] = vendor.name
+    # result["users"] = user_list
+    print(suggested_program_list)
+    data = serializers.serialize('json', obj_location)
+    # data = json.dumps(program_list)
     return HttpResponse(data, content_type='application/json')
 
 #function for update implemented programs
