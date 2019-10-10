@@ -19,8 +19,8 @@ from utils.configuration import kobo_constants, metabase_constants
 from utils.constants import kobo_form_constants
 
 from common.models import code
-from location.models import location
-from domain.models import domain
+from location.models import location, location_program
+from domain.models import domain, domain_program
 from .models import survey, survey_question, survey_question_options
 from survey_response.models import survey_response, survey_response_detail
 from survey_response import views as response_views
@@ -110,6 +110,7 @@ def survey_create(request, template_name='survey_create.html'):
         form = SurveyForm(initial={'kobo_form_name': 'Select an Option'})
 
     return render(request, template_name, {'form':form})
+
 
 
 @login_required
@@ -257,3 +258,85 @@ def get_kobo_questions_and_options(survey_children, i, surveyID, grp_name=None):
                                                 option_label=option_label).save()
             else:
                 print('question exists')
+
+def pull_kobo_form_data(surveyID):
+
+    print(surveyID)
+    kobo_form_id = surveyID.kobo_form_id
+    data_link = kobo_constants.kobo_form_link+ "/" + str(kobo_form_id) + kobo_form_constants.data_format
+    print(data_link)
+    survey_data = requests.get(data_link, headers={'Authorization': kobo_constants.authorization_token}).json()
+    #print(json.dumps(survey_data, indent=4))
+    survey_children = survey_data['children']
+    print("survey_name: ", survey_data['title'])
+    grp_name = ""
+
+    for i in range(len(survey_children)):
+        if survey_children[i]['type'] == 'group':
+            grp_name = survey_children[i]['name']
+            print("****************")
+            for j in range(len(survey_children[i]['children'])):
+                get_kobo_questions_and_options(survey_children[i]['children'], j, surveyID,grp_name)
+
+        else:
+            print("----------------")
+            get_kobo_questions_and_options(survey_children, i,surveyID)
+
+def survey_domain_suggestion(request):
+    domain_list = domain.objects.all()
+    data_json = serializers.serialize('json', domain_list)
+    data_list = json.loads(data_json)
+    for item in data_list:
+        item.update({"index": "100"})
+
+    data = json.dumps(data_list)
+
+    return HttpResponse(data, content_type='application/json')
+
+# location program list form
+class LocationProgram_Form(ModelForm):
+    YEARS = [x for x in range(1990, 2021)]
+
+    location_queryset = location.objects.all()
+    location_id = forms.ModelChoiceField(queryset=location_queryset, empty_label='Select an Option',
+                                         label='Location', required=True)
+    date_of_implementation = forms.DateField(required=True,
+                                           label='Date of implementation', initial= datetime.now(),
+                                           widget=forms.SelectDateWidget(empty_label="", years=YEARS))
+
+    class Meta:
+        model = location_program
+        fields = [ 'location_id', 'date_of_implementation', 'notes']
+
+@login_required
+def survey_program_list(request, pk, template_name='survey_program_list.html'):
+    obj_domain =  get_object_or_404(domain, pk=pk)
+    obj_domain = domain.objects.get(domain_id=pk)
+    return render(request, template_name, {'obj_domain': obj_domain})
+
+@login_required
+def get_location_program_list_for_datatable(request, pk):
+    program_list = domain_program.objects.filter(domain_id=pk)
+    data = serializers.serialize('json', program_list, use_natural_foreign_keys=True)
+    return HttpResponse(data, content_type='application/json')
+
+#function for update implemented programs
+@login_required
+def location_program_update(request, pk, template_name='survey_location_program_update.html'):
+    obj_program = domain_program.objects.get(pk=pk)
+    if request.method == 'POST':
+        form = LocationProgram_Form(request.POST)
+        print(request.POST)
+        if form.is_valid():
+            print('form valid.............')
+            info = form.save(commit=False)
+            info.program_id = obj_program
+            info.created_by = request.user
+            info.modified_by = request.user
+            info.save()
+            return redirect('/survey/survey_program_list/' + str(obj_program.domain_id.domain_id))
+        else:
+            print(form.errors)
+    else:
+        form = LocationProgram_Form
+    return render(request, template_name, {'form': form , 'obj_program': obj_program})

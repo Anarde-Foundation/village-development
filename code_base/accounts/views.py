@@ -1,4 +1,3 @@
-
 from django.views.generic import UpdateView
 from django.contrib.auth.models import User, Group
 from django.shortcuts import render, redirect, get_object_or_404
@@ -102,8 +101,8 @@ class account_list(TemplateView):
 
 @login_required
 def get_user_list_for_datatable(request):
-    location_list = User.objects.all()
-    data = serializers.serialize('json', location_list)
+    user_list = User.objects.all().select_related()
+    data = serializers.serialize('json', user_list)
     return HttpResponse(data, content_type='application/json')
 
 
