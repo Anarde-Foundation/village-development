@@ -7,3 +7,9 @@ class kobo_constants:
     kobo_form_link = "<kobo form metadata url>"
     #kobo_data_link = "http://kc.kobo.local/api/v1/data/"
     kobo_data_link = "<kobo form data url>"
+
+
+class metabase_constants:
+
+    metabase_site_url = "<metabase url>"
+    metabase_secret_key = "<metabase secret key>"
