@@ -26,12 +26,8 @@
                             <!--Location-->
                             <div class="form-group col-lg-6 col-md-6 col-sm-12">
                                 <label class="form-control-label">Location</label>
-                                {{form.location_id}}
-                                {% for error in form.location_id.errors %}
-                                <small class="form-text text-danger">{{error}}</small>
-                                {% endfor %}
+                                <input type="text" disabled class="form-control" value="{{location_name}}">
                             </div>
-
                             <!--date-->
                            <div class="form-group col-lg-12 col-md-12 col-sm-12 date-picker">
                                 <label class="form-control-label">Date of implementation</label><br/>
@@ -53,9 +49,7 @@
 
                             <div class="col-lg-12 col-md-12 col-sm-12">
                                 <button id="create-button" type="submit" class="btn btn-info">Submit</button>
-                                <a href="{% url 'survey_program_list' obj_program.domain_id.domain_id %}"  id="btnCancel" value="cancel" class="ml-2 btn btn-outline-info">Cancel</a>
-
-
+                                <a href="{% url 'survey_program_list' obj_program.domain_id.domain_id location_name.location_id %}"  id="btnCancel" value="cancel" class="ml-2 btn btn-outline-info">Cancel</a>
                             </div>
 
                             {% for error in field.errors %}
