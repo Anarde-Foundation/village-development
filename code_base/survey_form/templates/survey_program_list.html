@@ -24,6 +24,7 @@ Program suggestions
             <tr>
                 <th>Program name</th>
                 <th>description</th>
+                <th>Implemented on date</th>
             </tr>
             </thead>
             <tbody>
@@ -49,13 +50,15 @@ Program suggestions
             "responsive": true,
             "ajax": {
                  "processing": true,
-                 "url": '{% url "get_location_program_list_for_datatable" obj_domain.domain_id %}',
+                 "url": '{% url "get_location_program_list_for_datatable" obj_domain.domain_id obj_location.location_id%}',
                  "dataSrc": ""
              },
             "columns":[
-                {data: 'fields.program_name'},
-                {data: 'fields.description'},
+                {data: 'program_name'},
+                {data: 'description'},
+                {data: 'date_of_implementation', defaultContent:'-', render: appUtils.formatDatatableDate }
             ]
+
         });
     };
 
@@ -66,10 +69,11 @@ Program suggestions
         // bind row click event
         $('#survey_program_list tbody').on('click', 'tr', onProgramRowClick);
     };
-var onProgramRowClick = function () {
-        var data = table.row( this ).data();
+    var onProgramRowClick = function () {
 
-        var url = 'survey_location_program_update/' + data.pk;
+        var data = table.row( this ).data();
+        var url = '/survey/survey_location_program_update/' + data.domain_program_id+ '/' + data.location_id_id ;
+
         appUtils.navigateToUrl(url);
     };
 

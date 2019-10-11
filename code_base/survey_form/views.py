@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.core import serializers
+from itertools import chain
 
 from django_datatables_view.base_datatable_view import BaseDatatableView
 from django.views.generic import TemplateView
@@ -282,12 +283,15 @@ def pull_kobo_form_data(surveyID):
             print("----------------")
             get_kobo_questions_and_options(survey_children, i,surveyID)
 
-def survey_domain_suggestion(request):
+def survey_domain_suggestion(request, survey_id):
     domain_list = domain.objects.all()
+    obj_survey = survey.objects.get(survey_id = survey_id)
+    obj_location = location.objects.get(location_id = obj_survey.location_id.location_id)
     data_json = serializers.serialize('json', domain_list)
     data_list = json.loads(data_json)
     for item in data_list:
-        item.update({"index": "100"})
+        item.update({"index": "100"}) #static index
+        item.update({"location_id": obj_location.location_id}) # location id of conducted survey
 
     data = json.dumps(data_list)
 
@@ -297,46 +301,70 @@ def survey_domain_suggestion(request):
 class LocationProgram_Form(ModelForm):
     YEARS = [x for x in range(1990, 2021)]
 
-    location_queryset = location.objects.all()
-    location_id = forms.ModelChoiceField(queryset=location_queryset, empty_label='Select an Option',
-                                         label='Location', required=True)
+
     date_of_implementation = forms.DateField(required=True,
                                            label='Date of implementation', initial= datetime.now(),
                                            widget=forms.SelectDateWidget(empty_label="", years=YEARS))
 
     class Meta:
         model = location_program
-        fields = [ 'location_id', 'date_of_implementation', 'notes']
+        fields = [ 'date_of_implementation', 'notes']
 
 @login_required
-def survey_program_list(request, pk, template_name='survey_program_list.html'):
-    obj_domain =  get_object_or_404(domain, pk=pk)
+def survey_program_list(request, pk, location_id, template_name='survey_program_list.html'):
     obj_domain = domain.objects.get(domain_id=pk)
-    return render(request, template_name, {'obj_domain': obj_domain})
+    obj_location = location.objects.get(location_id= location_id)
+    return render(request, template_name, {'obj_domain': obj_domain , 'obj_location':obj_location})
 
 @login_required
-def get_location_program_list_for_datatable(request, pk):
-    program_list = domain_program.objects.filter(domain_id=pk)
-    data = serializers.serialize('json', program_list, use_natural_foreign_keys=True)
+def get_location_program_list_for_datatable(request, pk, location_id):
+    program_list = domain_program.objects.filter(domain_id=pk).values('domain_program_id','program_name','description')
+    for item in program_list:
+        program_id = item['domain_program_id']
+        if location_program.objects.filter(program_id=program_id, location_id=location_id ).exists():
+            obj_location_program = location_program.objects.filter(program_id=program_id, location_id=location_id ).\
+                values('date_of_implementation','notes','location_id_id')
+            for i in obj_location_program:
+                item.update(i)
+        else:
+            i = {'date_of_implementation': None, 'notes': None , 'location_id_id': location_id}
+            item.update(i)
+    data1 = list(program_list)
+    data = json.dumps(data1, indent=4, sort_keys=True, default=str)
     return HttpResponse(data, content_type='application/json')
 
 #function for update implemented programs
 @login_required
-def location_program_update(request, pk, template_name='survey_location_program_update.html'):
+def location_program_update(request, pk, location_id, template_name='survey_location_program_update.html'):
+    location_name = location.objects.get(pk = location_id)
     obj_program = domain_program.objects.get(pk=pk)
-    if request.method == 'POST':
-        form = LocationProgram_Form(request.POST)
-        print(request.POST)
-        if form.is_valid():
-            print('form valid.............')
-            info = form.save(commit=False)
-            info.program_id = obj_program
-            info.created_by = request.user
-            info.modified_by = request.user
-            info.save()
-            return redirect('/survey/survey_program_list/' + str(obj_program.domain_id.domain_id))
-        else:
-            print(form.errors)
+    if location_program.objects.filter(program_id=pk, location_id=location_id).exists():
+        programForUpdate = get_object_or_404(location_program, pk=pk)
+        form = LocationProgram_Form(instance=programForUpdate)
+        if request.method == 'POST':
+            form = LocationProgram_Form(request.POST, instance=programForUpdate)
+            if form.is_valid():
+                info = form.save()
+                info.modified_by = request.user
+                info.save()
+                return redirect('/survey/survey_program_list/' + str(obj_program.domain_id.domain_id) + '/' + str(location_id))
+            else:
+                print(form.errors)
+        form.pk = pk
     else:
-        form = LocationProgram_Form
-    return render(request, template_name, {'form': form , 'obj_program': obj_program})
+        if request.method == 'POST':
+            form = LocationProgram_Form(request.POST)
+            print(request.POST)
+            if form.is_valid():
+                info = form.save(commit=False)
+                info.program_id = obj_program
+                info.location_id = location_name
+                info.created_by = request.user
+                info.modified_by = request.user
+                info.save()
+                return redirect('/survey/survey_program_list/' + str(obj_program.domain_id.domain_id) + '/' + str(location_id))
+            else:
+                print(form.errors)
+        else:
+            form = LocationProgram_Form
+    return render(request, template_name, {'form': form , 'obj_program': obj_program, 'location_name': location_name})
