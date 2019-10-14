@@ -42,6 +42,8 @@ class survey_question(models.Model):
 
     question_type = models.CharField(max_length=50, null=False)
 
+    question_weightage = models.IntegerField(null=False, blank=True, default=1)
+
     class Meta:
         db_table = 'sur_survey_question'
         get_latest_by = 'survey_question_id'
@@ -55,6 +57,7 @@ class survey_question_options(models.Model):
 
     option_name = models.CharField(max_length=255, null=False)
     option_label = models.CharField(max_length=255, null=False)
+    option_weightage = models.IntegerField(null=False, blank=True, default=1)
 
     class Meta:
         db_table = 'sur_survey_question_options'

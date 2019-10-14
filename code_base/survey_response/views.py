@@ -10,7 +10,75 @@ from common.models import code
 from location.models import location
 from domain.models import domain
 from survey_form.models import survey, survey_question, survey_question_options
-from .models import survey_response,survey_response_detail
+from .models import survey_response, survey_response_detail
+
+
+def pull_kobo_form_data(surveyID):
+
+    print(surveyID)
+    kobo_form_id = surveyID.kobo_form_id
+    data_link = kobo_constants.kobo_form_link+ "/" + str(kobo_form_id) + kobo_form_constants.data_format
+    print(data_link)
+    survey_form_data = requests.get(data_link, headers={'Authorization': kobo_constants.authorization_token}).json()
+    #print(json.dumps(survey_data, indent=4))
+    survey_children = survey_form_data['children']
+    print("survey_name: ", survey_form_data['title'])
+
+    for i in range(len(survey_children)):
+        if survey_children[i]['type'] == 'group':
+            grp_name = survey_children[i]['name']
+            print("****************")
+            for j in range(len(survey_children[i]['children'])):
+                get_kobo_questions_and_options(survey_children[i]['children'], j, surveyID, grp_name)
+
+        else:
+            print("----------------")
+            get_kobo_questions_and_options(survey_children, i, surveyID)
+
+
+def get_kobo_questions_and_options(survey_children, i, surveyID, grp_name=None):
+    print(grp_name)
+    question_label = ""
+    option_label = ""
+    grp_key = ""
+    if grp_name:
+        domainname = re.search('_(.+?)_', grp_name)
+        if domainname:
+            grp_key = domainname.group(1)
+
+    domainID = domain.objects.filter(kobo_group_key=grp_key).first()
+
+    if survey_children[i]['type'] != 'group':
+        if survey_children[i]['name'] not in kobo_form_constants.names_not_allowed:
+            print("question name: ", survey_children[i]['name'])
+            question_name = survey_children[i]['name']
+
+            survey_questionID = survey_question.objects.filter(survey_id=surveyID, question_name=question_name).first()
+            if not survey_questionID:
+                if 'label' in survey_children[i].keys():
+                    print("question label ", survey_children[i]['label'])
+                    question_label = survey_children[i]['label']
+
+                question_type = survey_children[i]['type']
+                survey_question(survey_id=surveyID, section_id=grp_name, domain_id=domainID,
+                                question_label=question_label, question_name=question_name,
+                                question_type=question_type).save()
+
+                if survey_children[i]['type'] in kobo_form_constants.question_type_having_options:
+                    question_children = survey_children[i]['children']
+                    questionID= survey_question.objects.filter(question_name=question_name).first()
+
+                    for k in range(len(question_children)):
+                        print("options : ", question_children[k]['name'])
+                        option_name = question_children[k]['name']
+                        if 'label' in question_children[k].keys():
+                            print("option label ", question_children[k]['label'])
+                            option_label = question_children[k]['label']
+
+                        survey_question_options(survey_question_id=questionID,option_name=option_name,
+                                                option_label=option_label).save()
+            else:
+                print('question exists')
 
 
 def pull_kobo_response_data(surveyID):
@@ -77,4 +145,40 @@ def pull_kobo_response_data(surveyID):
 
         #print(question.question_name," ",[value for key, value in survey_form_data[response_entry].items() if question.question_name in key.lower()])
         print()
+
+
+def get_domain_index(item):
+    print(item['fields']['kobo_group_key'])
+    domain_name = item['fields']['kobo_group_key']
+    objdomain = domain.objects.filter(kobo_group_key=domain_name).first()
+    questions_in_group = survey_question.objects.filter(domain_id=objdomain)
+    #print(questions_in_group)
+
+    weighted_sum = 0
+    sum_of_question_weights = 0
+    for question in questions_in_group:
+        objsurvey_response = survey_response_detail.objects.filter(survey_question_id=question)
+        question_weight = question.question_weightage
+
+        if objsurvey_response:
+            sum_of_responses = 0
+            length_of_responses = 0
+            for response in objsurvey_response:
+                #print(response)
+                if response.survey_question_options_id:
+                    #print(response.survey_question_options_id)
+                    #print(type(response.survey_question_options_id))
+                    option_weight = response.survey_question_options_id.option_weightage
+                    sum_of_responses += option_weight
+                else:
+                    sum_of_responses = 1
+                length_of_responses += 1
+            print("question is ",question,"and sum of response is ",sum_of_responses)
+            print("number of responses for question is ",length_of_responses)
+            weighted_sum += (question_weight * sum_of_responses) / length_of_responses
+            sum_of_question_weights += question_weight
+
+    index = "%.2f" % (weighted_sum / sum_of_question_weights)
+    print()
+    return index
 

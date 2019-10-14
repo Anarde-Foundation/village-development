@@ -112,7 +112,6 @@ def survey_create(request, template_name='survey_create.html'):
     return render(request, template_name, {'form':form})
 
 
-
 @login_required
 def survey_delete(request, pk, template_name='survey_delete.html'):
     surveys=get_object_or_404(survey, pk=pk)
@@ -159,139 +158,50 @@ def survey_view(request, pk, template_name='survey_detail.html'):
     objsurvey= get_object_or_404(survey, pk=pk)
     print(objsurvey.kobo_form_id)
     if request.method == 'POST':
-        print(request.POST)
+        #print(request.POST)
 
         if 'pull-form-data' in request.POST:
-            print("kobo form data")
-            pull_kobo_form_data(objsurvey)
+            #print("kobo form data")
+            response_views.pull_kobo_form_data(objsurvey)
 
         elif 'pull-response-data' in request.POST:
-            print("form response data")
+            #print("form response data")
             response_views.pull_kobo_response_data(objsurvey)
 
     show_delete_survey_button = True
     survey_response_exists = survey_response.objects.filter(survey_id=objsurvey).first()
     if survey_response_exists:
-        survey_response_detail_exists = survey_response_detail.objects.filter(survey_response_id =survey_response_exists).first()
+        survey_response_detail_exists = survey_response_detail.objects.filter(survey_response_id=survey_response_exists).first()
 
         if survey_response_detail_exists:
             show_delete_survey_button = False
-
+    print(objsurvey.survey_id)
     payload = {
-        "resource": {"dashboard": 4},
+        "resource": {"dashboard": 2},
         "params": {
-        #    "survey_id": objsurvey.survey_id
+            "survey_id": objsurvey.survey_id
         }
     }
     token = jwt.encode(payload, metabase_constants.metabase_secret_key, algorithm="HS256")
-    print(token)
-    iframeUrl = metabase_constants.metabase_site_url + "/embed/dashboard/" + token.decode() + "#bordered=false&titled=false"
-    # print(iframeUrl)
+    iframeUrl = metabase_constants.metabase_site_url + "/embed/dashboard/" + token.decode('utf8') + "#bordered=false&titled=false"
 
     return render(request, template_name, {'object': objsurvey, 'show_delete': show_delete_survey_button,
                                            'iframeUrl': iframeUrl})
 
 
-def pull_kobo_form_data(surveyID):
-
-    print(surveyID)
-    kobo_form_id = surveyID.kobo_form_id
-    data_link = kobo_constants.kobo_form_link+ "/" + str(kobo_form_id) + kobo_form_constants.data_format
-    print(data_link)
-    survey_form_data = requests.get(data_link, headers={'Authorization': kobo_constants.authorization_token}).json()
-    #print(json.dumps(survey_data, indent=4))
-    survey_children = survey_form_data['children']
-    print("survey_name: ", survey_form_data['title'])
-
-    for i in range(len(survey_children)):
-        if survey_children[i]['type'] == 'group':
-            grp_name = survey_children[i]['name']
-            print("****************")
-            for j in range(len(survey_children[i]['children'])):
-                get_kobo_questions_and_options(survey_children[i]['children'], j, surveyID, grp_name)
-
-        else:
-            print("----------------")
-            get_kobo_questions_and_options(survey_children, i, surveyID)
-
-
-def get_kobo_questions_and_options(survey_children, i, surveyID, grp_name=None):
-    print(grp_name)
-    question_label = ""
-    option_label = ""
-    grp_key = ""
-    if grp_name:
-        domainname = re.search('_(.+?)_', grp_name)
-        if domainname:
-            grp_key = domainname.group(1)
-
-    domainID = domain.objects.filter(kobo_group_key=grp_key).first()
-
-    if survey_children[i]['type'] != 'group':
-        if survey_children[i]['name'] not in kobo_form_constants.names_not_allowed:
-            print("question name: ", survey_children[i]['name'])
-            question_name = survey_children[i]['name']
-
-            survey_questionID = survey_question.objects.filter(survey_id=surveyID, question_name=question_name).first()
-            if not survey_questionID:
-                if 'label' in survey_children[i].keys():
-                    print("question label ", survey_children[i]['label'])
-                    question_label = survey_children[i]['label']
-
-                question_type = survey_children[i]['type']
-                survey_question(survey_id=surveyID, section_id=grp_name, domain_id=domainID,
-                                question_label=question_label, question_name=question_name,
-                                question_type=question_type).save()
-
-                if survey_children[i]['type'] in kobo_form_constants.question_type_having_options:
-                    question_children = survey_children[i]['children']
-                    questionID= survey_question.objects.filter(question_name=question_name).first()
-
-                    for k in range(len(question_children)):
-                        print("options : ", question_children[k]['name'])
-                        option_name = question_children[k]['name']
-                        if 'label' in question_children[k].keys():
-                            print("option label ", question_children[k]['label'])
-                            option_label = question_children[k]['label']
-
-                        survey_question_options(survey_question_id=questionID,option_name=option_name,
-                                                option_label=option_label).save()
-            else:
-                print('question exists')
-
-def pull_kobo_form_data(surveyID):
-
-    print(surveyID)
-    kobo_form_id = surveyID.kobo_form_id
-    data_link = kobo_constants.kobo_form_link+ "/" + str(kobo_form_id) + kobo_form_constants.data_format
-    print(data_link)
-    survey_data = requests.get(data_link, headers={'Authorization': kobo_constants.authorization_token}).json()
-    #print(json.dumps(survey_data, indent=4))
-    survey_children = survey_data['children']
-    print("survey_name: ", survey_data['title'])
-    grp_name = ""
-
-    for i in range(len(survey_children)):
-        if survey_children[i]['type'] == 'group':
-            grp_name = survey_children[i]['name']
-            print("****************")
-            for j in range(len(survey_children[i]['children'])):
-                get_kobo_questions_and_options(survey_children[i]['children'], j, surveyID,grp_name)
-
-        else:
-            print("----------------")
-            get_kobo_questions_and_options(survey_children, i,surveyID)
 
 def survey_domain_suggestion(request):
     domain_list = domain.objects.all()
     data_json = serializers.serialize('json', domain_list)
     data_list = json.loads(data_json)
     for item in data_list:
-        item.update({"index": "100"})
+        index_value = response_views.get_domain_index(item)
+        item.update({"index": index_value})
 
     data = json.dumps(data_list)
 
     return HttpResponse(data, content_type='application/json')
+
 
 # location program list form
 class LocationProgram_Form(ModelForm):
@@ -306,13 +216,15 @@ class LocationProgram_Form(ModelForm):
 
     class Meta:
         model = location_program
-        fields = [ 'location_id', 'date_of_implementation', 'notes']
+        fields = ['location_id', 'date_of_implementation', 'notes']
+
 
 @login_required
 def survey_program_list(request, pk, template_name='survey_program_list.html'):
     obj_domain =  get_object_or_404(domain, pk=pk)
     obj_domain = domain.objects.get(domain_id=pk)
     return render(request, template_name, {'obj_domain': obj_domain})
+
 
 @login_required
 def get_location_program_list_for_datatable(request, pk):
@@ -339,4 +251,4 @@ def location_program_update(request, pk, template_name='survey_location_program_
             print(form.errors)
     else:
         form = LocationProgram_Form
-    return render(request, template_name, {'form': form , 'obj_program': obj_program})
+    return render(request, template_name, {'form': form, 'obj_program': obj_program})
