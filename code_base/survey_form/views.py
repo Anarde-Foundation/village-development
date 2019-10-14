@@ -323,7 +323,7 @@ def get_location_program_list_for_datatable(request, pk, location_id):
         program_id = item['domain_program_id']
         if location_program.objects.filter(program_id=program_id, location_id=location_id ).exists():
             obj_location_program = location_program.objects.filter(program_id=program_id, location_id=location_id ).\
-                values('date_of_implementation','notes','location_id_id')
+                values('location_program_id', 'date_of_implementation','notes','location_id_id')
             for i in obj_location_program:
                 item.update(i)
         else:
@@ -339,7 +339,8 @@ def location_program_update(request, pk, location_id, template_name='survey_loca
     location_name = location.objects.get(pk = location_id)
     obj_program = domain_program.objects.get(pk=pk)
     if location_program.objects.filter(program_id=pk, location_id=location_id).exists():
-        programForUpdate = get_object_or_404(location_program, pk=pk)
+        obj_loc_program = location_program.objects.get(program_id=obj_program, location_id=location_id)
+        programForUpdate = get_object_or_404(location_program, pk=obj_loc_program.location_program_id)
         form = LocationProgram_Form(instance=programForUpdate)
         if request.method == 'POST':
             form = LocationProgram_Form(request.POST, instance=programForUpdate)
