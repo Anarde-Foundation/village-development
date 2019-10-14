@@ -9,7 +9,7 @@ class domain(models.Model):
     kobo_group_key = models.CharField(max_length=255, null=False)
 
     description = models.TextField(null=True, blank=True)
-
+    metabase_dashboard_id = models.IntegerField(null=True, blank=True)
 
     created_by = models.ForeignKey(User, null=True, db_column='created_by', related_name='fk_domain_cby',
                                    on_delete=models.PROTECT)
