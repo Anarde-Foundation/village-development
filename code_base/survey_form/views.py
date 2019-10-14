@@ -178,14 +178,16 @@ def survey_view(request, pk, template_name='survey_detail.html'):
             show_delete_survey_button = False
 
     payload = {
-        "resource": {"dashboard": 4},
+        "resource": {"dashboard": 1},
         "params": {
-        #    "survey_id": objsurvey.survey_id
+            "survey_id": objsurvey.survey_id
         }
     }
+    print (metabase_constants.metabase_secret_key)
+    print (objsurvey.survey_id)
     token = jwt.encode(payload, metabase_constants.metabase_secret_key, algorithm="HS256")
     print(token)
-    iframeUrl = metabase_constants.metabase_site_url + "/embed/dashboard/" + token.decode() + "#bordered=false&titled=false"
+    iframeUrl = metabase_constants.metabase_site_url + "/embed/dashboard/" + token.decode("utf8") + "#bordered=false&titled=false"
     # print(iframeUrl)
 
     return render(request, template_name, {'object': objsurvey, 'show_delete': show_delete_survey_button,
