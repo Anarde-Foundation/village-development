@@ -177,7 +177,8 @@ var showDomain = function ($) {
             replacedHtml = domainCardTemplate.replace('[domain_name]', response[index].fields.domain_name);
             replacedHtml = replacedHtml.replace('[vulnerability_index]', response[index].index);
             //var domain_id = response[index].pk
-            //replacedHtml = replacedHtml.replace('[next_page]', 'href="/survey/survey_program_list/'+ domain_id+'"');
+            //var location_id = response[index].location_id
+            //replacedHtml = replacedHtml.replace('[next_page]', 'href="/survey/survey_program_list/'+ domain_id+'/'+location_id+'"');
             allDomainHtml += replacedHtml;
 
         }
@@ -192,7 +193,7 @@ var showDomain = function ($) {
     };
 
     $.ajax({
-        url: '{% url "survey_suggestion" %}',
+        url: '{% url "survey_suggestion" object.survey_id %}',
         success: showDomainSuccessCB,
         error: showDomainErrorCB
     });

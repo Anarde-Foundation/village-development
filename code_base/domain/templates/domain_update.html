@@ -17,7 +17,8 @@ Edit domain
                     <div class="card-body px-3 py-4">
                         <form method="post" action="">
                             {% csrf_token %}
-                            <div class="form-group col-lg-6 col-md-6 col-sm-12">
+                            <!-- Domain name-->
+                            <div class="form-group col-lg-4 col-md-4 col-sm-12">
                                 <label class="form-control-label" for="{{form.domain_name.id_for_label}}">Domain name</label>
                                 <input id="{{form.domain_name.id_for_label}}" name="{{ form.domain_name.html_name }}"
                                        value="{{form.domain_name.value}}" type="text" class="form-control" aria-required="true"
@@ -27,7 +28,8 @@ Edit domain
                                 <small class="form-text text-danger">{{error}}</small>
                                 {% endfor %}
                             </div>
-                            <div class="form-group col-lg-6 col-md-6 col-sm-12">
+                            <!--  Kobo group key-->
+                            <div class="form-group col-lg-4 col-md-4 col-sm-12">
                                 <label class="form-control-label"> Kobo group key</label>
                                 <input id="{{form.kobo_group_key.id_for_lable}}" name="{{ form.kobo_group_key.html_name }}"
                                        value="{{form.kobo_group_key.value}}" type="text" class="form-control" data-val="true" placeholder="Enter group key "
@@ -36,6 +38,17 @@ Edit domain
                                 <small class="form-text text-danger">{{error}}</small>
                                 {% endfor %}
                             </div>
+                            <!--metabase_dashboard_id-->
+                            <div class="form-group col-lg-4 col-md-4 col-sm-12">
+                                <label class="form-control-label"> Metabase dashboard id</label>
+                                <input id="{{form.metabase_dashboard_id.id_for_lable}}" name="{{ form.metabase_dashboard_id.html_name }}"
+                                       value="{{form.metabase_dashboard_id.value}}" type="text" class="form-control" data-val="true" placeholder="Enter metabase dashboard id "
+                                       aria-required="true" aria-invalid="false" >
+                                {% for error in form.metabase_dashboard_id.errors %}
+                                <small class="form-text text-danger">{{error}}</small>
+                                {% endfor %}
+                            </div>
+                            <!--Description-->
                             <div class="form-group col-lg-12 col-md-12 col-sm-12">
                                 <label class="form-control-label" for="{{form.description.id_for_label}}">Description</label>
                                 <textarea rows="3" id="{{form.description.id_for_label}}" name="{{ form.description.html_name }}"
