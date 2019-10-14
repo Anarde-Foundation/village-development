@@ -21,7 +21,7 @@ class DomainForm(ModelForm):
     kobo_group_key = forms.CharField(validators = [validator], required=True)
     class Meta:
         model = domain
-        fields = ['domain_name', 'kobo_group_key', 'description']
+        fields = ['domain_name', 'kobo_group_key','metabase_dashboard_id', 'description', ]
 
 
 @login_required
