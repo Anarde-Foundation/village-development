@@ -104,31 +104,42 @@ Survey Details
                         <a class="nav-link active show" data-toggle="tab"
                            href="#tab-domain-index-content" role="tab" aria-controls="tab-domain-index-content" aria-selected="true">Domainwise index</a>
                     </li>
-                    <li class="nav-item" id="tab-graphs">
+                    <li class="nav-item" id="tab-analysis">
                         <a class="nav-link" data-toggle="tab"
-                           href="#tab-graphs-content" role="tab" aria-controls="tab-graphs-content" aria-selected="false">Analysis</a>
+                           href="#tab-analysis-content" role="tab" aria-controls="tab-analysis-content" aria-selected="false">Analysis</a>
+                    </li>
+                    <li class="nav-item" id="tab-suggestions">
+                        <a class="nav-link" data-toggle="tab"
+                           href="#tab-suggestions-content" role="tab" aria-controls="tab-suggestions-content" aria-selected="false">Suggestions
+                        </a>
                     </li>
                 </ul>
             </div>
             <div class="tab-content pl-3 py-5" id="nav-tabContent">
                 <!--Content for domainwise index tab -->
                 <div class="tab-pane fade active show" id="tab-domain-index-content" role="tabpanel" aria-labelledby="tab-domain-index-content">
-                    <p>Survey data</p>
+                    <h3 class="px-3 mb-3">Vulnerability index</h3>
+                    <div id="domain-list">
+                        <center><img src="/static/images/spinner.gif" class="py-5"></center>
+                    </div>
                 </div>
 
                 <!--Content for analysis tabs -->
-                <div class="tab-pane fade" id="tab-graphs-content" role="tabpanel" aria-labelledby="custom-nav-profile-tab">
+                <div class="tab-pane fade" id="tab-analysis-content" role="tabpanel" aria-labelledby="custom-nav-profile-tab">
                     <div class="container">
                         <div class="row">
-                            <div class="col-sm-12 col-md-12" >
-                                <iframe src="{{iframeUrl}}"
-                                        width="1000"
-                                        height="900"
-                                        frameborder="0" ></iframe>
+                            <div class="col-sm-12 col-md-12">
+                                <h3 class="px-3 mb-3 selectedDomainName"></h3>
+                                <iframe src=""  width="800" height="900" frameborder="0"></iframe>
                             </div>
                         </div>
                     </div>
                 </div>
+
+
+                <div class="tab-pane fade" id="tab-suggestions-content" role="tabpanel" aria-labelledby="tab-suggestions-content">
+                </div>
+
             </div>
         </div>
     </div>
@@ -146,27 +157,12 @@ var showDomain = function ($) {
         console.log(response);
         var allDomainHtml = '';
         var replacedHtml = '';
-        var domainCardTemplate = '<div id ="domain_box" class="col-sm-6 col-lg-3">' +
-                        '<div  class="card text-white bg-flat-color-2 domain-index" >' +
+        var domainCardTemplate = '<div id ="domain_box" class="col-sm-6 col-lg-3 card-clickable">' +
+                        '<div  class="card text-white bg-flat-color-2 domain-index" domain-id=[domain_id] >' +
                             '<div class="card-body pb-0">' +
-                            '<div  class=" float-right">' +
-                                /*'<a [next_page]'+
-                                '<i class="ti-arrow-circle-right px-3"></i>'+
-                                '</a>'+*/
-                            '</div>' +
-                                '<h4 class="mb-0">' +
-                                    '<span class="count">[vulnerability_index]</span>' +
-                                '</h4>' +
                                 '<p class="text-light">[domain_name]</p>' +
-                                '<div class="chart-wrapper px-0 card-domain-index">' +
-                                    '<div style="position: absolute; inset: 0px; overflow: hidden; pointer-events: none; visibility: hidden; z-index: -1;" class="chartjs-size-monitor">' +
-                                        '<div class="chartjs-size-monitor-expand" style="position:absolute;left:0;top:0;right:0;bottom:0;overflow:hidden;pointer-events:none;visibility:hidden;z-index:-1;">' +
-                                            '<div style="position:absolute;width:1000000px;height:1000000px;left:0;top:0"></div>' +
-                                        '</div>' +
-                                        '<div class="chartjs-size-monitor-shrink" style="position:absolute;left:0;top:0;right:0;bottom:0;overflow:hidden;pointer-events:none;visibility:hidden;z-index:-1;">' +
-                                            '<div style="position:absolute;width:200%;height:200%;left:0; top:0"></div>' +
-                                        '</div>' +
-                                    '</div>' +
+                                '<div class="chart-wrapper px-0 card-domain-index stat-widget-one">' +
+                                     '<strong class="count stat-digit text-white">[vulnerability_index] %</strong>' +
                                 '</div>' +
                             '</div>' +
                         '</div>' +
@@ -175,16 +171,14 @@ var showDomain = function ($) {
 
         for (index = 0; index < response.length; index++) {
             replacedHtml = domainCardTemplate.replace('[domain_name]', response[index].fields.domain_name);
-            replacedHtml = replacedHtml.replace('[vulnerability_index]', response[index].index);
+            replacedHtml = replacedHtml.replace('[domain_id]', response[index].pk);
+            replacedHtml = replacedHtml.replace('[vulnerability_index]', response[index].index * 100);
             //var domain_id = response[index].pk
             //var location_id = response[index].location_id
             //replacedHtml = replacedHtml.replace('[next_page]', 'href="/survey/survey_program_list/'+ domain_id+'/'+location_id+'"');
             allDomainHtml += replacedHtml;
-
         }
-
-        $('#tab-domain-index-content').html(allDomainHtml);
-
+        $('#domain-list').html(allDomainHtml);
     };
 
     var showDomainErrorCB = function (response) {
@@ -197,26 +191,64 @@ var showDomain = function ($) {
         success: showDomainSuccessCB,
         error: showDomainErrorCB
     });
-}
-
-var navigateToNextTab = function () {
-    console.log('clicked domain index');
-    $('#tab-graphs').trigger('click');
 };
 
-var initSurveryDetailView = function (dollar) {
-    $ = dollar;
+
+var showDomainWiseGraph = function (domain_id) {
+    var showDomainWiseGraphSuccessCB = function (response) {
+        if (response.iframeUrl == '') {
+
+        }
+        $('iframe').attr('src', response.iframeUrl);
+    };
+
+    var showDomainWiseGraphErrorCB = function (response) {
+        console.log('There was some error when fetching graphs');
+        console.log(response);
+    };
+
+    var showDomainWiseGraphCompleteCB = function () {
+        $('iframe').removeClass('spinner');
+    }
+
+    $('iframe').addClass('spinner');
+    var ajaxUrl = '/survey/show_domainwise_metabase_graph/{{object.survey_id }}/' + domain_id;
+    $.ajax({
+        url: ajaxUrl,
+        success: showDomainWiseGraphSuccessCB,
+        error: showDomainWiseGraphErrorCB,
+        complete: showDomainWiseGraphCompleteCB
+    });
+};
+
+var activateTab = function (tabSelector) {
+    $('.nav.nav-tabs .nav-item a.active.show').removeClass('active show');
+    $('.nav.nav-tabs .nav-item' + tabSelector + ' a').addClass('active show');
+
+    tabContentID = $('.nav.nav-tabs .nav-item' + tabSelector + ' a').attr('aria-controls');
+    $('.tab-content .tab-pane.active.show').removeClass('active show');
+    $('#' + tabContentID).addClass('active show');
+};
+
+var domainCardOnClick = function (e) {
+    domain_card = $(e.currentTarget).find('.card');
+    domain_id = domain_card.attr('domain-id');
+    domain_name = domain_card.find('p').html();
+    $('.selectedDomainName').html(domain_name)
+    activateTab('#tab-analysis');
+    showDomainWiseGraph(domain_id);
+};
+
+var initSurveyDetailView = function (dollar) {
+   $ = dollar;
+
   // register on click event
-  $('#domain_tab').on('click',showDomain($));
-
-    console.log('in init...................................................................');
+  showDomain($);
   var domainCard = $('#tab-domain-index-content');
-  console.log(domainCard);
-  domainCard.on('click', '.domain-index', navigateToNextTab);
-
+  domainCard.on('click', '.card-clickable', domainCardOnClick);
 };
 var $;
-jQuery(document).ready(initSurveryDetailView($));
+jQuery(document).ready(initSurveyDetailView($));
 
 </script>
 {% endblock %}
