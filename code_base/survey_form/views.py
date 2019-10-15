@@ -157,6 +157,8 @@ def get_kobo_form(request,pk):
 @login_required
 def survey_view(request, pk, template_name='survey_detail.html'):
     objsurvey= get_object_or_404(survey, pk=pk)
+    objsurvey_question = survey_question.objects.filter(survey_id=objsurvey).last()
+    domain_id = objsurvey_question.domain_id.domain_id
     print(objsurvey.kobo_form_id)
     if request.method == 'POST':
         #print(request.POST)
@@ -186,7 +188,7 @@ def survey_view(request, pk, template_name='survey_detail.html'):
     token = jwt.encode(payload, metabase_constants.metabase_secret_key, algorithm="HS256")
     iframeUrl = metabase_constants.metabase_site_url + "/embed/dashboard/" + token.decode('utf8') + "#bordered=false&titled=false"
 
-    return render(request, template_name, {'object': objsurvey, 'show_delete': show_delete_survey_button,
+    return render(request, template_name, {'object': objsurvey, 'domain_id':domain_id, 'show_delete': show_delete_survey_button,
                                            'iframeUrl': iframeUrl})
 
 
@@ -282,3 +284,15 @@ def location_program_update(request, pk, location_id, template_name='survey_loca
        else:
            form = LocationProgram_Form
    return render(request, template_name, {'form': form , 'obj_program': obj_program, 'location_name': location_name})
+
+@login_required
+def survey_question_list(request, pk, domain_id, template_name='survey_question_list.html'):
+    obj_domain = domain.objects.get(pk = domain_id)
+    obj_survey = survey.objects.get(pk=pk)
+    return render(request, template_name, {'obj_domain': obj_domain, 'obj_survey': obj_survey})
+@login_required
+def get_survey_question_list_for_datatable(request, pk, domain_id):
+    survey_questions_list = survey_question.objects.filter(survey_id = pk , domain_id= domain_id)
+    data = serializers.serialize('json', survey_questions_list)
+    return HttpResponse(data, content_type='application/json')
+

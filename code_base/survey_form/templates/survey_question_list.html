@@ -1,0 +1,81 @@
+{% extends 'home.html' %}
+
+{% block page-title %}
+Survey Questions
+{% endblock %}
+ {% block page-title-path %}
+<ol class="breadcrumb text-right">
+    <li><a href="/survey">Surveys</a></li>
+    <li class="active">Survey questions</li>
+</ol>
+{% endblock %}
+{% block right-pane-content %}
+
+<!--Right panel - start here -->
+
+<div class="card">
+    <div class="card-header bg-info text-white">
+        <div class="col-md-10">
+            <h5 class="card-title">Survey questions under {{obj_domain.domain_name }} domain</h5>
+        </div>
+    </div>
+    <div class="card-body">
+        <table id="survey_question_list" class="table table-striped table-bordered table-row-clickable" width="100%">
+            <thead>
+            <tr>
+                <th>Question name</th>
+                <th>Question lable</th>
+                <th>Question type</th>
+                <th>Question weightage</th>
+            </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+</div>
+<!-- Right panel - ends here -->
+
+{% endblock %}
+{% block page_script %}
+<script type="text/javascript">
+    var table;
+    /* Init datatable */
+    var initDatatable = function($) {
+        table = $("#survey_question_list").DataTable({
+            "searching": true,
+            "processing": true,
+            "serverSide": false,
+            "1stateSave": true,
+            "colReorder": true,
+            "paging":true,
+            "responsive": true,
+            "ajax": {
+                 "processing": true,
+                 "url": '{% url "get_survey_question_list_for_datatable" obj_survey.survey_id obj_domain.domain_id %}',
+                 "dataSrc": ""
+             },
+            "columns":[
+                {data: 'fields.question_name'},
+                {data: 'fields.question_label'},
+                {data: 'fields.question_type'},
+                {data: 'fields.question_weightage', defaultContent:'-'}
+            ]
+
+        });
+    };
+
+
+     /* init this page */
+    var initQuestionListView = function ($) {
+        initDatatable($);
+
+    };
+
+
+
+    /* int this page */
+    jQuery(document).ready(initQuestionListView($));
+
+</script>
+{% endblock %}
