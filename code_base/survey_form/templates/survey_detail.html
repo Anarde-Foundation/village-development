@@ -12,6 +12,7 @@ Survey Details
 <div class="card">
     <form method="post" action="">
         {% csrf_token %}
+        <!--Survey details - -->
         <div class="card-body">
             <div class="container">
                 <div class="row">
@@ -51,20 +52,27 @@ Survey Details
                 </div>
             </div>
         </div>
+
+        <!--Buttons in footer of survey details -->
         <div class="card-footer bg-light">
             <!--<div class="container">-->
             <div class="row">
-                <div class="col-md-3">
+                <div class="col-md-2">
                     <button id="pull-form-data" type="submit" name="pull-form-data" value="pull_kobo_form_data"
                             class="btn btn-md btn-info">
-                        Pull survey form information
+                        Pull Kobo Questions
                     </button>
                 </div>
 
                 <div class="col-md-4">
                     <button id="pull-response-data" type="submit" name="pull-response-data" value="pull_kobo_data" class="btn btn-md btn-info">
-                        Pull survey response data from Kobo
+                        Pull Kobo Data
                     </button>
+                </div>
+                <div class="col-md-3">
+                    <a href = "{% url 'survey_question_list' object.survey_id domain_id %}" >
+                        <button type = "button" class ="ml-2 btn btn-outline-info" > Survey Questions </button >
+                    </a>
                 </div>
                 <!--{{ show_delete }}-->
                 {% if show_delete %}
@@ -79,55 +87,65 @@ Survey Details
         </div>
     </form>
 </div>
-<!--Display survey list -->
-<div class="card">
+<!--Display survey graphs -->
+<div class="card d-none">
     <div class="card-header bg-info text-white">
         <h5> Data of {{object.survey_name}}</h5>
     </div>
     <div class="card-body">
-        <div class="container">
-            <div class="row">
-                <div class="col-sm-12 col-md-12" >
-                    <!--<table id="survey_data" class="table table-striped table-bordered" width="100%">
-                        <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Publish Date</th>
-                        </tr>
-                        </thead>
-                        <tbody></tbody></table>-->
-                    <iframe src="http://{{iframeUrl}}"
-                            width="1000"
-                            height="500"
-                            frameborder="0" ></iframe>
-                </div>
-            </div>
-        </div>
     </div>
-
 </div>
+
 <div class="card">
-    <div class="card-header bg-info text-white">
+    <div class="card-header bg-info text-white d-none">
         <h5> Survey analysis</h5>
     </div>
     <div class="card-body">
         <div class="custom-tab">
 
-            <nav>
-                <div class="nav nav-tabs" id="nav-tab" role="tablist">
-                    <a class="nav-item nav-link active show" id="custom-nav-home-tab" data-toggle="tab" href="#custom-nav-home" role="tab" aria-controls="custom-nav-home" aria-selected="true">Data</a>
-                    <a class="nav-item nav-link" id="custom-nav-profile-tab" data-toggle="tab" href="#domain_tab" role="tab" aria-controls="custom-nav-profile" aria-selected="false">Suggestions</a>
-
-                </div>
-            </nav>
-            <div class="tab-content pl-3 pt-2" id="nav-tabContent">
-                <div class="tab-pane fade active show" id="custom-nav-home" role="tabpanel" aria-labelledby="custom-nav-home-tab">
-                    <p>Survey data</p>
-                </div>
-                <div class="tab-pane fade" id="domain_tab" role="tabpanel" aria-labelledby="custom-nav-profile-tab">
-                </div>
+            <div>
+                <ul class="nav nav-tabs" id="nav-tab" role="tablist">
+                    <li class="nav-item" id="tab-domain-index">
+                        <a class="nav-link active show" data-toggle="tab"
+                           href="#tab-domain-index-content" role="tab" aria-controls="tab-domain-index-content" aria-selected="true">Domainwise index</a>
+                    </li>
+                    <li class="nav-item" id="tab-analysis">
+                        <a class="nav-link" data-toggle="tab"
+                           href="#tab-analysis-content" role="tab" aria-controls="tab-analysis-content" aria-selected="false">Analysis</a>
+                    </li>
+                    <li class="nav-item" id="tab-suggestions">
+                        <a class="nav-link" data-toggle="tab"
+                           href="#tab-suggestions-content" role="tab" aria-controls="tab-suggestions-content" aria-selected="false">Suggestions
+                        </a>
+                    </li>
+                </ul>
             </div>
+            <div class="tab-content pl-3 py-5" id="nav-tabContent">
+                <!--Content for domainwise index tab -->
+                <div class="tab-pane fade active show" id="tab-domain-index-content" role="tabpanel" aria-labelledby="tab-domain-index-content">
+                    <h3 class="px-3 mb-3">Vulnerability index</h3>
+                    <div id="domain-list">
+                        <center><img src="/static/images/spinner.gif" class="py-5"></center>
+                    </div>
+                </div>
 
+                <!--Content for analysis tabs -->
+                <div class="tab-pane fade" id="tab-analysis-content" role="tabpanel" aria-labelledby="custom-nav-profile-tab">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-sm-12 col-md-12">
+                                <h3 class="px-3 mb-3 selectedDomainName"></h3>
+                                <iframe src=""  width="800" height="900" frameborder="0"></iframe>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="tab-pane fade" id="tab-suggestions-content" role="tabpanel" aria-labelledby="tab-suggestions-content">
+                </div>
+
+            </div>
         </div>
     </div>
 </div>
@@ -144,27 +162,12 @@ var showDomain = function ($) {
         console.log(response);
         var allDomainHtml = '';
         var replacedHtml = '';
-        var domainCardTemplate = '<div id ="domain_box" class="col-sm-6 col-lg-3">' +
-                        '<div  class="card text-white bg-flat-color-2">' +
+        var domainCardTemplate = '<div id ="domain_box" class="col-sm-6 col-lg-3 card-clickable">' +
+                        '<div  class="card text-white bg-flat-color-2 domain-index" domain-id=[domain_id] >' +
                             '<div class="card-body pb-0">' +
-                            '<div  class=" float-right">' +
-                                '<a [next_page]'+
-                                '<i class="ti-arrow-circle-right px-3"></i>'+
-                                '</a>'+
-                            '</div>' +
-                                '<h4 class="mb-0">' +
-                                    '<span class="count">[vulnerability_index]</span>' +
-                                '</h4>' +
                                 '<p class="text-light">[domain_name]</p>' +
-                                '<div class="chart-wrapper px-0" style="height:70px;" height="70">' +
-                                    '<div style="position: absolute; inset: 0px; overflow: hidden; pointer-events: none; visibility: hidden; z-index: -1;" class="chartjs-size-monitor">' +
-                                        '<div class="chartjs-size-monitor-expand" style="position:absolute;left:0;top:0;right:0;bottom:0;overflow:hidden;pointer-events:none;visibility:hidden;z-index:-1;">' +
-                                            '<div style="position:absolute;width:1000000px;height:1000000px;left:0;top:0"></div>' +
-                                        '</div>' +
-                                        '<div class="chartjs-size-monitor-shrink" style="position:absolute;left:0;top:0;right:0;bottom:0;overflow:hidden;pointer-events:none;visibility:hidden;z-index:-1;">' +
-                                            '<div style="position:absolute;width:200%;height:200%;left:0; top:0"></div>' +
-                                        '</div>' +
-                                    '</div>' +
+                                '<div class="chart-wrapper px-0 card-domain-index stat-widget-one">' +
+                                     '<strong class="count stat-digit text-white">[vulnerability_index] %</strong>' +
                                 '</div>' +
                             '</div>' +
                         '</div>' +
@@ -173,16 +176,14 @@ var showDomain = function ($) {
 
         for (index = 0; index < response.length; index++) {
             replacedHtml = domainCardTemplate.replace('[domain_name]', response[index].fields.domain_name);
-            replacedHtml = replacedHtml.replace('[vulnerability_index]', response[index].index);
-            var domain_id = response[index].pk
-            var location_id = response[index].location_id
-            replacedHtml = replacedHtml.replace('[next_page]', 'href="/survey/survey_program_list/'+ domain_id+'/'+location_id+'"');
+            replacedHtml = replacedHtml.replace('[domain_id]', response[index].pk);
+            replacedHtml = replacedHtml.replace('[vulnerability_index]', response[index].index );
+            //var domain_id = response[index].pk
+            //var location_id = response[index].location_id
+            //replacedHtml = replacedHtml.replace('[next_page]', 'href="/survey/survey_program_list/'+ domain_id+'/'+location_id+'"');
             allDomainHtml += replacedHtml;
-
         }
-
-        $('#domain_tab').html(allDomainHtml);
-
+        $('#domain-list').html(allDomainHtml);
     };
 
     var showDomainErrorCB = function (response) {
@@ -195,14 +196,64 @@ var showDomain = function ($) {
         success: showDomainSuccessCB,
         error: showDomainErrorCB
     });
-}
-
-var initSurveryDetailView = function ($) {
-  console.log('In initSurveryDetailView');
-  $('#domain_tab').on('click',showDomain($));
-
 };
-jQuery(document).ready(initSurveryDetailView($));
+
+
+var showDomainWiseGraph = function (domain_id) {
+    var showDomainWiseGraphSuccessCB = function (response) {
+        if (response.iframeUrl == '') {
+
+        }
+        $('iframe').attr('src', response.iframeUrl);
+    };
+
+    var showDomainWiseGraphErrorCB = function (response) {
+        console.log('There was some error when fetching graphs');
+        console.log(response);
+    };
+
+    var showDomainWiseGraphCompleteCB = function () {
+        $('iframe').removeClass('spinner');
+    }
+
+    $('iframe').addClass('spinner');
+    var ajaxUrl = '/survey/show_domainwise_metabase_graph/{{object.survey_id }}/' + domain_id;
+    $.ajax({
+        url: ajaxUrl,
+        success: showDomainWiseGraphSuccessCB,
+        error: showDomainWiseGraphErrorCB,
+        complete: showDomainWiseGraphCompleteCB
+    });
+};
+
+var activateTab = function (tabSelector) {
+    $('.nav.nav-tabs .nav-item a.active.show').removeClass('active show');
+    $('.nav.nav-tabs .nav-item' + tabSelector + ' a').addClass('active show');
+
+    tabContentID = $('.nav.nav-tabs .nav-item' + tabSelector + ' a').attr('aria-controls');
+    $('.tab-content .tab-pane.active.show').removeClass('active show');
+    $('#' + tabContentID).addClass('active show');
+};
+
+var domainCardOnClick = function (e) {
+    domain_card = $(e.currentTarget).find('.card');
+    domain_id = domain_card.attr('domain-id');
+    domain_name = domain_card.find('p').html();
+    $('.selectedDomainName').html(domain_name)
+    activateTab('#tab-analysis');
+    showDomainWiseGraph(domain_id);
+};
+
+var initSurveyDetailView = function (dollar) {
+   $ = dollar;
+
+  // register on click event
+  showDomain($);
+  var domainCard = $('#tab-domain-index-content');
+  domainCard.on('click', '.card-clickable', domainCardOnClick);
+};
+var $;
+jQuery(document).ready(initSurveyDetailView($));
 
 </script>
 {% endblock %}
