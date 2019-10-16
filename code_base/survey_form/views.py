@@ -156,10 +156,9 @@ def get_kobo_form(request,pk):
 
 @login_required
 def survey_view(request, pk, template_name='survey_detail.html'):
-    objsurvey= get_object_or_404(survey, pk=pk)
-    objsurvey_question = survey_question.objects.filter(survey_id=objsurvey).last()
-    domain_id = objsurvey_question.domain_id.domain_id
-    print(objsurvey.kobo_form_id)
+    objsurvey = get_object_or_404(survey, pk=pk)
+
+    # Pull kobo form data
     if request.method == 'POST':
         #print(request.POST)
 
@@ -168,9 +167,9 @@ def survey_view(request, pk, template_name='survey_detail.html'):
             response_views.pull_kobo_form_data(objsurvey)
 
         elif 'pull-response-data' in request.POST:
-            #print("form response data")
             response_views.pull_kobo_response_data(objsurvey)
 
+    # Show / Hide delete button
     show_delete_survey_button = True
     survey_response_exists = survey_response.objects.filter(survey_id=objsurvey).first()
     if survey_response_exists:
@@ -178,23 +177,54 @@ def survey_view(request, pk, template_name='survey_detail.html'):
 
         if survey_response_detail_exists:
             show_delete_survey_button = False
-    print(objsurvey.survey_id)
-    payload = {
-        "resource": {"dashboard": 2},
-        "params": {
-            "survey_id": objsurvey.survey_id
+
+    return render(request, template_name, {'object': objsurvey, 'show_delete': show_delete_survey_button,
+                                           'iframeUrl': '', 'domain_id':1})
+
+def show_domainwise_metabase_graph(request, survey_id, domain_id):
+    # Get domain object
+    # objDomain = get_object_or_404(domain, pk=domain_id)
+    try:
+        objDomain = domain.objects.get(pk = domain_id)
+    except domain.DoesNotExist:
+        objDomain = None
+
+    if (objDomain == None or objDomain.metabase_dashboard_id == None):
+        responseData = {}
+        responseData['iframeUrl'] = ''
+    else:
+        # Payload for metabase graphs
+        payload = {
+            "resource": {"dashboard": objDomain.metabase_dashboard_id},
+            "params": {
+                "survey_id": survey_id
+            }
         }
-    }
-    token = jwt.encode(payload, metabase_constants.metabase_secret_key, algorithm="HS256")
-    iframeUrl = metabase_constants.metabase_site_url + "/embed/dashboard/" + token.decode('utf8') + "#bordered=false&titled=false"
 
-    return render(request, template_name, {'object': objsurvey, 'domain_id':domain_id, 'show_delete': show_delete_survey_button,
-                                           'iframeUrl': iframeUrl})
+        # Build iframe url
+        token = jwt.encode(payload, metabase_constants.metabase_secret_key, algorithm="HS256")
+        iframeUrl = metabase_constants.metabase_site_url + "/embed/dashboard/" + token.decode(
+            "utf8") + "#bordered=false&titled=false"
 
+        responseData = {}
+        responseData['iframeUrl'] = iframeUrl
 
+    data = json.dumps(responseData) #{'iframeUrl': iframeUrl}
+    return HttpResponse(data, content_type='application/json')
 
 def survey_domain_suggestion(request, survey_id):
-    domain_list = domain.objects.all()
+    """
+    Returns a list of domains based on survey
+    :param request:
+    :param survey_id: The survey id, whose domains are to be found out
+    :return:
+    """
+    # Get list of distinct domain ids, applicable for the current survey
+    distinct_domain_ids = survey_question.objects.values('domain_id').filter(survey_id = survey_id).distinct()
+
+    # Get list of domain objects based on distinct domain list above
+    domain_list = domain.objects.filter(domain_id__in=[item['domain_id'] for item in distinct_domain_ids])
+
     obj_survey = survey.objects.get(survey_id = survey_id)
     obj_location = location.objects.get(location_id = obj_survey.location_id.location_id)
     data_json = serializers.serialize('json', domain_list)
@@ -203,7 +233,6 @@ def survey_domain_suggestion(request, survey_id):
         index_value = response_views.get_domain_index(item)
         item.update({"index": index_value})
         item.update({"location_id": obj_location.location_id}) # location id of conducted survey
-
 
     data = json.dumps(data_list)
 
@@ -290,6 +319,7 @@ def survey_question_list(request, pk, domain_id, template_name='survey_question_
     obj_domain = domain.objects.get(pk = domain_id)
     obj_survey = survey.objects.get(pk=pk)
     return render(request, template_name, {'obj_domain': obj_domain, 'obj_survey': obj_survey})
+
 @login_required
 def get_survey_question_list_for_datatable(request, pk, domain_id):
     survey_questions_list = survey_question.objects.filter(survey_id = pk , domain_id= domain_id)

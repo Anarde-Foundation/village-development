@@ -12,6 +12,7 @@ urlpatterns = [
     path('edit/<int:pk>', views.survey_update, name='survey_edit'),
     path('survey_suggestion/<int:survey_id>', views.survey_domain_suggestion, name='survey_suggestion'),
     path('survey_program_list/<int:pk>/<int:location_id>', views.survey_program_list, name='survey_program_list'),
+    path('show_domainwise_metabase_graph/<int:survey_id>/<int:domain_id>', views.show_domainwise_metabase_graph, name='show_domainwise_metabase_graph'),
     path('survey_question_list/<int:pk>/<int:domain_id>', views.survey_question_list, name='survey_question_list'),
     path('survey_location_program_update/<int:pk>/<int:location_id>', views.location_program_update, name='survey_location_program_update'),
     path('get_location_program_list_for_datatable/<int:pk>/<int:location_id>', views.get_location_program_list_for_datatable,

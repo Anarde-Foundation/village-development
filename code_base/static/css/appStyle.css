@@ -22,6 +22,14 @@ dd {
 .form-group {
     margin-bottom: 2rem;
 }
-.table-row-clickable tbody tr {
+.table-row-clickable tbody tr, .card-clickable {
     cursor: pointer;
+}
+.card-domain-index {
+    height:70px;";
+}
+.spinner {
+    background-image: url('/static/images/spinner.gif');
+    height: 100px;
+    width: 100px;
 }
