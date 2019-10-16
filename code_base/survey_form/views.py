@@ -213,6 +213,7 @@ def show_domainwise_metabase_graph(request, survey_id, domain_id):
     return HttpResponse(data, content_type='application/json')
 
 def survey_domain_suggestion(request, survey_id):
+
     """
     Returns a list of domains based on survey
     :param request:
@@ -230,7 +231,7 @@ def survey_domain_suggestion(request, survey_id):
     data_json = serializers.serialize('json', domain_list)
     data_list = json.loads(data_json)
     for item in data_list:
-        index_value = response_views.get_domain_index(item)
+        index_value = response_views.get_domain_index(item, survey_id)
         item.update({"index": index_value})
         item.update({"location_id": obj_location.location_id}) # location id of conducted survey
 
