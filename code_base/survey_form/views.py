@@ -192,13 +192,16 @@ def survey_view(request, pk, template_name='survey_detail.html'):
 
 
 def survey_domain_suggestion(request, survey_id):
-    domain_list = domain.objects.all()
+    #domain_list = domain.objects.all()
     obj_survey = survey.objects.get(survey_id = survey_id)
+    surveyID = survey_question.objects.filter(survey_id=survey_id).values('domain_id').distinct()
+    print(surveyID)
+    domain_list = domain.objects.filter(domain_id__in=surveyID)
     obj_location = location.objects.get(location_id = obj_survey.location_id.location_id)
     data_json = serializers.serialize('json', domain_list)
     data_list = json.loads(data_json)
     for item in data_list:
-        index_value = response_views.get_domain_index(item)
+        index_value = response_views.get_domain_index(item, survey_id)
         item.update({"index": index_value})
         item.update({"location_id": obj_location.location_id}) # location id of conducted survey
 
