@@ -69,6 +69,11 @@ Survey Details
                         Pull Kobo Data
                     </button>
                 </div>
+                <div class="col-md-3">
+                    <a href = "{% url 'survey_question_list' object.survey_id domain_id %}" >
+                        <button type = "button" class ="ml-2 btn btn-outline-info" > Survey Questions </button >
+                    </a>
+                </div>
                 <!--{{ show_delete }}-->
                 {% if show_delete %}
 
