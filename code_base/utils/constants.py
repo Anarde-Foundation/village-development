@@ -10,4 +10,5 @@ class kobo_form_constants:
 
 class numeric_constants:
     one = 1
-    pattern_for_weights = '[wW](\d*)_'
+    zero = 0
+    pattern_for_weights = '^[wW](\d*)_'
