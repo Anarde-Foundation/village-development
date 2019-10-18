@@ -1,0 +1,38 @@
+{% extends 'report.html' %}
+{% block content %}
+<div class="card">
+    <div class="card-header bg-info text-white">
+        <div class="col-md-10">
+            <h5 class="card-title">Survey questions under  domain</h5>
+        </div>
+    </div>
+    <div class="card-body">
+        <table id="survey_question_list" class="table table-striped table-bordered table-row-clickable" width="100%">
+            <thead>
+            <tr>
+                <th>Question name</th>
+                <th>Question lable</th>
+                <th>Question type</th>
+                <th>Question weightage</th>
+            </tr>
+            </thead>
+            {% for item in object %}
+              <tr>
+                  <td>{{item.question_name}}</td>
+                  <td>{{item.question_label}}</td>
+                  <td>{{item.question_type}}</td>
+                  <td>{{item.question_weightage}}</td>
+
+              </tr>
+            {% endfor %}
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+</div>
+<div id="footerContent">
+            {%block page_foot%}
+                Page <pdf:pagenumber>
+            {%endblock%}
+</div>
+{% endblock %}

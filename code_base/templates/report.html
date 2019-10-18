@@ -1,0 +1,63 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+    <head>
+        <title> {% block title %}{% endblock %}
+</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <style type="text/css">
+            @page {
+                size: {{ pagesize }};
+                margin: 1cm;
+                @frame footer {
+                    -pdf-frame-content: footerContent;
+                    bottom: 0cm;
+                    margin-left: 9cm;
+                    margin-right: 9cm;
+                    height: 1cm;
+                }
+            }
+body {
+  background-color: white;
+}
+
+h1 {
+  color: DodgerBlue;
+  text-align: center;
+  font-family: Times New Roman;
+  font-size: 30px
+}
+
+p {
+  font-family: Times New Roman;
+  font-size: 20px;
+  text-align: center;
+}
+
+dt {
+    font-weight: bold;
+    text-decoration: underline;
+  }
+  dd {
+    margin-left: 7;
+    padding: 0 0 0.5em 0;
+  }
+hr {
+    display: block;
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+    margin-left: auto;
+    margin-right: auto;
+    border-style: inset;
+    border-width: 1px;
+border-color:red;
+}
+
+img {
+  border-radius: 8px;
+}
+        </style>
+    </head>
+<body>
+ {% block content %}{% endblock %}
+</body>
+</html>

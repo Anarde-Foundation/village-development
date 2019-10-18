@@ -1,0 +1,60 @@
+{% extends 'report.html' %}
+{% block title %}
+Report
+{% endblock %}
+{% block content %}
+<div class="card">
+    <div class="card-header bg-info text-white">
+        <div class="col-md-10">
+            <h1 class="card-title">Survey details</h1>
+            <hr/>
+        </div>
+    </div>
+    <div class="card-body">
+
+          <div class="card-body">
+            <div class="container">
+                <div class="row">
+                    <div class="col-sm-12 col-md-12" >
+                        <p class="card-title">{{object.survey_name}}
+
+                        </p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="column">
+                        <dl>
+                            <dt>Survey Type</dt>
+                            <dd>{{ object.survey_type_code_id.code_name }}</dd>
+                        </dl>
+                    </div>
+                    <div class="column">
+                        <dl>
+                            <dt>Publish date</dt>
+                            <dd>{{ object.publish_date }}</dd>
+                        </dl>
+                    </div>
+                    <div class="column">
+                        <dl>
+                            <dt>Location</dt>
+                            <dd>{{ object.location_id.location_name }}</dd>
+                        </dl>
+                    </div>
+                    <div class="column">
+                        <dl>
+                            <dt>Survey Created by</dt>
+                            <dd>{{ object.created_by }}</dd>
+                        </dl>
+                    </div>
+                     <img src="logo.png" alt="Italian Trulli">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="footerContent">
+            {%block page_foot%}
+                Page <pdf:pagenumber>
+            {%endblock%}
+</div>
+{% endblock %}

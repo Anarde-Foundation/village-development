@@ -74,6 +74,11 @@ Survey Details
                         <button type = "button" class ="ml-2 btn btn-outline-info" > Survey Questions </button >
                     </a>
                 </div>
+                <div class="col-md-3">
+                    <a href = "{% url 'report:pdf' object.survey_id%}" >
+                        <button type = "button" class ="ml-2 btn btn-outline-info" > Survey pdf</button >
+                    </a>
+                </div>
                 <!--{{ show_delete }}-->
                 {% if show_delete %}
 
