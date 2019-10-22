@@ -53,16 +53,17 @@ def get_kobo_questions_and_options(survey_children, i, surveyID, grp_name=None):
         if survey_children[i]['name'] not in kobo_form_constants.names_not_allowed:
 
             question_name = survey_children[i]['name'].lower()
-
             questionweight = re.search(numeric_constants.pattern_for_weights, question_name)
             if questionweight:
                 question_weight = re.split(numeric_constants.pattern_for_weights, question_name)[1]
                 question_name = re.split(numeric_constants.pattern_for_weights, question_name)[-1]
+                #print(question_weight)
+
             else:
                 question_weight = 1
 
             #print('question weight ',question_weight)
-            print("question name: ", question_name)
+            #print("question name: ", question_name)
             survey_questionID = survey_question.objects.filter(survey_id=surveyID, question_name=question_name)
 
             if 'label' in survey_children[i].keys():
@@ -93,7 +94,6 @@ def get_kobo_questions_and_options(survey_children, i, surveyID, grp_name=None):
 
                 for k in range(len(question_children)):
                     option_name = question_children[k]['name'].lower()
-                    #print("options : ", option_name)
                     optionweight = re.search(numeric_constants.pattern_for_weights, option_name)
                     if optionweight:
                         option_weight = re.split(numeric_constants.pattern_for_weights, option_name)[1]
@@ -149,27 +149,37 @@ def pull_kobo_response_data(surveyID):
 
             if not survey_response_question_exists:
                 print('survey response exists but question does not exist')
-                if question.question_name in survey_form_data[response_entry]:
-                    print("direct question")
-                    #print(question.question_name, " ",survey_form_data[response_entry][question.question_name])
-                    survey_question_response = survey_form_data[response_entry][question.question_name]
 
-                else:
-                    print("question in group")
-                    # pattern = r"(?<=/)\w+" + question.question_name
-                    pattern = "/"+question.question_name+"$"
-                    for key in list_of_keys:
-                        questionname = re.search(pattern, key)
+                for key in list_of_keys:
+                    new_key = key.lower()
+                    #print(question.question_name, " ",new_key)
+                    if question.question_name == new_key:
+                        print("direct question")
+                        #print(question.question_name, " ",survey_form_data[response_entry][question.question_name])
+                        survey_question_response = survey_form_data[response_entry][key]
+
+                    else:
+                        pattern = question.question_name+"$"
+                        questionname = re.search(pattern, new_key)
                         if questionname:
+                            print("question in group")
                             #print(pattern," ", survey_form_data[response_entry][key])
                             survey_question_response = survey_form_data[response_entry][key]
 
+                survey_question_response_lower = survey_question_response.lower()
+                optionweight = re.search(numeric_constants.pattern_for_weights, survey_question_response_lower)
+                if optionweight:
+                    survey_question_response_lower = re.split(numeric_constants.pattern_for_weights,
+                                                              survey_question_response_lower)[-1]
+
                 optionID = survey_question_options.objects.filter(survey_question_id=question,
-                                                                  option_name=survey_question_response).first()
+                                                                  option_name=survey_question_response_lower).first()
                 question_type = question.question_type
+
                 if len(survey_question_response.split()) > numeric_constants.one and \
                         question_type in kobo_form_constants.questions_not_having_space:     # for select many questions
-                    split_responses = survey_question_response.split()
+
+                    split_responses = survey_question_response_lower.split()
                     for response in range(len(split_responses)):
                         survey_response_detail(survey_question_id=question, survey_question_options_id=optionID,
                                                survey_response_id=survey_response_id,
@@ -177,7 +187,7 @@ def pull_kobo_response_data(surveyID):
                 else:
                     survey_response_detail(survey_question_id=question, survey_question_options_id=optionID,
                                            survey_response_id=survey_response_id,
-                                           survey_response_value=survey_question_response).save()
+                                           survey_response_value=survey_question_response_lower).save()
 
                 print("question ID is ", question, " option id is", optionID)
                 print("saved successfully")
@@ -187,36 +197,42 @@ def pull_kobo_response_data(surveyID):
 
 
 def get_domain_index(item, survey_id):
-    print(item['fields']['kobo_group_key'])
     domain_name = item['fields']['kobo_group_key']
+    print(domain_name)
     objdomain = domain.objects.filter(kobo_group_key=domain_name).first()
     questions_in_group = survey_question.objects.filter(domain_id=objdomain, survey_id=survey_id)
     survey_responseID = survey_response.objects.filter(survey_id=survey_id)
+    index = 0
     if questions_in_group:
         weighted_sum = 0
         sum_of_question_weights = 0
         for question in questions_in_group:
             objsurvey_response = survey_response_detail.objects.filter(survey_response_id__in=survey_responseID,
                                                                        survey_question_id=question)
-            question_weight = question.question_weightage
 
-            sum_of_responses = 0
-            length_of_responses = 0
-            for response in objsurvey_response:
-                if response.survey_question_options_id:
-                    option_weight = response.survey_question_options_id.option_weightage
-                    sum_of_responses += option_weight
-                else:
-                    sum_of_responses = 1
-                length_of_responses += 1
-            print("question is ",question, "and sum of response is ",sum_of_responses)
-            print("number of responses for question is ",length_of_responses)
-            weighted_sum += (question_weight * sum_of_responses) / length_of_responses
-            sum_of_question_weights += question_weight
+            if objsurvey_response.count() > numeric_constants.zero:     ## if no response exists for question skip
+                question_weight = question.question_weightage
 
-        index = "%.2f" % ((weighted_sum / sum_of_question_weights)*100)
-    else:
-        index = 0
+                sum_of_responses = 0
+                number_of_responses = 0
+                for response in objsurvey_response:
+                    if response.survey_question_options_id:
+                        option_weight = response.survey_question_options_id.option_weightage
+                        sum_of_responses += option_weight
+                        # print("option name is", response.survey_question_options_id.option_name,
+                        #       "and weight is ", response.survey_question_options_id.option_weightage)
+                    else:
+                        sum_of_responses = 1
+                    number_of_responses += 1
+                # print("question is ",question, "and sum of response is ",sum_of_responses)
+                # print("number of responses for question ",question.question_name," is ",number_of_responses)
+                weighted_sum += (question_weight * sum_of_responses) / number_of_responses
+                sum_of_question_weights += question_weight
+        # print("weighted sum is ",weighted_sum)
+        # print("sum of question weights is ", sum_of_question_weights)
+
+        if sum_of_question_weights > numeric_constants.zero:
+            index = "%.2f" % ((weighted_sum / sum_of_question_weights)*100)
 
     print()
     return index
