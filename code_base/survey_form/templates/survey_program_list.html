@@ -1,14 +1,6 @@
-{% extends 'home.html' %}
+{% extends 'base.html' %}
 
-{% block page-title %}
-Program suggestions
-{% endblock %}
- {% block page-title-path %}
-<ol class="breadcrumb text-right">
-    <li class="active">program list</li>
-</ol>
-{% endblock %}
-{% block right-pane-content %}
+{% block content %}
 
 <!--Right panel - start here -->
 
@@ -68,6 +60,7 @@ Program suggestions
         initDatatable($);
         // bind row click event
         $('#survey_program_list tbody').on('click', 'tr', onProgramRowClick);
+        $('body').addClass('bg-white');
     };
     var onProgramRowClick = function () {
 

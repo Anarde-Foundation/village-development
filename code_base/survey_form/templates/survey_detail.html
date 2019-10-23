@@ -71,7 +71,7 @@ Survey Details
                 </div>
                 <div class="col-md-3">
                     <a href = "{% url 'survey_question_list' object.survey_id domain_id %}" >
-                        <button type = "button" class ="ml-2 btn btn-outline-info" > Survey Questions </button >
+                        <button type = "button" class ="ml-2 btn btn-outline-info d-none" > Survey Questions </button >
                     </a>
                 </div>
                 <!--{{ show_delete }}-->
@@ -118,6 +118,11 @@ Survey Details
                            href="#tab-suggestions-content" role="tab" aria-controls="tab-suggestions-content" aria-selected="false">Suggestions
                         </a>
                     </li>
+                    <li class="nav-item" id="tab-questions">
+                        <a class="nav-link" data-toggle="tab"
+                           href="#tab-questions-content" role="tab" aria-controls="tab-questions-content" aria-selected="false">Questions
+                        </a>
+                    </li>
                 </ul>
             </div>
             <div class="tab-content pl-3 py-5" id="nav-tabContent">
@@ -134,15 +139,39 @@ Survey Details
                     <div class="container">
                         <div class="row">
                             <div class="col-sm-12 col-md-12">
-                                <h3 class="px-3 mb-3 selectedDomainName"></h3>
-                                <iframe src=""  width="800" height="900" frameborder="0"></iframe>
+                                <h3 class="px-3 mb-3 selectedDomainName" prefixtext="Graphical analysis for "></h3>
+                                <iframe id="frmGraphs" src=""  width="800" height="900" frameborder="0"></iframe>
                             </div>
                         </div>
                     </div>
                 </div>
 
-
+                <!-- Content  for suggestions -->
                 <div class="tab-pane fade" id="tab-suggestions-content" role="tabpanel" aria-labelledby="tab-suggestions-content">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-sm-12 col-md-12">
+                                <h3 class="px-3 mb-3 selectedDomainName" prefixtext="Program suggestions for "></h3>
+                                <div class="iframe-container">
+                                    <iframe id="frmSuggestion" src=""  width="100%" frameborder="0"></iframe>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Content for survey questions -->
+                <div class="tab-pane fade" id="tab-questions-content" role="tabpanel" aria-labelledby="tab-questions-content">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-sm-12 col-md-12">
+                                <h3 class="px-3 mb-3 selectedDomainName" prefixtext="Survey questions for "></h3>
+                                <div class="iframe-container">
+                                    <iframe id="frmQuestion" src=""  width="100%" frameborder="0"></iframe>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
             </div>
@@ -163,7 +192,7 @@ var showDomain = function ($) {
         var allDomainHtml = '';
         var replacedHtml = '';
         var domainCardTemplate = '<div id ="domain_box" class="col-sm-6 col-lg-3 card-clickable">' +
-                        '<div  class="card text-white bg-flat-color-2 domain-index" domain-id=[domain_id] >' +
+                        '<div  class="card text-white [color-code] domain-index" domain-id=[domain_id] >' +
                             '<div class="card-body pb-0">' +
                                 '<p class="text-light">[domain_name]</p>' +
                                 '<div class="chart-wrapper px-0 card-domain-index stat-widget-one">' +
@@ -175,9 +204,24 @@ var showDomain = function ($) {
 
 
         for (index = 0; index < response.length; index++) {
+            //bg-flat-color-2
             replacedHtml = domainCardTemplate.replace('[domain_name]', response[index].fields.domain_name);
             replacedHtml = replacedHtml.replace('[domain_id]', response[index].pk);
             replacedHtml = replacedHtml.replace('[vulnerability_index]', response[index].index );
+
+            vulnerability_index = response[index].index;
+            color_code = 'bg-flat-color-2'
+            if( vulnerability_index < 25) {
+                color_code = 'bg-danger';
+            } else if( vulnerability_index >= 25 && vulnerability_index < 50) {
+                color_code = 'bg-warning';
+            } else if( vulnerability_index >= 50 && vulnerability_index < 75) {
+                color_code = 'bg-flat-color-2';
+            } else {
+                color_code = 'bg-success';
+            }
+
+            replacedHtml = replacedHtml.replace('[color-code]', color_code );
             //var domain_id = response[index].pk
             //var location_id = response[index].location_id
             //replacedHtml = replacedHtml.replace('[next_page]', 'href="/survey/survey_program_list/'+ domain_id+'/'+location_id+'"');
@@ -199,12 +243,20 @@ var showDomain = function ($) {
 };
 
 
+var setQuestionContent = function (domain_id) {
+    $('iframe#frmQuestion').attr('src', '/survey/survey_question_list/{{object.survey_id }}/' + domain_id)
+}
+
+var setProgramSuggestionContent = function (domain_id) {
+    $('iframe#frmSuggestion').attr('src', '/survey/survey_program_list/{{object.survey_id }}/' + domain_id)
+}
+
 var showDomainWiseGraph = function (domain_id) {
     var showDomainWiseGraphSuccessCB = function (response) {
         if (response.iframeUrl == '') {
 
         }
-        $('iframe').attr('src', response.iframeUrl);
+        $('iframe#frmGraphs').attr('src', response.iframeUrl);
     };
 
     var showDomainWiseGraphErrorCB = function (response) {
@@ -213,10 +265,10 @@ var showDomainWiseGraph = function (domain_id) {
     };
 
     var showDomainWiseGraphCompleteCB = function () {
-        $('iframe').removeClass('spinner');
+        $('iframe#frmGraphs').removeClass('spinner');
     }
 
-    $('iframe').addClass('spinner');
+    $('iframe#frmGraphs').addClass('spinner');
     var ajaxUrl = '/survey/show_domainwise_metabase_graph/{{object.survey_id }}/' + domain_id;
     $.ajax({
         url: ajaxUrl,
@@ -239,9 +291,15 @@ var domainCardOnClick = function (e) {
     domain_card = $(e.currentTarget).find('.card');
     domain_id = domain_card.attr('domain-id');
     domain_name = domain_card.find('p').html();
-    $('.selectedDomainName').html(domain_name)
+
+    //heading = $('.selectedDomainName').attr('prefixtext')
+
+    $('.selectedDomainName').html( domain_name)
     activateTab('#tab-analysis');
+
     showDomainWiseGraph(domain_id);
+    setProgramSuggestionContent(domain_id);
+    setQuestionContent(domain_id);
 };
 
 var initSurveyDetailView = function (dollar) {

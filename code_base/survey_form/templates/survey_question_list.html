@@ -1,15 +1,6 @@
-{% extends 'home.html' %}
+{% extends 'base.html' %}
 
-{% block page-title %}
-Survey Questions
-{% endblock %}
- {% block page-title-path %}
-<ol class="breadcrumb text-right">
-    <li><a href="/survey">Surveys</a></li>
-    <li class="active">Survey questions</li>
-</ol>
-{% endblock %}
-{% block right-pane-content %}
+{% block content %}
 
 <!--Right panel - start here -->
 
@@ -56,10 +47,10 @@ Survey Questions
                  "dataSrc": ""
              },
             "columns":[
-                {data: 'fields.question_name'},
-                {data: 'fields.question_label'},
-                {data: 'fields.question_type'},
-                {data: 'fields.question_weightage', defaultContent:'-'}
+                {data: 'fields.question_label', title:'Question'},
+                {data: 'fields.question_name', title:'key'},
+                {data: 'fields.question_type', title:'Type'},
+                {data: 'fields.question_weightage', defaultContent:'-', title:'Weightage'}
             ]
 
         });
@@ -69,7 +60,7 @@ Survey Questions
      /* init this page */
     var initQuestionListView = function ($) {
         initDatatable($);
-
+        $('body').addClass('bg-white');
     };
 
 
