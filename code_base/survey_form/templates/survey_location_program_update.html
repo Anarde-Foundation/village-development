@@ -39,11 +39,12 @@
 
                             <!-- Notes -->
                             <div class="form-group col-lg-12 col-md-12 col-sm-12">
-                                <label class="form-control-label">Notes</label>
+                                <label class="form-control-label" for="{{form.notes.id_for_lable}}">Notes</label>
                                 <textarea rows="3" id="{{form.notes.id_for_lable}}" name="{{ form.notes.html_name }}"
-                                       type="text" class="form-control" data-val="true" placeholder="Enter program notes"
+                                       value="{{form.notes.value}}" type="text" class="form-control" placeholder="Enter program notes"
                                           aria-required="true" aria-invalid="false" ></textarea>
                             </div>
+
 
                             <!--Buttons-->
 

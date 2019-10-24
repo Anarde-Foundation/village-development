@@ -299,7 +299,7 @@ def location_program_update(request, pk, location_id, template_name='survey_loca
                return redirect('/survey/survey_program_list/' + str(obj_program.domain_id.domain_id) + '/' + str(location_id))
            else:
                print(form.errors)
-       form.pk = pk
+       form = LocationProgram_Form
    else:
        if request.method == 'POST':
            form = LocationProgram_Form(request.POST)

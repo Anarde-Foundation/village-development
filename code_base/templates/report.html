@@ -16,48 +16,79 @@
                     height: 1cm;
                 }
             }
-body {
-  background-color: white;
-}
+            body {
+              background-color: white;
+            }
 
-h1 {
-  color: DodgerBlue;
-  text-align: center;
-  font-family: Times New Roman;
-  font-size: 30px
-}
+            h1 {
+              color: DodgerBlue;
+              text-align: center;
+              font-family: Times New Roman;
+              font-size: 30px
+            }
 
-p {
-  font-family: Times New Roman;
-  font-size: 20px;
-  text-align: center;
-}
+            p {
+              font-family: Times New Roman;
+              font-size: 20px;
+              text-align: center;
+            }
 
-dt {
-    font-weight: bold;
-    text-decoration: underline;
-  }
-  dd {
-    margin-left: 7;
-    padding: 0 0 0.5em 0;
-  }
-hr {
-    display: block;
-    margin-top: 0.5em;
-    margin-bottom: 0.5em;
-    margin-left: auto;
-    margin-right: auto;
-    border-style: inset;
-    border-width: 1px;
-border-color:red;
-}
 
-img {
-  border-radius: 8px;
-}
+            hr {
+                display: block;
+                margin-top: 0.5em;
+                margin-bottom: 0.5em;
+                margin-left: auto;
+                margin-right: auto;
+                border-style: inset;
+                border-width: 1px;
+            border-color:red;
+            }
+
+            img {
+                border-radius: 8px;
+                margin-left:20px; /*to have the space above the image*/
+                margin-right:20px; /*to have the space under the image*/
+            }
+
+            dl, dd, dt{
+                 margin: 0;
+                 padding: 50px 20px;
+
+            }
+            dl dt,dl dd{
+                 display: inline;
+
+            }
+            dt{
+                    font-weight: bold;
+                    font-size: 15px;
+                 margin-right: 25px;
+                 color: #fff;
+                 background-color: LightSkyBlue;
+                 min-width: 500px;
+                 border-radius: 150px;
+            }
+            dd{
+                margin-left: 5;
+                background-color:AntiqueWhite;
+            }
+
         </style>
+        <link rel="stylesheet" type="text/css" href="/home/aishwarya/Project/Anarde/Anarde/village-development/code_base/static/datatable/datatables.min.css">
     </head>
 <body>
  {% block content %}{% endblock %}
+ <script type="text/javascript" src="/static/theme/vendors/jquery/dist/jquery.min.js"></script>
+    <!--<script src="https://code.jquery.com/jquery-3.3.1.js"></script>-->
+    <script type="text/javascript" src="/home/aishwarya/Project/Anarde/Anarde/village-development/code_base/static/datatable/datatables.min.js"></script>
+    <script type="text/javascript" src="/home/aishwarya/Project/Anarde/Anarde/village-development/code_base/static/theme/vendors/popper.js/dist/umd/popper.min.js"></script>
+    <script type="text/javascript" src="/home/aishwarya/Project/Anarde/Anarde/village-development/code_base/static/theme/vendors/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript" defer src="/home/aishwarya/Project/Anarde/Anarde/village-development/code_base/static/theme/vendors/chosen/chosen.jquery.min.js"></script>
+    <script type="text/javascript" defer src="/home/aishwarya/Project/Anarde/Anarde/village-development/code_base/static/theme/assets/js/main.js"></script>
+    <script type="text/javascript" src="/home/aishwarya/Project/Anarde/Anarde/village-development/code_base/static/js/moment.min.js"></script>
+    <script type="text/javascript" src="/home/aishwarya/Project/Anarde/Anarde/village-development/code_base/static/js/utils.js"></script>
+    {% block page_script %}{% endblock %}
+
 </body>
 </html>

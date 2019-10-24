@@ -28,10 +28,12 @@ def InvoicePDFView(request,pk):
     #Retrieve data or whatever you need
     # obj_domain = domain.objects.get(pk=domain_id)
     obj_survey = survey.objects.get(survey_id = pk)
+    obj_survey_question = get_survey_question_list_for_pdf(request,pk)
     return render_to_pdf(
             'generate_pdf.html',
             {
                 'pagesize':'A4',
                 'object': obj_survey,
+                'obj_question': obj_survey_question,
             }
         )
