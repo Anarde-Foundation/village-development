@@ -1,35 +1,23 @@
-{% extends 'home.html' %}
-
-{% block page-title %}
-    Program implementation
-{% endblock %} <!-- end of block page-title -->
-
-{% block page-title-path %}
-<ol class="breadcrumb text-right">
-<!--    <li><a href="/location/">Locations</a></li>-->
-<!--    <li class="active">Add location</li>-->
-</ol>
-{% endblock %} <!-- end of block page-title-path -->
-
-
-
-{% block right-pane-content %}
-<div class="content mt-3">
+{% extends 'base.html' %}
+{% block content %}
+<div class="content">
     <div class="animated fadeIn">
         <div class="row">
             <div class="col-md-12">
-                <div class="card">
-                    <div class="card-body  px-3 py-4">
-                        <form method="post" action=""  class="form-horizontal1 row">
+                <div class="card border-0">
+                    <div class="card-body">
+                        <form method="post" action=""  class="row">
                             {% csrf_token %}
 
-                            <!--Location-->
-                            <div class="form-group col-lg-6 col-md-6 col-sm-12">
-                                <label class="form-control-label">Location</label>
-                                <input type="text" disabled class="form-control" value="{{location_name}}">
+                             <div class="col-6">
+                                <dl>
+                                    <dt>Program</dt>
+                                    <dd>{{obj_program.program_name}}</dd>
+                                </dl>
                             </div>
+
                             <!--date-->
-                           <div class="form-group col-lg-12 col-md-12 col-sm-12 date-picker">
+                           <div class="form-group col-lg-6 col-md-6 col-sm-12 date-picker">
                                 <label class="form-control-label">Date of implementation</label><br/>
                                 {{form.date_of_implementation}}
                                 {% for error in form.date_of_implementation.errors %}
@@ -39,7 +27,7 @@
 
                             <!-- Notes -->
                             <div class="form-group col-lg-12 col-md-12 col-sm-12">
-                                <label class="form-control-label" for="{{form.notes.id_for_lable}}">Notes</label>
+                                <label class="form-control-label">Notes if any, for the program implemented</label>
                                 <textarea rows="3" id="{{form.notes.id_for_lable}}" name="{{ form.notes.html_name }}"
                                        value="{{form.notes.value}}" type="text" class="form-control" placeholder="Enter program notes"
                                           aria-required="true" aria-invalid="false" ></textarea>
@@ -49,7 +37,7 @@
                             <!--Buttons-->
 
                             <div class="col-lg-12 col-md-12 col-sm-12">
-                                <button id="create-button" type="submit" class="btn btn-info">Submit</button>
+                                <button id="create-button" type="submit" class="btn btn-info">Save</button>
                                 <a href="{% url 'survey_program_list' obj_program.domain_id.domain_id location_name.location_id %}"  id="btnCancel" value="cancel" class="ml-2 btn btn-outline-info">Cancel</a>
                             </div>
 
@@ -71,10 +59,12 @@
 {% block page_script %}
 <script type="text/javascript">
     jQuery(document).ready(function($) {
-        $('#id_date_of_implementation_month').chosen({width: "15%"});
-        $('#id_date_of_implementation_day').chosen({width: "8%"});
-        $('#id_date_of_implementation_year').chosen({width: "10%"});
+        $('#id_date_of_implementation_month').chosen({width: "30%"});
+        $('#id_date_of_implementation_day').chosen({width: "16%"});
+        $('#id_date_of_implementation_year').chosen({width: "20%"});
         $('select').chosen({width:'100%'});
+
+        $('body').addClass('bg-white');
     });
 </script>
 {% endblock %}

@@ -284,10 +284,13 @@ def get_location_program_list_for_datatable(request, pk, location_id):
 #function for update implemented programs
 @login_required
 def location_program_update(request, pk, location_id, template_name='survey_location_program_update.html'):
+   print("------------------------------------------------------")
    location_name = location.objects.get(pk = location_id)
    obj_program = domain_program.objects.get(pk=pk)
    if location_program.objects.filter(program_id=pk, location_id=location_id).exists():
        obj_loc_program = location_program.objects.get(program_id=obj_program, location_id=location_id)
+
+
        programForUpdate = get_object_or_404(location_program, pk=obj_loc_program.location_program_id)
        form = LocationProgram_Form(instance=programForUpdate)
        if request.method == 'POST':
@@ -315,6 +318,7 @@ def location_program_update(request, pk, location_id, template_name='survey_loca
            else:
                print(form.errors)
        else:
+           print(obj_program.program_name)
            form = LocationProgram_Form
    return render(request, template_name, {'form': form , 'obj_program': obj_program, 'location_name': location_name})
 
