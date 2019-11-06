@@ -323,10 +323,9 @@ def location_program_update(request, pk, location_id, template_name='survey_loca
    return render(request, template_name, {'form': form , 'obj_program': obj_program, 'location_name': location_name})
 
 @login_required
-def survey_question_list(request, PdfResponseMixin,pk, domain_id, template_name='survey_question_list.html'):
+def survey_question_list(request,pk, domain_id, template_name='survey_question_list.html'):
     obj_domain = domain.objects.get(pk = domain_id)
     obj_survey = survey.objects.get(pk=pk)
-    context_object_name = obj_survey
     return render(request, template_name, {'obj_domain': obj_domain, 'obj_survey': obj_survey})
 
 @login_required
