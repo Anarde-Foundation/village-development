@@ -17,7 +17,7 @@ import json
 import jwt
 
 from utils.configuration import kobo_constants, metabase_constants
-from utils.constants import kobo_form_constants
+from utils.constants import kobo_form_constants, image_constants
 
 from common.models import code
 from location.models import location, location_program
@@ -48,7 +48,7 @@ def get_kobo_forms():
 
     base_response = requests.get(kobo_constants.kobo_form_link,
                                  headers={'Authorization': kobo_constants.authorization_token}).json()
-    list_res =[]
+    list_res = []
     for i in range(len(base_response)):
         print(base_response[i]['formid'], " ", base_response[i]['title'], " ", base_response[i]['date_created'])
         match = re.search(r'\d{4}-\d{2}-\d{2}', base_response[i]['date_created'])
@@ -86,6 +86,7 @@ class SurveyForm(ModelForm):
     survey_type_code_id = forms.ModelChoiceField(queryset=code_queryset, empty_label='Select an Option',
                                                  label='Select Survey Type', required=True)
 
+
     class Meta:
         model = survey
         fields = ['location_id', 'kobo_form_id', 'survey_name', 'survey_type_code_id']
@@ -108,7 +109,7 @@ def survey_create(request, template_name='survey_create.html'):
             print(form.errors)
     else:
 
-        form = SurveyForm(initial={'kobo_form_name': 'Select an Option'})
+        form = SurveyForm(initial={'kobo_form_id': 'Select an Option'})
 
     return render(request, template_name, {'form':form})
 
@@ -244,14 +245,16 @@ def survey_domain_suggestion(request, survey_id):
 class LocationProgram_Form(ModelForm):
     YEARS = [x for x in range(1990, 2021)]
 
-
     date_of_implementation = forms.DateField(required=True,
                                            label='Date of implementation', initial= datetime.now(),
                                            widget=forms.SelectDateWidget(empty_label="", years=YEARS))
 
+    before_image_upload = forms.ImageField(required=False, widget=forms.widgets.ClearableFileInput())
+    after_image_upload = forms.ImageField(required=False, widget=forms.widgets.ClearableFileInput())
+
     class Meta:
         model = location_program
-        fields = ['date_of_implementation', 'notes']
+        fields = ['date_of_implementation', 'before_image_upload', 'after_image_upload', 'notes']
 
 
 @login_required
@@ -281,39 +284,52 @@ def get_location_program_list_for_datatable(request, pk, location_id):
 #function for update implemented programs
 @login_required
 def location_program_update(request, pk, location_id, template_name='survey_location_program_update.html'):
-   location_name = location.objects.get(pk = location_id)
-   obj_program = domain_program.objects.get(pk=pk)
-   if location_program.objects.filter(program_id=pk, location_id=location_id).exists():
-       obj_loc_program = location_program.objects.get(program_id=obj_program, location_id=location_id)
-       programForUpdate = get_object_or_404(location_program, pk=obj_loc_program.location_program_id)
-       form = LocationProgram_Form(instance=programForUpdate)
-       if request.method == 'POST':
-           form = LocationProgram_Form(request.POST, instance=programForUpdate)
-           if form.is_valid():
-               info = form.save()
-               info.modified_by = request.user
-               info.save()
-               return redirect('/survey/survey_program_list/' + str(obj_program.domain_id.domain_id) + '/' + str(location_id))
-           else:
-               print(form.errors)
-       form.pk = pk
-   else:
-       if request.method == 'POST':
-           form = LocationProgram_Form(request.POST)
-           print(request.POST)
-           if form.is_valid():
-               info = form.save(commit=False)
-               info.program_id = obj_program
-               info.location_id = location_name
-               info.created_by = request.user
-               info.modified_by = request.user
-               info.save()
-               return redirect('/survey/survey_program_list/' + str(obj_program.domain_id.domain_id) + '/' + str(location_id))
-           else:
-               print(form.errors)
-       else:
-           form = LocationProgram_Form
-   return render(request, template_name, {'form': form , 'obj_program': obj_program, 'location_name': location_name})
+    location_name = location.objects.get(pk = location_id)
+    obj_program = domain_program.objects.get(pk=pk)
+    if location_program.objects.filter(program_id=pk, location_id=location_id).exists():
+        obj_loc_program = location_program.objects.get(program_id=obj_program, location_id=location_id)
+        programForUpdate = get_object_or_404(location_program, pk=obj_loc_program.location_program_id)
+        form = LocationProgram_Form(instance=programForUpdate)
+
+        if request.method == 'POST':
+            form = LocationProgram_Form(request.POST, instance=programForUpdate)
+            if form.is_valid():
+                info = form.save()
+                print(request.FILES)
+                #images_to_be_uploaded = request.FILES.getlist('image_upload') if 'file' in request.FILES else None
+                before_images_to_be_uploaded = request.FILES['before_image_upload']
+                if before_images_to_be_uploaded:
+                    print(before_images_to_be_uploaded)
+                    location1, image_name = response_views.save_images(before_images_to_be_uploaded,image_constants.image_type_before)
+
+                after_images_to_be_uploaded = request.FILES['after_image_upload']
+                if after_images_to_be_uploaded:
+                    print(after_images_to_be_uploaded)
+                    location1, image_name = response_views.save_images(after_images_to_be_uploaded,image_constants.image_type_after)
+
+                info.modified_by = request.user
+                info.save()
+                return redirect('/survey/survey_program_list/' + str(obj_program.domain_id.domain_id) + '/' + str(location_id))
+            else:
+                print(form.errors)
+        form.pk = pk
+    else:
+        if request.method == 'POST':
+            form = LocationProgram_Form(request.POST)
+            print(request.POST)
+            if form.is_valid():
+                info = form.save(commit=False)
+                info.program_id = obj_program
+                info.location_id = location_name
+                info.created_by = request.user
+                info.modified_by = request.user
+                info.save()
+                return redirect('/survey/survey_program_list/' + str(obj_program.domain_id.domain_id) + '/' + str(location_id))
+            else:
+                print(form.errors)
+        else:
+            form = LocationProgram_Form
+    return render(request, template_name, {'form': form , 'obj_program': obj_program, 'location_name': location_name})
 
 @login_required
 def survey_question_list(request, pk, domain_id, template_name='survey_question_list.html'):

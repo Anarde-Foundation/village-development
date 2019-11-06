@@ -1,16 +1,16 @@
 from django.shortcuts import render
 
-import requests, re, json
+import requests, re, json, os
 
 from utils.configuration import kobo_constants, metabase_constants
-from utils.constants import kobo_form_constants, numeric_constants
+from utils.constants import kobo_form_constants, numeric_constants, image_constants
 
 from common.models import code
 from location.models import location
 from domain.models import domain
 from survey_form.models import survey, survey_question, survey_question_options
 from .models import survey_response, survey_response_detail
-
+from django.utils.timezone import datetime
 
 def pull_kobo_form_data(surveyID):
 
@@ -236,4 +236,62 @@ def get_domain_index(item, survey_id):
 
     print()
     return index
+
+
+def upload_image(request):
+
+    if request.method == 'POST':
+        images_to_be_uploaded= request.FILES.getlist('file') if 'file' in request.FILES else None
+
+        if not images_to_be_uploaded:
+            print("hello")
+
+        print(images_to_be_uploaded)
+
+        locations=[]
+        images_names=[]
+        for image_to_be_uploaded in images_to_be_uploaded:
+            location,image_name = save_images(image_to_be_uploaded)
+            locations.append(location)
+            images_names.append(image_name)
+
+            print("image name is ",image_name)
+
+        return render(request)
+
+
+'''function to save images'''
+def save_images(image, type_image):
+
+    if image is not None:
+        imageName, fileLocation = createImageName(image, type_image)
+        print("location is ", fileLocation, " and image name is ", imageName)
+
+        # if production.constants.is_production:
+        #     move_to_s3(image, imageName, location)
+        #     print('successfully stored in s3 bucket')
+        # else:
+        #     # open the file in chunks and write it the to the destination
+        with open(fileLocation, 'wb+') as destination:
+            for chunk in image.chunks():
+                destination.write(chunk)
+
+        return fileLocation, imageName
+
+
+''' function to construct image name'''
+def createImageName(image, type_image):
+
+    currentDateTime = datetime.now().strftime("%y%m%d%H%M%S%f")
+    tempFileName, fileExtension = os.path.splitext(image.name)
+
+    if type_image == image_constants.image_type_before:
+        imageName = (r"before_" + currentDateTime + fileExtension)
+    else:
+        imageName = (r"after_" + currentDateTime + fileExtension)
+
+    fileLocation = str(image_constants.before_afterDir) + str(imageName)
+    #location = image_constants.before_afterDir
+
+    return imageName, fileLocation
 
