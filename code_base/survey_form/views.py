@@ -44,19 +44,29 @@ def get_survey_list_for_datatable(request):
     return HttpResponse(data, content_type='application/json')
 
 
-def get_kobo_forms():
-
+def get_kobo_forms(surveyID=None):
     base_response = requests.get(kobo_constants.kobo_form_link,
                                  headers={'Authorization': kobo_constants.authorization_token}).json()
     list_res =[]
     for i in range(len(base_response)):
-        print(base_response[i]['formid'], " ", base_response[i]['title'], " ", base_response[i]['date_created'])
-        match = re.search(r'\d{4}-\d{2}-\d{2}', base_response[i]['date_created'])
-        date = datetime.strptime(match.group(), '%Y-%m-%d').date()
-        res = (base_response[i]['formid'], base_response[i]['title'] + " (" + str(date) + ")")
-        list_res.append(res)
+        surveyObj=survey.objects.filter(kobo_form_id=base_response[i]['formid']).first()
+        if surveyObj:
+            survey_ID = surveyObj.survey_id
+            if survey_ID == surveyID:
+                print(base_response[i]['formid'], " ", base_response[i]['title'], " ", base_response[i]['date_created'])
+                match = re.search(r'\d{4}-\d{2}-\d{2}', base_response[i]['date_created'])
+                date = datetime.strptime(match.group(), '%Y-%m-%d').date()
+                res = (base_response[i]['formid'], base_response[i]['title'] + " (" + str(date) + ")")
+                list_res.append(res)
 
-    return tuple(list_res)
+        else:
+            print(base_response[i]['formid'], " ", base_response[i]['title'], " ", base_response[i]['date_created'])
+            match = re.search(r'\d{4}-\d{2}-\d{2}', base_response[i]['date_created'])
+            date = datetime.strptime(match.group(), '%Y-%m-%d').date()
+            res = (base_response[i]['formid'], base_response[i]['title'] + " (" + str(date) + ")")
+            list_res.append(res)
+    
+    return sorted(tuple(list_res), reverse=True)
 
 
 def get_kobo_form_date(kobo_id):
@@ -86,6 +96,11 @@ class SurveyForm(ModelForm):
     survey_type_code_id = forms.ModelChoiceField(queryset=code_queryset, empty_label='Select an Option',
                                                  label='Select Survey Type', required=True)
 
+    def __init__(self, *args, **kwargs):
+        surveyID = kwargs.pop('surveyID')
+        super(SurveyForm, self).__init__(*args, **kwargs)
+        self.fields['kobo_form_id'] = forms.ChoiceField(choices=get_kobo_forms(surveyID))
+
     class Meta:
         model = survey
         fields = ['location_id', 'kobo_form_id', 'survey_name', 'survey_type_code_id']
@@ -108,7 +123,7 @@ def survey_create(request, template_name='survey_create.html'):
             print(form.errors)
     else:
 
-        form = SurveyForm(initial={'kobo_form_name': 'Select an Option'})
+        form = SurveyForm(initial={'kobo_form_name': 'Select an Option'},surveyID=None)
 
     return render(request, template_name, {'form':form})
 
@@ -126,7 +141,7 @@ def survey_delete(request, pk, template_name='survey_delete.html'):
 @login_required
 def survey_update(request, pk, template_name='survey_update.html'):
     surveyForUpdate = get_object_or_404(survey, pk=pk)
-    form = SurveyForm(instance=surveyForUpdate)
+    form = SurveyForm(instance=surveyForUpdate, surveyID=pk)
     if request.method == 'POST':
         print(request.POST)
         if 'cancel' in request.POST:
