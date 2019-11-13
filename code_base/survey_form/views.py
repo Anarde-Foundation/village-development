@@ -1,6 +1,9 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
+
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.csrf import csrf_exempt
+
 from django.core import serializers
 from itertools import chain
 
@@ -10,6 +13,7 @@ from django.utils.timezone import datetime
 
 from django import forms
 from django.forms import ModelForm
+
 
 import re
 import requests
@@ -44,19 +48,29 @@ def get_survey_list_for_datatable(request):
     return HttpResponse(data, content_type='application/json')
 
 
-def get_kobo_forms():
-
+def get_kobo_forms(surveyID=None):
     base_response = requests.get(kobo_constants.kobo_form_link,
                                  headers={'Authorization': kobo_constants.authorization_token}).json()
     list_res = []
     for i in range(len(base_response)):
-        print(base_response[i]['formid'], " ", base_response[i]['title'], " ", base_response[i]['date_created'])
-        match = re.search(r'\d{4}-\d{2}-\d{2}', base_response[i]['date_created'])
-        date = datetime.strptime(match.group(), '%Y-%m-%d').date()
-        res = (base_response[i]['formid'], base_response[i]['title'] + " (" + str(date) + ")")
-        list_res.append(res)
+        surveyObj=survey.objects.filter(kobo_form_id=base_response[i]['formid']).first()
+        if surveyObj:
+            survey_ID = surveyObj.survey_id
+            if survey_ID == surveyID:
+                print(base_response[i]['formid'], " ", base_response[i]['title'], " ", base_response[i]['date_created'])
+                match = re.search(r'\d{4}-\d{2}-\d{2}', base_response[i]['date_created'])
+                date = datetime.strptime(match.group(), '%Y-%m-%d').date()
+                res = (base_response[i]['formid'], base_response[i]['title'] + " (" + str(date) + ")")
+                list_res.append(res)
 
-    return tuple(list_res)
+        else:
+            print(base_response[i]['formid'], " ", base_response[i]['title'], " ", base_response[i]['date_created'])
+            match = re.search(r'\d{4}-\d{2}-\d{2}', base_response[i]['date_created'])
+            date = datetime.strptime(match.group(), '%Y-%m-%d').date()
+            res = (base_response[i]['formid'], base_response[i]['title'] + " (" + str(date) + ")")
+            list_res.append(res)
+    
+    return sorted(tuple(list_res), reverse=True)
 
 
 def get_kobo_form_date(kobo_id):
@@ -86,6 +100,10 @@ class SurveyForm(ModelForm):
     survey_type_code_id = forms.ModelChoiceField(queryset=code_queryset, empty_label='Select an Option',
                                                  label='Select Survey Type', required=True)
 
+    def __init__(self, *args, **kwargs):
+        surveyID = kwargs.pop('surveyID')
+        super(SurveyForm, self).__init__(*args, **kwargs)
+        self.fields['kobo_form_id'] = forms.ChoiceField(choices=get_kobo_forms(surveyID))
 
     class Meta:
         model = survey
@@ -109,7 +127,7 @@ def survey_create(request, template_name='survey_create.html'):
             print(form.errors)
     else:
 
-        form = SurveyForm(initial={'kobo_form_id': 'Select an Option'})
+        form = SurveyForm(initial={'kobo_form_id': 'Select an Option'},surveyID=None)
 
     return render(request, template_name, {'form':form})
 
@@ -127,7 +145,7 @@ def survey_delete(request, pk, template_name='survey_delete.html'):
 @login_required
 def survey_update(request, pk, template_name='survey_update.html'):
     surveyForUpdate = get_object_or_404(survey, pk=pk)
-    form = SurveyForm(instance=surveyForUpdate)
+    form = SurveyForm(instance=surveyForUpdate, surveyID=pk)
     if request.method == 'POST':
         print(request.POST)
         if 'cancel' in request.POST:
@@ -281,6 +299,44 @@ def get_location_program_list_for_datatable(request, pk, location_id):
     data = json.dumps(data1, indent=4, sort_keys=True, default=str)
     return HttpResponse(data, content_type='application/json')
 
+
+@login_required
+@csrf_exempt
+def location_program_update_image_upload(request):
+    print("in upload image")
+    data = {}
+    if request.is_ajax():
+    # photo = form.save()
+        print("****")
+        print(request.FILES)
+        # images_to_be_uploaded = request.FILES.getlist('image_upload') if 'file' in request.FILES else None
+        before_images_to_be_uploaded = request.FILES.getlist(
+            'before_image_upload') if 'before_image_upload' in request.FILES else None
+        print(before_images_to_be_uploaded)
+        location_names=[]
+        image_names=[]
+
+        if before_images_to_be_uploaded:
+            for single_image in before_images_to_be_uploaded:
+                print(single_image)
+                location1, image_name = response_views.save_images(single_image,
+                                                                   image_constants.image_type_before)
+                location_names.append(location1)
+                image_names.append(image_name)
+        # after_images_to_be_uploaded = request.FILES['after_image_upload']
+        # if after_images_to_be_uploaded:
+        #     print(after_images_to_be_uploaded)
+        #     location1, image_name = response_views.save_images(after_images_to_be_uploaded,
+        #                                                        image_constants.image_type_after)
+            data = {'is_valid': True, 'name': image_names, 'url': location_names}
+        else:
+            data = {'is_valid': False}
+        # return render(request, template_name, {'form': form, 'obj_program': obj_program,
+        #                                       'location_name': location_name, 'data': JsonResponse(data)})
+    data = json.dumps(data)
+    return HttpResponse(data, content_type='application/json')
+
+
 #function for update implemented programs
 @login_required
 def location_program_update(request, pk, location_id, template_name='survey_location_program_update.html'):
@@ -291,22 +347,16 @@ def location_program_update(request, pk, location_id, template_name='survey_loca
         programForUpdate = get_object_or_404(location_program, pk=obj_loc_program.location_program_id)
         form = LocationProgram_Form(instance=programForUpdate)
 
+
+        print("hello")
+        print(request.POST)
+        #if request.method == 'POST' and request.FILES:
+
+
         if request.method == 'POST':
             form = LocationProgram_Form(request.POST, instance=programForUpdate)
             if form.is_valid():
                 info = form.save()
-                print(request.FILES)
-                #images_to_be_uploaded = request.FILES.getlist('image_upload') if 'file' in request.FILES else None
-                before_images_to_be_uploaded = request.FILES['before_image_upload']
-                if before_images_to_be_uploaded:
-                    print(before_images_to_be_uploaded)
-                    location1, image_name = response_views.save_images(before_images_to_be_uploaded,image_constants.image_type_before)
-
-                after_images_to_be_uploaded = request.FILES['after_image_upload']
-                if after_images_to_be_uploaded:
-                    print(after_images_to_be_uploaded)
-                    location1, image_name = response_views.save_images(after_images_to_be_uploaded,image_constants.image_type_after)
-
                 info.modified_by = request.user
                 info.save()
                 return redirect('/survey/survey_program_list/' + str(obj_program.domain_id.domain_id) + '/' + str(location_id))
@@ -329,7 +379,8 @@ def location_program_update(request, pk, location_id, template_name='survey_loca
                 print(form.errors)
         else:
             form = LocationProgram_Form
-    return render(request, template_name, {'form': form , 'obj_program': obj_program, 'location_name': location_name})
+    return render(request, template_name, {'form': form, 'obj_program': obj_program, 'location_name': location_name})
+
 
 @login_required
 def survey_question_list(request, pk, domain_id, template_name='survey_question_list.html'):

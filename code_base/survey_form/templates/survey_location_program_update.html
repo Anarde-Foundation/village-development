@@ -1,20 +1,6 @@
-{% extends 'home.html' %}
-
-{% block page-title %}
-    Program implementation
-{% endblock %} <!-- end of block page-title -->
-
-{% block page-title-path %}
-<ol class="breadcrumb text-right">
-<!--    <li><a href="/location/">Locations</a></li>-->
-<!--    <li class="active">Add location</li>-->
-</ol>
-{% endblock %} <!-- end of block page-title-path -->
-
-
-
-{% block right-pane-content %}
-<div class="content mt-3">
+{% extends 'base.html' %}
+{% block content %}
+<div class="content">
     <div class="animated fadeIn">
         <div class="row">
             <div class="col-md-12">
@@ -23,15 +9,15 @@
                         <form method="post" action=""  class="form-horizontal1 row" enctype="multipart/form-data" id="js-upload-form">
                             {% csrf_token %}
 
-                            <!--Location-->
-                            <div class="form-group col-lg-6 col-md-6 col-sm-12">
-                                <label class="form-control-label">Location</label>
-                                <input type="text" disabled class="form-control" value="{{location_name}}">
+                             <div class="col-6">
+                                <dl>
+                                    <dt>Program</dt>
+                                    <dd>{{obj_program.program_name}}</dd>
+                                </dl>
                             </div>
 
-
                             <!--date-->
-                            <div class="form-group col-lg-12 col-md-12 col-sm-12 date-picker">
+                           <div class="form-group col-lg-6 col-md-6 col-sm-12 date-picker">
                                 <label class="form-control-label">Date of implementation</label><br/>
                                 {{form.date_of_implementation}}
                                 {% for error in form.date_of_implementation.errors %}
@@ -53,50 +39,60 @@
                             </div>
                             <!-- Notes -->
                             <div class="form-group col-lg-12 col-md-12 col-sm-12">
-                                <label class="form-control-label">Notes</label>
+                                <label class="form-control-label">Notes if any, for the program implemented</label>
                                 <textarea rows="3" id="{{form.notes.id_for_lable}}" name="{{ form.notes.html_name }}"
                                        type="text" class="form-control" data-val="true" placeholder="Enter program notes"
                                           aria-required="true" aria-invalid="false" ></textarea>
                             </div>
 
+                            <div class="form-group col-lg-12 col-md-12 col-sm-12">
+                                <button id="upload_button" type="button" class="btn btn-primary js-upload-photos" name="upload_images">
+                                    <span class="glyphicon glyphicon-cloud-upload"></span> Select photos
+                                </button>
 
-                            <h4>Select files from your computer</h4>
+                                <input id="fileupload" type="file" name="before_image_upload" multiple
+                                       style="display: none;"
+                                       data-url="{% url 'survey_program_list' obj_program.domain_id.domain_id location_name.location_id %}"
+                                        value={{form.before_image_upload}}
+                                <!--data-form-data='{"csrfmiddlewaretoken": "{{ csrf_token }}"}'-->
 
-                            <div class="form-inline">
-                                <div class="form-group">
-                                    <input type="file" class="form-control-file" name="before_image_upload"
-                                           id="js-upload-files" multiple value={{form.before_image_upload}}
+
+                                <table id="gallery" class="table table-bordered">
+                                    <thead>
+                                    <tr>
+                                        <th>Photo</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for photo in data %}
+                                    <tr>
+                                        <td><a href="">
+                                             <img id=photo-image src="" alt={{photo }} height="42" width="42">
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!--<div class="modal fade" id="modal-progress" data-backdrop="static" data-keyboard="false">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h4 class="modal-title">Uploading...</h4>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="progress">
+                                                <div class="progress-bar" role="progressbar" style="width: 0%;">0%</div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                                <button type="submit" class="btn btn-sm btn-primary" id="js-upload-submit">Upload files</button>
-                            </div>
-
-
-                            <!-- Drop Zone -->
-                            <h4>Or drag and drop files below</h4>
-                            <div class="upload-drop-zone" id="drop-zone">
-                                Just drag and drop files here
-                            </div>
-
-                            <!-- Progress Bar -->
-                            <div class="progress">
-                                <div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%;">
-                                    <span class="sr-only">60% Complete</span>
-                                </div>
-                            </div>
-
-                            <!-- Upload Finished -->
-                            <div class="js-upload-finished">
-                                <h3>Processed files</h3>
-                                <div class="list-group">
-                                    <a href="#" class="list-group-item list-group-item-success"><span class="badge alert-success pull-right">Success</span>image-01.jpg</a>
-                                    <a href="#" class="list-group-item list-group-item-success"><span class="badge alert-success pull-right">Success</span>image-02.jpg</a>
-                                </div>
-                            </div>
-
-                            <!--Buttons-->
+                            </div>-->
 
                             <div class="col-lg-12 col-md-12 col-sm-12">
-                                <button id="create-button" type="submit" class="btn btn-info">Submit</button>
+                                <button id="create-button" type="submit" class="btn btn-info">Save</button>
                                 <a href="{% url 'survey_program_list' obj_program.domain_id.domain_id location_name.location_id %}"  id="btnCancel" value="cancel" class="ml-2 btn btn-outline-info">Cancel</a>
                             </div>
 
@@ -116,50 +112,80 @@
 {% endblock %} <!-- end of right-pane-content -->
 
 {% block page_script %}
+<script type="text/javascript"  src="/static/theme/vendors/multiple-upload/js/jquery-file-upload/vendor/jquery.ui.widget.js"></script>
+<script type="text/javascript"  src="/static/theme/vendors/multiple-upload/js/jquery-file-upload/jquery.iframe-transport.js"></script>
+<script type="text/javascript"  src="/static/theme/vendors/multiple-upload/js/jquery-file-upload/jquery.fileupload.js"></script>
 <script type="text/javascript">
+
+    var uploadForm = function(){
+        $('form').submit(uploadImage);
+    };
+
+    function uploadImage(event) {
+        event.preventDefault();
+        var data = new FormData();
+        alert('in image upload');
+        var uploadImageSuccessCB = function (response) {
+            console.log('In upload image');
+            console.log(response);
+
+            alert("111");
+            alert(response);
+            <!--alert(data.length);-->
+            for (index = 0; index < response.length; index++) {
+                $('#photo-image').attr('src', response[index].url);
+            }
+        };
+
+        var uploadImageErrorCB = function (response) {
+            console.log('In error');
+            console.log(response);
+        };
+
+        $.ajax({
+            type: "POST",
+            url: '/survey/survey_location_program_update_image_upload', /*'{% url "survey_location_program_update_image_upload" %}',*/
+            data: data,
+            processData: false,
+            contentType: false,
+            success: uploadImageSuccessCB,
+            error: uploadImageErrorCB
+        });
+    };
+
+
+    /*
+    $(function () {
+        $(".js-upload-photos").click(function () {
+
+            console.log('before file upload');
+            $("#fileupload").fileupload({
+                dataType: 'json',
+                done: function (e, response) {
+                if (response.result.is_valid) {
+                    $("#gallery tbody").prepend(
+                    "<tr><td><a href='" + response.result.url + "'>" + response.result.name + "</a></td></tr>"
+                    )
+                }
+            }
+        });
+    });*/
+
+
     jQuery(document).ready(function($) {
-        $('#id_date_of_implementation_month').chosen({width: "15%"});
-        $('#id_date_of_implementation_day').chosen({width: "8%"});
-        $('#id_date_of_implementation_year').chosen({width: "10%"});
+        $('#id_date_of_implementation_month').chosen({width: "30%"});
+        $('#id_date_of_implementation_day').chosen({width: "16%"});
+        $('#id_date_of_implementation_year').chosen({width: "20%"});
         $('select').chosen({width:'100%'});
+        $('body').addClass('bg-white');
+        alert('after add class');
 
-
-
-        'use strict';
-
-        // UPLOAD CLASS DEFINITION
-        // ======================
-
-        var dropZone = document.getElementById('drop-zone');
-        var uploadForm = document.getElementById('js-upload-form');
-
-        var startUpload = function(files) {
-            console.log(files)
-        }
-
-        uploadForm.addEventListener('submit', function(e) {
-            var uploadFiles = document.getElementById('js-upload-files').files;
-            e.preventDefault()
-
-            startUpload(uploadFiles)
-        })
-
-        dropZone.ondrop = function(e) {
-            e.preventDefault();
-            this.className = 'upload-drop-zone';
-
-            startUpload(e.dataTransfer.files)
-        }
-
-        dropZone.ondragover = function() {
-            this.className = 'upload-drop-zone drop';
-            return false;
-        }
-
-        dropZone.ondragleave = function() {
-            this.className = 'upload-drop-zone';
-            return false;
-        }
+        $('#upload_button').on('click', uploadForm);
+        $(".js-upload-photos").on('click', appUtils.selectPhotosAndShowThumbnail)
+        console.log($(".js-upload-photos"));
     });
+
+
+
 </script>
 {% endblock %}
