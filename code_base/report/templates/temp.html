@@ -1,38 +1,88 @@
 {% extends 'report.html' %}
+{% block page-title %}
+Survey Details
+{% endblock %}
+
 {% block content %}
 <div class="card">
-    <div class="card-header bg-info text-white">
-        <div class="col-md-10">
-            <h5 class="card-title">Survey questions under  domain</h5>
+    <form method="post" action="">
+        {% csrf_token %}
+        <!--Survey details - -->
+        <div class="card-body">
+            <div class="container">
+                <div class="row">
+                    <div class="col-sm-12 col-md-12" >
+                        <h3 class="card-title">{{object.survey_name}}
+                            <a href='{% url "survey_edit" object.survey_id %}' class="text-info" title="Edit survey details">
+                                <i class="fa fa-pencil-square-o px-3"></i>
+                            </a>
+                        </h3>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-3">
+                        <dl>
+                            <dt>Survey Type</dt>
+                            <dd>{{ object.survey_type_code_id.code_name }}</dd>
+                        </dl>
+                    </div>
+                    <div class="col-3">
+                        <dl>
+                            <dt>Publish date</dt>
+                            <dd>{{ object.publish_date }}</dd>
+                        </dl>
+                    </div>
+                    <div class="col-3">
+                        <dl>
+                            <dt>Location</dt>
+                            <dd>{{ object.location_id.location_name }}</dd>
+                        </dl>
+                    </div>
+                    <div class="col-3">
+                        <dl>
+                            <dt>Survey Created by</dt>
+                            <dd>{{ object.created_by }}</dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
         </div>
+    </form>
+</div>
+<!--Display survey graphs -->
+<div class="card d-none">
+    <div class="card-header bg-info text-white">
+        <h5> Data of {{object.survey_name}}</h5>
     </div>
     <div class="card-body">
-        <table id="survey_question_list" class="table table-striped table-bordered table-row-clickable" width="100%">
-            <thead>
-            <tr>
-                <th>Question name</th>
-                <th>Question lable</th>
-                <th>Question type</th>
-                <th>Question weightage</th>
-            </tr>
-            </thead>
-            {% for item in object %}
-              <tr>
-                  <td>{{item.question_name}}</td>
-                  <td>{{item.question_label}}</td>
-                  <td>{{item.question_type}}</td>
-                  <td>{{item.question_weightage}}</td>
-
-              </tr>
-            {% endfor %}
-            <tbody>
-            </tbody>
-        </table>
     </div>
 </div>
-<div id="footerContent">
-            {%block page_foot%}
-                Page <pdf:pagenumber>
-            {%endblock%}
+
+<div class="card">
+    <div class="card-header bg-info text-white d-none">
+        <h5> Survey analysis</h5>
+    </div>
+
+                <!--Content for domainwise index tab -->
+                <div >
+                    <h3 class="px-3 mb-3">Vulnerability index</h3>
+                    {% for key,value in domain_index.items%}
+
+                     <div id ="domain_box" class="col-sm-6 col-lg-3 ">
+                        <div  class="card text-white {{value.1}} domain-index" domain-id=[domain_id] >
+                            <div class="card-body pb-0">
+                                <p class="text-light">{{key}}</p>
+                                <div class="chart-wrapper px-0 card-domain-index stat-widget-one">
+                                     <strong class="count stat-digit text-white">{{value.0}} %</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {%endfor%}
+
+                </div>
 </div>
+
 {% endblock %}
+
+

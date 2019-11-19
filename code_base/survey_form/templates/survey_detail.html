@@ -75,8 +75,13 @@ Survey Details
                     </a>
                 </div>
                 <div class="col-md-3">
-                    <a href = "{% url 'report:pdf' object.survey_id%}" >
-                        <button type = "button" class ="ml-2 btn btn-outline-info" > Survey pdf</button >
+                    <a href = "{% url 'report:survey_html_page' object.survey_id %}" >
+                        <button type = "button" class ="ml-2 btn btn-outline-info" >show_weasy_html_page</button >
+                    </a>
+                </div>
+                <div class="col-md-3">
+                    <a href = "{% url 'report:survey_pdf' object.survey_id %}" >
+                        <button type = "button" class ="ml-2 btn btn-outline-info" > weasy_pdf </button >
                     </a>
                 </div>
                 <!--{{ show_delete }}-->
