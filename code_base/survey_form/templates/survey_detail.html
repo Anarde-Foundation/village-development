@@ -37,7 +37,7 @@ Survey Details
                             <dd>{{ object.publish_date }}</dd>
                         </dl>
                     </div>
-                    <div class="col-3">
+                    <div class="col-3" id="divSurveyLocation" location-id="{{ object.location_id.location_id }}">
                         <dl>
                             <dt>Location</dt>
                             <dd>{{ object.location_id.location_name }}</dd>
@@ -150,7 +150,7 @@ Survey Details
                         <div class="row">
                             <div class="col-sm-12 col-md-12">
                                 <h3 class="px-3 mb-3 selectedDomainName" prefixtext="Graphical analysis for "></h3>
-                                <iframe id="frmGraphs" src=""  width="800" height="900" frameborder="0"></iframe>
+                                <iframe id="frmGraphs" src=""  width="100%" height="900" frameborder="0"></iframe>
                             </div>
                         </div>
                     </div>
@@ -258,7 +258,8 @@ var setQuestionContent = function (domain_id) {
 }
 
 var setProgramSuggestionContent = function (domain_id) {
-    $('iframe#frmSuggestion').attr('src', '/survey/survey_program_list/{{object.survey_id }}/' + domain_id)
+    location_id = $('#divSurveyLocation').attr('location-id');
+    $('iframe#frmSuggestion').attr('src', '/survey/survey_program_list/' + domain_id + '/' + location_id)
 }
 
 var showDomainWiseGraph = function (domain_id) {
