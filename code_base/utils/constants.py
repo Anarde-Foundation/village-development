@@ -1,3 +1,4 @@
+
 class kobo_form_constants:
 
     data_format = "/form.json"
@@ -12,3 +13,6 @@ class numeric_constants:
     one = 1
     zero = 0
     pattern_for_weights = '^[wW](\d*)_'
+
+    before_images = 101001
+    after_images = 101002

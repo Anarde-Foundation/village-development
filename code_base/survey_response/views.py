@@ -1,8 +1,8 @@
 from django.shortcuts import render
 
-import requests, re, json
+import requests, re, json, os
 
-from utils.configuration import kobo_constants, metabase_constants
+from utils.configuration import kobo_constants, metabase_constants, image_constants
 from utils.constants import kobo_form_constants, numeric_constants
 
 from common.models import code
@@ -10,7 +10,7 @@ from location.models import location
 from domain.models import domain
 from survey_form.models import survey, survey_question, survey_question_options
 from .models import survey_response, survey_response_detail
-
+from django.utils.timezone import datetime
 
 def pull_kobo_form_data(surveyID):
 
@@ -210,7 +210,7 @@ def get_domain_index(item, survey_id):
             objsurvey_response = survey_response_detail.objects.filter(survey_response_id__in=survey_responseID,
                                                                        survey_question_id=question)
 
-            if objsurvey_response.count() > numeric_constants.zero:     ## if no response exists for question skip
+            if objsurvey_response.count() > numeric_constants.zero:     # if no response exists for question skip
                 question_weight = question.question_weightage
 
                 sum_of_responses = 0
@@ -234,6 +234,42 @@ def get_domain_index(item, survey_id):
         if sum_of_question_weights > numeric_constants.zero:
             index = "%.2f" % ((weighted_sum / sum_of_question_weights)*100)
 
-    print()
     return index
+
+
+# function to save images
+def save_images(image, type_image):
+
+    if image is not None:
+        imageName, fileLocation, static_path = createImageName(image, type_image)
+        print("location is ", fileLocation, " and image name is ", imageName)
+        print("static path is ", str(image_constants.localhost + static_path))
+
+        # if production.constants.is_production:
+        #     move_to_s3(image, imageName, location)
+        #     print('successfully stored in s3 bucket')
+        # else:
+        #     # open the file in chunks and write it the to the destination
+        with open(fileLocation, 'wb+') as destination:
+            for chunk in image.chunks():
+                destination.write(chunk)
+
+        return static_path, imageName
+
+
+# function to construct image name
+def createImageName(image, type_image):
+
+    currentDateTime = datetime.now().strftime("%y%m%d%H%M%S%f")
+    tempFileName, fileExtension = os.path.splitext(image.name)
+
+    if type_image == image_constants.image_type_before:
+        imageName = (r"before_" + currentDateTime + fileExtension)
+    else:
+        imageName = (r"after_" + currentDateTime + fileExtension)
+
+    fileLocation = str(image_constants.before_afterDir) + str(imageName)
+    static_path = image_constants.before_afterDirStatic + str(imageName)
+
+    return imageName, fileLocation, static_path
 
