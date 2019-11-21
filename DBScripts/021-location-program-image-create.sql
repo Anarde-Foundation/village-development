@@ -15,3 +15,5 @@ ALTER TABLE `loc_location_program_image` ADD CONSTRAINT `loc_location_program_im
 ALTER TABLE `loc_location_program_image` ADD CONSTRAINT `loc_location_program_location_program_id_fk_loc_locat`
              FOREIGN KEY (`location_program_id`) REFERENCES `loc_location_program` (`location_program_id`);
 COMMIT;
+
+insert into zzz_db_script values('021-location-program-image-create.sql', now());

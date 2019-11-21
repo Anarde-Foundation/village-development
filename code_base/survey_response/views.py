@@ -210,7 +210,7 @@ def get_domain_index(item, survey_id):
             objsurvey_response = survey_response_detail.objects.filter(survey_response_id__in=survey_responseID,
                                                                        survey_question_id=question)
 
-            if objsurvey_response.count() > numeric_constants.zero:     ## if no response exists for question skip
+            if objsurvey_response.count() > numeric_constants.zero:     # if no response exists for question skip
                 question_weight = question.question_weightage
 
                 sum_of_responses = 0
@@ -234,38 +234,16 @@ def get_domain_index(item, survey_id):
         if sum_of_question_weights > numeric_constants.zero:
             index = "%.2f" % ((weighted_sum / sum_of_question_weights)*100)
 
-    print()
     return index
 
 
-def upload_image(request):
-
-    if request.method == 'POST':
-        images_to_be_uploaded= request.FILES.getlist('file') if 'file' in request.FILES else None
-
-        if not images_to_be_uploaded:
-            print("hello")
-
-        print(images_to_be_uploaded)
-
-        locations=[]
-        images_names=[]
-        for image_to_be_uploaded in images_to_be_uploaded:
-            location,image_name = save_images(image_to_be_uploaded)
-            locations.append(location)
-            images_names.append(image_name)
-
-            print("image name is ",image_name)
-
-        return render(request)
-
-
-'''function to save images'''
+# function to save images
 def save_images(image, type_image):
 
     if image is not None:
-        imageName, fileLocation = createImageName(image, type_image)
+        imageName, fileLocation, static_path = createImageName(image, type_image)
         print("location is ", fileLocation, " and image name is ", imageName)
+        print("static path is ", str(image_constants.localhost + static_path))
 
         # if production.constants.is_production:
         #     move_to_s3(image, imageName, location)
@@ -276,10 +254,10 @@ def save_images(image, type_image):
             for chunk in image.chunks():
                 destination.write(chunk)
 
-        return fileLocation, imageName
+        return static_path, imageName
 
 
-''' function to construct image name'''
+# function to construct image name
 def createImageName(image, type_image):
 
     currentDateTime = datetime.now().strftime("%y%m%d%H%M%S%f")
@@ -291,7 +269,7 @@ def createImageName(image, type_image):
         imageName = (r"after_" + currentDateTime + fileExtension)
 
     fileLocation = str(image_constants.before_afterDir) + str(imageName)
-    #location = image_constants.before_afterDir
+    static_path = image_constants.before_afterDirStatic + str(imageName)
 
-    return imageName, fileLocation
+    return imageName, fileLocation, static_path
 

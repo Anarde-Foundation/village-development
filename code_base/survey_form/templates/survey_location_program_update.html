@@ -6,7 +6,7 @@
             <div class="col-md-12">
                 <div class="card">
                     <div class="card-body px-3 py-4">
-                        <form method="post" action=""  class="form-horizontal1 row" enctype="multipart/form-data" id="js-upload-form">
+                        <form method="post" action="" class="form-horizontal1 row" enctype="multipart/form-data" id="js-upload-form">
                             {% csrf_token %}
 
                              <div class="col-6">
@@ -25,18 +25,6 @@
                                 {% endfor %}
                             </div>
 
-                            <!--<div class="form-group col-lg-6 col-md-6 col-sm-12">
-                                <label class="form-control-label">Images before Program was conducted</label>
-                                <input type ="file" class="form-control-file" name="before_image_upload" multiple
-                                       value={{form.before_image_upload}}
-                            </div>-->
-
-                            <div class="form-group col-lg-6 col-md-6 col-sm-12">
-                                <label class="form-control-label" > Images after Program was conducted</label>
-                                <input type ="file" class="form-control-file" name="after_image_upload" multiple
-                                       value={{form.after_image_upload}}
-
-                            </div>
                             <!-- Notes -->
                             <div class="form-group col-lg-12 col-md-12 col-sm-12">
                                 <label class="form-control-label">Notes if any, for the program implemented</label>
@@ -45,64 +33,75 @@
                                           aria-required="true" aria-invalid="false" ></textarea>
                             </div>
 
-                            <div class="form-group col-lg-12 col-md-12 col-sm-12">
-                                <button id="upload_button" type="button" class="btn btn-primary js-upload-photos" name="upload_images">
-                                    <span class="glyphicon glyphicon-cloud-upload"></span> Select photos
-                                </button>
-
-                                <input id="fileupload" type="file" name="before_image_upload" multiple
-                                       style="display: none;"
-                                       data-url="{% url 'survey_program_list' obj_program.domain_id.domain_id location_name.location_id %}"
-                                        value={{form.before_image_upload}}
-                                <!--data-form-data='{"csrfmiddlewaretoken": "{{ csrf_token }}"}'-->
-
-
-                                <table id="gallery" class="table table-bordered">
-                                    <thead>
-                                    <tr>
-                                        <th>Photo</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    {% for photo in data %}
-                                    <tr>
-                                        <td><a href="">
-                                             <img id=photo-image src="" alt={{photo }} height="42" width="42">
-                                            </a>
-                                        </td>
-                                    </tr>
-                                    {% endfor %}
-                                    </tbody>
-                                </table>
-                            </div>
-
-                            <!--<div class="modal fade" id="modal-progress" data-backdrop="static" data-keyboard="false">
-                                <div class="modal-dialog">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h4 class="modal-title">Uploading...</h4>
-                                        </div>
-                                        <div class="modal-body">
-                                            <div class="progress">
-                                                <div class="progress-bar" role="progressbar" style="width: 0%;">0%</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>-->
-
                             <div class="col-lg-12 col-md-12 col-sm-12">
                                 <button id="create-button" type="submit" class="btn btn-info">Save</button>
                                 <a href="{% url 'survey_program_list' obj_program.domain_id.domain_id location_name.location_id %}"  id="btnCancel" value="cancel" class="ml-2 btn btn-outline-info">Cancel</a>
+                            </div>
+
+                            <div class="form-group col-lg-6 col-md-6 col-sm-12 py-2">
+                                <button id="upload_before_button" type="button" class="btn btn-info" name="upload_images">
+                                    <span class="glyphicon glyphicon-cloud-upload"></span> Select Before photos
+                                </button>
+
+                                <input id="beforeImgupload" type="file" name="before_image_upload" multiple
+                                       style="display: none;"
+                                       value = {{form.before_image_upload}}
+
+                                <div id="gallery" class="table table-bordered">
+                                    <div class="row">
+                                        <div class="col-lg-12 col-md-12 col-sm-12">Uploaded Images</div>
+                                    </div>
+
+                                    <!--<tbody>-->
+                                    <div class="row">
+                                        <div class="col-lg-12 col-md-12 col-sm-12 photo-container" id="beforeImgContainer">
+                                            {% for photo in before_photos %}
+                                                <div name={{photo}} >
+                                                    <img src={{path}}{{photo}}  alt="" class="img-thumbnail rounded program-images">
+                                                    <a href="#" name="removeImg" class="btn-delete">
+                                                        <i id={{photo}} class="fa fa-times"></i>
+                                                    </a>
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group col-lg-6 col-md-6 col-sm-12 py-2">
+                                <button id="upload_after_button" type="button" class="btn btn-info" name="upload_images">
+                                    <span class="glyphicon glyphicon-cloud-upload"></span> Select After photos
+                                </button>
+
+                                <input id="afterImgupload" type="file" name="after_image_upload" multiple
+                                       style="display: none;"
+                                       value = {{form.after_image_upload}}
+
+
+                                <div id="Aftergallery" class="table table-bordered">
+                                    <div class="row">
+                                        <div class="col-lg-12 col-md-12 col-sm-12">Uploaded Images</div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-12 col-md-12 col-sm-12 photo-container" id="afterImgContainer">
+                                            {% for photo in after_photos %}
+                                                <div name={{photo}} >
+                                                    <img src={{path}}{{photo}}  alt="" class="img-thumbnail rounded program-images">
+                                                    <a href="#" name="removeImg" class="btn-delete">
+                                                        <i id={{photo}} class="fa fa-times"></i>
+                                                    </a>
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
 
                             {% for error in field.errors %}
                             <p class="text-danger">{{ error }}</p>
                             {% endfor %}
                         </form>
-
                     </div>
-
                 </div>
             </div>
         </div>
@@ -112,29 +111,28 @@
 {% endblock %} <!-- end of right-pane-content -->
 
 {% block page_script %}
-<script type="text/javascript"  src="/static/theme/vendors/multiple-upload/js/jquery-file-upload/vendor/jquery.ui.widget.js"></script>
-<script type="text/javascript"  src="/static/theme/vendors/multiple-upload/js/jquery-file-upload/jquery.iframe-transport.js"></script>
-<script type="text/javascript"  src="/static/theme/vendors/multiple-upload/js/jquery-file-upload/jquery.fileupload.js"></script>
 <script type="text/javascript">
-
-    var uploadForm = function(){
-        $('form').submit(uploadImage);
-    };
-
-    function uploadImage(event) {
-        event.preventDefault();
-        var data = new FormData();
-        alert('in image upload');
+    var fileSelect;
+    function uploadImageAjax(data, upload_type){
         var uploadImageSuccessCB = function (response) {
-            console.log('In upload image');
-            console.log(response);
-
-            alert("111");
-            alert(response);
-            <!--alert(data.length);-->
-            for (index = 0; index < response.length; index++) {
-                $('#photo-image').attr('src', response[index].url);
+            htmlTemplate = '<div name=[image_name] > <img src="[imageUrl]"  alt="" class="img-thumbnail rounded program-images">'+
+                            '<a name="removeImg" href="#" class="btn-delete">'+
+                                '<i id=[image_name] class="fa fa-times"></i>'+
+                            '</a></div>';
+            replacedHtml = '';
+            imageListHtml = '';
+            for (index = 0; index < response.url.length; index++) {
+                console.log(response.url[index]);
+                replacedHtml = htmlTemplate.replace('[imageUrl]', response.url[index]);
+                replacedHtml = replacedHtml.replace('[image_name]', response.name[index]);
+                replacedHtml = replacedHtml.replace('[image_name]', response.name[index]);
+                imageListHtml = imageListHtml + replacedHtml;
             }
+            if(upload_type == 'before'){
+                $('#beforeImgContainer').append(imageListHtml);
+            }else{
+                $('#afterImgContainer').append(imageListHtml);
+            };
         };
 
         var uploadImageErrorCB = function (response) {
@@ -142,35 +140,59 @@
             console.log(response);
         };
 
+        ajaxURL = '/survey/survey_location_program_update_image_upload/'+ {{location_id}};
+        console.log(ajaxURL);
         $.ajax({
             type: "POST",
-            url: '/survey/survey_location_program_update_image_upload', /*'{% url "survey_location_program_update_image_upload" %}',*/
+            url: ajaxURL,   /*'{% url "survey_location_program_update_image_upload" location_id %}',*/
             data: data,
             processData: false,
             contentType: false,
             success: uploadImageSuccessCB,
             error: uploadImageErrorCB
         });
-    };
+    }
 
+    function deleteImages(data){
+        console.log('in delete');
+        console.log(data);
+        var DeleteImageSuccessCB = function (response) {
+            console.log('in delete success');
+            $("div[name='" + response.image_id +"']").addClass('d-none');
+        };
 
-    /*
-    $(function () {
-        $(".js-upload-photos").click(function () {
+        var DeleteImageErrorCB = function (response) {
+            console.log('In error');
+            console.log(response);
+        };
 
-            console.log('before file upload');
-            $("#fileupload").fileupload({
-                dataType: 'json',
-                done: function (e, response) {
-                if (response.result.is_valid) {
-                    $("#gallery tbody").prepend(
-                    "<tr><td><a href='" + response.result.url + "'>" + response.result.name + "</a></td></tr>"
-                    )
-                }
-            }
+        ajaxURL = '/survey/survey_location_program_update_image_delete/'+ data ;
+        console.log(ajaxURL);
+        $.ajax({
+            type: "POST",
+            url: ajaxURL,
+            data: data,
+            processData: false,
+            contentType: false,
+            success: DeleteImageSuccessCB,
+            error: DeleteImageErrorCB
         });
-    });*/
 
+    }
+
+    function uploadImages(SelectedFile, upload_type){
+        var data = new FormData();
+        const files = SelectedFile.files;
+        const filesCount = files.length;
+        console.log(SelectedFile);
+        console.log(upload_type)
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            data.append(upload_type+i, file);
+        }
+        uploadImageAjax(data, upload_type);
+
+    };
 
     jQuery(document).ready(function($) {
         $('#id_date_of_implementation_month').chosen({width: "30%"});
@@ -178,14 +200,28 @@
         $('#id_date_of_implementation_year').chosen({width: "20%"});
         $('select').chosen({width:'100%'});
         $('body').addClass('bg-white');
-        alert('after add class');
 
-        $('#upload_button').on('click', uploadForm);
-        $(".js-upload-photos").on('click', appUtils.selectPhotosAndShowThumbnail)
-        console.log($(".js-upload-photos"));
-    });
+        $('#upload_before_button').on('click', function(){
+            $("#beforeImgupload").click();
+        });
+        fileSelect = document.getElementById("beforeImgupload");
+        fileSelect.addEventListener('change',function(){
+            uploadImages(fileSelect,"before")
+        });
 
+        $('#upload_after_button').on('click', function(){
+            $("#afterImgupload").click();
+        });
+        fileSelectAfter = document.getElementById("afterImgupload");
+        fileSelectAfter.addEventListener('change', function(){
+            uploadImages(fileSelectAfter,"after");
+        });
 
+        $('.photo-container').on('click',"a[name='removeImg']", function(){
+            console.log('in click delete');
+            deleteImages($(this).children('i').attr('id'));
+        });
+     })
 
 </script>
 {% endblock %}
