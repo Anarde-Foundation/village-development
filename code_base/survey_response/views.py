@@ -2,8 +2,8 @@ from django.shortcuts import render
 
 import requests, re, json, os
 
-from utils.configuration import kobo_constants, metabase_constants
-from utils.constants import kobo_form_constants, numeric_constants, image_constants
+from utils.configuration import kobo_constants, metabase_constants, image_constants
+from utils.constants import kobo_form_constants, numeric_constants
 
 from common.models import code
 from location.models import location

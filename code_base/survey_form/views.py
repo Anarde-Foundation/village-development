@@ -20,8 +20,8 @@ import requests
 import json
 import jwt
 
-from utils.configuration import kobo_constants, metabase_constants
-from utils.constants import kobo_form_constants, image_constants, numeric_constants
+from utils.configuration import kobo_constants, metabase_constants, image_constants
+from utils.constants import kobo_form_constants, numeric_constants
 
 from common.models import code
 from location.models import location, location_program, location_program_image
