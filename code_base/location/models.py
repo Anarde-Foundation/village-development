@@ -27,6 +27,7 @@ class location(models.Model):
         db_table = 'loc_location'
         get_latest_by = 'location_id'
 
+
 class location_program(models.Model):
     location_program_id = models.BigAutoField(primary_key=True)
     location_id = models.ForeignKey('location.location', null=False, blank=False, db_column='location_id',
@@ -48,3 +49,21 @@ class location_program(models.Model):
     class Meta:
         db_table = 'loc_location_program'
         get_latest_by = 'location_program_id'
+
+
+class location_program_image(models.Model):
+    location_program_image_id = models.BigAutoField(primary_key=True)
+    image_name = models.CharField(max_length=255, null=False)
+    image_type_code_id = models.ForeignKey('common.code', null=False, blank=False, db_column='image_type_code_id',
+                                            related_name='fk_image_type_code_id', on_delete=models.PROTECT)
+
+    location_program_id = models.ForeignKey('location_program', null=False, blank=False, db_column='location_program_id',
+                                            related_name='fk_location_program_id', on_delete=models.PROTECT)
+
+    created_by = models.ForeignKey(User, null=True, db_column='created_by', related_name='fk_image_cby',
+                                   on_delete=models.PROTECT)
+    created_on = models.DateTimeField(default=datetime.now)
+
+    class Meta:
+        db_table = 'loc_location_program_image'
+        get_latest_by = 'location_program_image_id'

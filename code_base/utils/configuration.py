@@ -1,3 +1,6 @@
+# from code_base.Anarde import settings
+import os
+
 class kobo_constants:
     user_name = "<kobo account user name>"
     pwd = "<kobo account password>"
@@ -13,3 +16,17 @@ class metabase_constants:
 
     metabase_site_url = "<metabase url>"
     metabase_secret_key = "<metabase secret key>"
+
+class image_constants:
+
+    localhost = "http://localhost:8000"
+    STATIC_URL = '/code_base/static/'
+
+    Static_path = "/static/"
+    currentDir = os.path.normpath(os.getcwd() + os.sep + os.pardir)
+    staticDir = currentDir + STATIC_URL
+
+    before_afterDir = staticDir + r"before_after/"
+    before_afterDirStatic = Static_path + r"before_after/"
+    image_type_before = "before"
+    image_type_after = "after"
