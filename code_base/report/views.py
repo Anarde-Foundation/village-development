@@ -5,9 +5,10 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.core import serializers
 from Anarde import settings as set
 from django.shortcuts import render
-from utils.constants import kobo_form_constants,  report_css_path
+from utils.constants import kobo_form_constants,  report_css_path, numeric_constants
+from utils.configuration import kobo_constants, metabase_constants, image_constants
 
-from location.models import location, location_program
+from location.models import location, location_program, location_program_image
 from domain.models import domain, domain_program
 from survey_form.models import survey, survey_question, survey_question_options
 from survey_response import views as response_views
@@ -152,7 +153,25 @@ def html_to_pdf_generation(request,pk): #weasyprint pdf generatiosurvey_idn comm
                 obj_location_program = location_program.objects.filter(program_id=program_id,
                                                                        location_id=obj_location.location_id). \
                     values('location_program_id', 'date_of_implementation', 'notes', 'location_id_id')
+                before_after_images = {}
                 for i in obj_location_program:
+                    print(i)
+                    if location_program_image.objects.filter(location_program_id=i['location_program_id']).exists():
+                        before_image_name = location_program_image.objects.filter\
+                            (location_program_id=i['location_program_id'],\
+                             image_type_code_id = numeric_constants.before_images).values_list('image_name', flat=True)
+                        for image in before_image_name:
+                            before_image_path = image_constants.localhost+image_constants.before_afterDirStatic + image
+                            print(before_image_path)
+                            before_after_images['before'] = before_image_path
+                        after_image_name = location_program_image.objects.filter \
+                            (location_program_id=i['location_program_id'], \
+                             image_type_code_id=numeric_constants.after_images).values_list('image_name', flat=True)
+                        for image in after_image_name:
+                            after_image_path = image_constants.localhost + image_constants.before_afterDirStatic + image
+                            print(after_image_path)
+                            before_after_images['after'] = after_image_path
+                        i.update(before_after_images)
                     item.update(i)
             else:
                 program_list.remove(item)
@@ -160,13 +179,13 @@ def html_to_pdf_generation(request,pk): #weasyprint pdf generatiosurvey_idn comm
     value_list = list(zip(color_index,domain_program_list))
 
     data = dict(zip(domain_name_list, value_list))
-
+    print("==================================================================================",data)
 
     response = HttpResponse(content_type="application/pdf")
     response['Content-Disposition'] = "inline;survey.pdf.pdf"
 
     html = render_to_string('survey_report.html', {'object': objsurvey,
-                                             'domain_index':data, 'program_list':program_list})
+                                             'domain_index':data})
     font_config = FontConfiguration()
     print(set.BASE_DIR)
     HTML(string=html).write_pdf(response, stylesheets=report_css_path.stylesheet)#, font_config=font_config, stylesheets=[CSS('/home/aishwarya/Project/Anarde/Anarde/village-development/code_base/static/theme/vendors/bootstrap/dist/css/bootstrap.min.css')])

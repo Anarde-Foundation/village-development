@@ -82,7 +82,7 @@ Survey Details
         <div class="col-3">
             <dl>
                 <dt>Description</dt>
-                <dd>{{ program.description.value }}</dd>
+                <dd>{{ program.description }}</dd>
             </dl>
         </div>
         <div class="col-3">
@@ -99,6 +99,23 @@ Survey Details
         </div>
 
     </div>
+    <div class="row">
+        {% if program.after %}
+        <div class="col-6">
+        <dl>
+            <dt>Before</dt>
+            <dd><img src="{{program.before}}" class="img-thumbnail rounded program-images"></dd>
+        </dl>
+        </div>
+        <div class="col-6">
+        <dl>
+            <dt>After</dt>
+            <dd><img src="{{program.after}}" class="img-thumbnail rounded program-images"></dd>
+        </dl>
+        </div>
+        {%endif%}
+    </div>
+
         {% endfor %}
         {% else %}
         <h3 > </h3>
