@@ -1,0 +1,112 @@
+{% extends 'report.html' %}
+{% block page-title %}
+Survey Details
+{% endblock %}
+
+{% block content %}
+
+<div class="col-md-10">
+            <h1 class="card-title" style="text-align:left;">Survey details</h1>
+            <hr/>
+</div>
+        <!--Survey details - -->
+        <div >
+            <div class="container">
+                <div class="row">
+                    <div class="col-sm-12 col-md-12" >
+                        <h3 class="card-title">{{object.survey_name}}
+
+                        </h3>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-3">
+                        <dl>
+                            <dt>Survey Type</dt>
+                            <dd>{{ object.survey_type_code_id.code_name }}</dd>
+                        </dl>
+                    </div>
+                    <div class="col-3">
+                        <dl>
+                            <dt>Publish date</dt>
+                            <dd>{{ object.publish_date }}</dd>
+                        </dl>
+                    </div>
+                    <div class="col-3">
+                        <dl>
+                            <dt>Location</dt>
+                            <dd>{{ object.location_id.location_name }}</dd>
+                        </dl>
+                    </div>
+                    <div class="col-3">
+                        <dl>
+                            <dt>Survey Created by</dt>
+                            <dd>{{ object.created_by }}</dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+            <hr/>
+        </div>
+
+
+
+<div >
+    <h5> Survey analysis</h5>
+</div>
+
+                <!--Content for domainwise index tab -->
+<div >
+    {% for key,value in domain_index.items%}
+     <h4 class="px-3 mb-3">Vulnerability index for {{key}} domain</h4>
+     <div id ="domain_box" class="col-sm-6 col-lg-3 ">
+        <div  class="card text-white {{value.0.1}} domain-index" domain-id=[domain_id] >
+            <div class="card-body pb-0">
+                <p class="text-light">{{key}}</p>
+                <div class="chart-wrapper px-0 card-domain-index stat-widget-one">
+                     <strong class="count stat-digit text-white">{{value.0.0}} %</strong>
+                </div>
+            </div>
+        </div>
+     </div>
+    <div class="container">
+        {% if value.1 %}
+        <h4 > Implemented programs under {{key}} domain</h4>
+        {% for program in value.1 %}
+        <div class="row">
+            <div class="col-sm-12 col-md-12" >
+                <h5 class="card-title"> Program name : {{program.program_name}}</h5>
+            </div>
+        </div>
+    <div class="row">
+        <div class="col-3">
+            <dl>
+                <dt>Description</dt>
+                <dd>{{ program.description.value }}</dd>
+            </dl>
+        </div>
+        <div class="col-3">
+            <dl>
+                <dt>Notes</dt>
+                <dd>{{ program.notes }}</dd>
+            </dl>
+        </div>
+        <div class="col-3">
+            <dl>
+                <dt>Date of implementeation</dt>
+                <dd>{{ program.date_of_implementation }}</dd>
+            </dl>
+        </div>
+
+    </div>
+        {% endfor %}
+        {% else %}
+        <h3 > </h3>
+        {%endif%}
+    </div>
+    {%endfor%}
+</div>
+
+{% endblock %}
+
+

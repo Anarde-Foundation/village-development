@@ -1,25 +1,18 @@
 import inspect
 
 from django.shortcuts import render, redirect, get_object_or_404
-from django.http import HttpResponse
-from django.contrib.auth.decorators import login_required
-from django.core import serializers
 
+from django.core import serializers
+from Anarde import settings as set
 from django.shortcuts import render
-from utils.configuration import kobo_constants, metabase_constants
-from utils.constants import kobo_form_constants
-from .test_pdf import render_to_pdf
-from django.views.generic import TemplateView
-from common.models import code
+from utils.constants import kobo_form_constants,  report_css_path
+
 from location.models import location, location_program
 from domain.models import domain, domain_program
 from survey_form.models import survey, survey_question, survey_question_options
-from survey_response.models import survey_response, survey_response_detail
 from survey_response import views as response_views
 import json
-import jwt
 from weasyprint import HTML, CSS
-from django.template.loader import get_template
 from django.http import HttpResponse
 from weasyprint import HTML
 from base64 import b64encode
@@ -28,7 +21,6 @@ import xml.etree.ElementTree as ET
 from io import BytesIO
 from pprint import pprint
 from django.template.loader import render_to_string
-from django.core.files.storage import FileSystemStorage
 from weasyprint.fonts import FontConfiguration
 from operator import itemgetter
 
@@ -79,7 +71,7 @@ def pdf_generation(request):
     data = serializers.serialize('json', location_list)
     return HttpResponse(data, content_type='application/json')
 
-def survey_html(request,pk,template_name='temp.html'):
+def survey_html(request,pk,template_name='survey_report.html'):
     objsurvey = get_object_or_404(survey, pk=pk)
     # Get list of distinct domain ids, applicable for the current survey
     distinct_domain_ids = survey_question.objects.values('domain_id').filter(survey_id=pk).distinct()
@@ -122,16 +114,20 @@ def html_to_pdf_generation(request,pk): #weasyprint pdf generatiosurvey_idn comm
 
     # Get list of domain objects based on distinct domain list above
     domain_list = domain.objects.filter(domain_id__in=[item['domain_id'] for item in distinct_domain_ids])
+
+
     obj_location = location.objects.get(location_id=objsurvey.location_id.location_id)
+
+
     data_json = serializers.serialize('json', domain_list)
     data_list = json.loads(data_json)
     for item in data_list:
         index_value = response_views.get_domain_index(item, pk)
         item.update({"index": index_value})
         item.update({"location_id": obj_location.location_id})  # location id of conducted survey
-    res = list(map(itemgetter('fields'), data_list))
+    field_list = list(map(itemgetter('fields'), data_list))
     index = list(map(itemgetter('index'), data_list))
-    res1 = list(map(itemgetter('domain_name'), res))
+    domain_name_list = list(map(itemgetter('domain_name'), field_list))
     color = []
     for i in index:
         color_code = 'bg-flat-color-2'
@@ -146,83 +142,37 @@ def html_to_pdf_generation(request,pk): #weasyprint pdf generatiosurvey_idn comm
         color.append(color_code)
     print(color)
     color_index = tuple(zip(index, color))
-    data = dict(zip(res1, color_index))
- 
+
+    domain_program_list = []
+    for domains in domain_list:
+        program_list = domain_program.objects.filter(domain_id=domains.domain_id).values('domain_program_id','program_name','description')
+        for item in program_list:
+            program_id = item['domain_program_id']
+            if location_program.objects.filter(program_id=program_id, location_id=obj_location.location_id).exists():
+                obj_location_program = location_program.objects.filter(program_id=program_id,
+                                                                       location_id=obj_location.location_id). \
+                    values('location_program_id', 'date_of_implementation', 'notes', 'location_id_id')
+                for i in obj_location_program:
+                    item.update(i)
+            else:
+                program_list.remove(item)
+        domain_program_list.append(program_list)
+    value_list = list(zip(color_index,domain_program_list))
+
+    data = dict(zip(domain_name_list, value_list))
+
+
     response = HttpResponse(content_type="application/pdf")
     response['Content-Disposition'] = "inline;survey.pdf.pdf"
 
-    html = render_to_string('temp.html', {'object': objsurvey,
-                                             'domain_index':data})
+    html = render_to_string('survey_report.html', {'object': objsurvey,
+                                             'domain_index':data, 'program_list':program_list})
     font_config = FontConfiguration()
-    HTML(string=html).write_pdf(response, font_config=font_config, stylesheets=[CSS('/home/aishwarya/Project/Anarde/Anarde/village-development/code_base/static/theme/vendors/bootstrap/dist/css/bootstrap.min.css')])
+    print(set.BASE_DIR)
+    HTML(string=html).write_pdf(response, stylesheets=report_css_path.stylesheet)#, font_config=font_config, stylesheets=[CSS('/home/aishwarya/Project/Anarde/Anarde/village-development/code_base/static/theme/vendors/bootstrap/dist/css/bootstrap.min.css')])
     return response
 
 
 
 
 
-
-# Create your views here.
-
-def get_survey_question_list_for_pdf(request, pk):
-    survey_questions_list = survey_question.objects.filter(survey_id = pk )
-    data = serializers.serialize('json', survey_questions_list)
-    return HttpResponse(data, content_type='application/json')
-
-
-def InvoicePDFView(request,pk):
-    #Retrieve data or whatever you need
-    # obj_domain = domain.objects.get(pk=domain_id)
-    obj_survey = survey.objects.get(survey_id = pk)
-    obj_survey_question = get_survey_question_list_for_pdf(request,pk)
-    return render_to_pdf(
-            'generate_pdf.html',
-            {
-                'pagesize':'A4',
-                'object': obj_survey,
-                'obj_question': obj_survey_question,
-
-            }
-        )
-
-def show_domainwise_metabase_graph(request, survey_id, domain_id):
-    # Get domain object
-    # objDomain = get_object_or_404(domain, pk=domain_id)
-    try:
-        objDomain = domain.objects.get(pk = domain_id)
-    except domain.DoesNotExist:
-        objDomain = None
-
-    if (objDomain == None or objDomain.metabase_dashboard_id == None):
-        # responseData = {}
-        # responseData['iframeUrl'] = ''
-        return None
-    else:
-        # Payload for metabase graphs
-        payload = {
-            "resource": {"dashboard": objDomain.metabase_dashboard_id},
-            "params": {
-                "survey_id": survey_id
-            }
-        }
-
-        # Build iframe url
-        token = jwt.encode(payload, metabase_constants.metabase_secret_key, algorithm="HS256")
-        iframeUrl = metabase_constants.metabase_site_url + "/embed/dashboard/" + token.decode(
-            "utf8") + "#bordered=false&titled=false"
-        return iframeUrl
-    #     responseData = {}
-    #     responseData['iframeUrl'] = iframeUrl
-    #
-    # data = json.dumps(responseData) #{'iframeUrl': iframeUrl}
-    # return HttpResponse(data, content_type='application/json')
-
-def domain_graphs_pdf(request,pk,domain_id):
-    iframeUrl = show_domainwise_metabase_graph(request, pk, domain_id)
-    print(iframeUrl)
-    return render_to_pdf(
-        'Metabase.html',
-        {
-            'iframeUrl': iframeUrl,
-        }
-    )
