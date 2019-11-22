@@ -21,9 +21,9 @@ import json
 import jwt
 
 from utils.configuration import kobo_constants, metabase_constants, image_constants
-from utils.constants import kobo_form_constants, numeric_constants
+from utils.constants import kobo_form_constants, numeric_constants, code_group_names
 
-from common.models import code
+from common.models import code, code_group
 from location.models import location, location_program, location_program_image
 from domain.models import domain, domain_program
 from .models import survey, survey_question, survey_question_options
@@ -96,7 +96,8 @@ class SurveyForm(ModelForm):
 
     survey_name = forms.CharField(required= True, label='Survey name', max_length=100)
 
-    code_queryset = code.objects.all()
+    code_group_id = code_group.objects.filter(code_group_id=code_group_names.survey_type)
+    code_queryset = code.objects.filter(code_group_id=code_group_id[0])
     survey_type_code_id = forms.ModelChoiceField(queryset=code_queryset, empty_label='Select an Option',
                                                  label='Select Survey Type', required=True)
 

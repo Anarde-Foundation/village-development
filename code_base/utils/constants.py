@@ -16,3 +16,7 @@ class numeric_constants:
 
     before_images = 101001
     after_images = 101002
+
+
+class code_group_names:
+    survey_type = 100
