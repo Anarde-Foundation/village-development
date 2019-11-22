@@ -146,11 +146,11 @@
             console.log(response);
         };
 
-        ajaxURL = '/survey/survey_location_program_update_image_upload/'+ {{location_id}};
+        ajaxURL = '/survey/survey_location_program_update_image_upload/{{location_id}}/{{domain_id}}';
         console.log(ajaxURL);
         $.ajax({
             type: "POST",
-            url: ajaxURL,   /*'{% url "survey_location_program_update_image_upload" location_id %}',*/
+            url: '{% url "survey_location_program_update_image_upload" location_id domain_id %}',
             data: data,
             processData: false,
             contentType: false,

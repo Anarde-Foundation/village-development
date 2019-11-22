@@ -307,8 +307,10 @@ def get_location_program_list_for_datatable(request, pk, location_id):
 
 @login_required
 @csrf_exempt
-def location_program_update_image_upload(request, location_id):
-    objlocation = location_program.objects.get(pk = location_id)
+def location_program_update_image_upload(request, location_id, domain_id):
+    obj_program = domain_program.objects.get(pk=domain_id)
+    objlocation = location_program.objects.get(location_id=location_id, program_id=obj_program)
+
     print(objlocation)
     print("in upload image")
     if request.is_ajax():
@@ -417,7 +419,7 @@ def location_program_update(request, pk, location_id, template_name='survey_loca
     print("--------")
     print(after_images)
     return render(request, template_name, {'form': form, 'obj_program': obj_program, 'location_name': location_name,
-                                           'location_id': location_id,
+                                           'location_id': location_id, 'domain_id': pk,
                                            'path': image_constants.localhost+image_constants.before_afterDirStatic,
                                            'before_photos': before_images, 'after_photos': after_images})
 
