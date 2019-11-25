@@ -179,7 +179,6 @@ def html_to_pdf_generation(request,pk): #weasyprint pdf generatiosurvey_idn comm
     value_list = list(zip(color_index,domain_program_list))
 
     data = dict(zip(domain_name_list, value_list))
-    print("==================================================================================",data)
 
     response = HttpResponse(content_type="application/pdf")
     response['Content-Disposition'] = "inline;survey.pdf.pdf"

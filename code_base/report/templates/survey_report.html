@@ -6,7 +6,7 @@ Survey Details
 {% block content %}
 
 <div class="col-md-10">
-            <h1 class="card-title" style="text-align:left;">Survey details</h1>
+            <h1 class="card-title" style="text-align:center;">Survey details</h1>
             <hr/>
 </div>
         <!--Survey details - -->
@@ -50,20 +50,21 @@ Survey Details
         </div>
 
 
-
-<div >
-    <h5> Survey analysis</h5>
+    <div >
+    <h5 class="card-title"> Survey analysis</h5>
 </div>
 
                 <!--Content for domainwise index tab -->
 <div >
+
+
     {% for key,value in domain_index.items%}
      <h4 class="px-3 mb-3">Vulnerability index for {{key}} domain</h4>
-     <div id ="domain_box" class="col-sm-6 col-lg-3 ">
-        <div  class="card text-white {{value.0.1}} domain-index" domain-id=[domain_id] >
-            <div class="card-body pb-0">
+     <div id ="card-domain-index" class="col-sm-6 col-lg-3 ">
+        <div  class="card text-white {{value.0.1}} "  >
+            <div class="card-body pb-0 ">
                 <p class="text-light">{{key}}</p>
-                <div class="chart-wrapper px-0 card-domain-index stat-widget-one">
+                <div class="chart-wrapper px-0 stat-widget-one">
                      <strong class="count stat-digit text-white">{{value.0.0}} %</strong>
                 </div>
             </div>

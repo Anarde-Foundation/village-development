@@ -24,5 +24,13 @@ class code_group_names:
     survey_type = 100
 
 class report_css_path:
-    stylesheet = [CSS(settings.BASE_DIR +'/static/css/appStyle.css'),
-                  CSS(settings.BASE_DIR + '/static/theme/vendors/bootstrap/dist/css/bootstrap.min.css')]
+    stylesheet = [CSS(settings.BASE_DIR +'/templates/reportStyle.css'),
+                  CSS(settings.BASE_DIR + '/templates/report_bootstrap.min.css')]
+    # position: relative;
+    # border: 0
+    # px;
+    # width: calc(160
+    # mm * 1.25);
+    # height: calc(297
+    # mm * 1.25);
+    # padding: 0
