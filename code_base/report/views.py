@@ -79,46 +79,8 @@ def survey_html(request,pk,template_name='survey_report.html'):
 
     # Get list of domain objects based on distinct domain list above
     domain_list = domain.objects.filter(domain_id__in=[item['domain_id'] for item in distinct_domain_ids])
-    obj_location = location.objects.get(location_id=objsurvey.location_id.location_id)
-    data_json = serializers.serialize('json', domain_list)
-    data_list = json.loads(data_json)
-    for item in data_list:
-        index_value = response_views.get_domain_index(item, pk)
-        item.update({"index": index_value})
-        item.update({"location_id": obj_location.location_id})  # location id of conducted survey
-    res = list(map(itemgetter('fields'), data_list))
-    index = list(map(itemgetter('index'), data_list))
-    res1 = list(map(itemgetter('domain_name'), res))
-    color = []
-    for i in index:
-        color_code = 'bg-flat-color-2'
-        if float(i) < 25 :
-            color_code = 'bg-danger'
-        elif  float(i) >= 25 and float(i) < 50 :
-            color_code = 'bg-warning'
-        elif float(i) >= 50  and float(i) < 75:
-            color_code = 'bg-flat-color-2'
-        else:
-            color_code = 'bg-success'
-        color.append(color_code)
-    print(color)
-    color_index = tuple(zip(index, color))
-    data = dict(zip(res1, color_index))
-    return render(request, template_name, {'object': objsurvey,
-                                             'domain_index':data})
-
-
-def html_to_pdf_generation(request,pk): #weasyprint pdf generatiosurvey_idn common function
-    objsurvey = get_object_or_404(survey, pk=pk)
-    # Get list of distinct domain ids, applicable for the current survey
-    distinct_domain_ids = survey_question.objects.values('domain_id').filter(survey_id=pk).distinct()
-
-    # Get list of domain objects based on distinct domain list above
-    domain_list = domain.objects.filter(domain_id__in=[item['domain_id'] for item in distinct_domain_ids])
-
 
     obj_location = location.objects.get(location_id=objsurvey.location_id.location_id)
-
 
     data_json = serializers.serialize('json', domain_list)
     data_list = json.loads(data_json)
@@ -146,7 +108,8 @@ def html_to_pdf_generation(request,pk): #weasyprint pdf generatiosurvey_idn comm
 
     domain_program_list = []
     for domains in domain_list:
-        program_list = domain_program.objects.filter(domain_id=domains.domain_id).values('domain_program_id','program_name','description')
+        program_list = domain_program.objects.filter(domain_id=domains.domain_id).values('domain_program_id',
+                                                                                         'program_name', 'description')
         for item in program_list:
             program_id = item['domain_program_id']
             if location_program.objects.filter(program_id=program_id, location_id=obj_location.location_id).exists():
@@ -157,11 +120,12 @@ def html_to_pdf_generation(request,pk): #weasyprint pdf generatiosurvey_idn comm
                 for i in obj_location_program:
                     print(i)
                     if location_program_image.objects.filter(location_program_id=i['location_program_id']).exists():
-                        before_image_name = location_program_image.objects.filter\
-                            (location_program_id=i['location_program_id'],\
-                             image_type_code_id = numeric_constants.before_images).values_list('image_name', flat=True)
+                        before_image_name = location_program_image.objects.filter \
+                            (location_program_id=i['location_program_id'], \
+                             image_type_code_id=numeric_constants.before_images).values_list('image_name', flat=True)
+
                         for image in before_image_name:
-                            before_image_path = image_constants.localhost+image_constants.before_afterDirStatic + image
+                            before_image_path = image_constants.localhost + image_constants.before_afterDirStatic + image
                             print(before_image_path)
                             before_after_images['before'] = before_image_path
                         after_image_name = location_program_image.objects.filter \
@@ -175,6 +139,104 @@ def html_to_pdf_generation(request,pk): #weasyprint pdf generatiosurvey_idn comm
                     item.update(i)
             else:
                 program_list.remove(item)
+        domain_program_list.append(program_list)
+    value_list = list(zip(color_index, domain_program_list))
+
+    data = dict(zip(domain_name_list, value_list))
+    return render(request, template_name, {'object': objsurvey,
+                                             'domain_index':data})
+
+
+def html_to_pdf_generation(request,pk): #weasyprint pdf generatiosurvey_idn common function
+    objsurvey = get_object_or_404(survey, pk=pk)
+    # Get list of distinct domain ids, applicable for the current survey
+    distinct_domain_ids = survey_question.objects.values('domain_id').filter(survey_id=pk).distinct()
+
+    # Get list of domain objects based on distinct domain list above
+    domain_list = domain.objects.filter(domain_id__in=[item['domain_id'] for item in distinct_domain_ids])
+
+
+    obj_location = location.objects.get(location_id=objsurvey.location_id.location_id)
+
+
+    data_json = serializers.serialize('json', domain_list)
+    data_list = json.loads(data_json)
+    for item in data_list:
+        index_value = response_views.get_domain_index(item, pk)
+        item.update({"index": index_value})
+        item.update({"location_id": obj_location.location_id})  # location id of conducted survey
+    field_list = list(map(itemgetter('fields'), data_list))
+    index = list(map(itemgetter('index'), data_list))
+    domain_name_list = list(map(itemgetter('domain_name'), field_list))
+    color_bg = []
+    color_text_list =[]
+    for i in index:
+        color_code = 'bg-flat-color-2'
+        color_text = 'bg-flat-color-2'
+        if float(i) < 25:
+            color_code = 'bg-danger'
+            color_text = 'text-danger'
+        elif float(i) >= 25 and float(i) < 50:
+            color_code = 'bg-warning'
+            color_text = 'text-warning'
+        elif float(i) >= 50 and float(i) < 75:
+            color_code = 'bg-flat-color-2'
+            color_text = 'bg-flat-color-2'
+        else:
+            color_code = 'bg-success'
+            color_text = 'text-success'
+        color_bg.append(color_code)
+        color_text_list.append(color_text)
+    # print(color_bg)
+
+    color_index = tuple(zip(index, color_bg, color_text_list))
+    # print(color_index)
+
+    domain_program_list = []
+    for domains in domain_list:
+        program_list = domain_program.objects.filter(domain_id=domains.domain_id).values('domain_program_id','program_name','description')
+        for item in program_list:
+            program_id = item['domain_program_id']
+            if location_program.objects.filter(program_id=program_id, location_id=obj_location.location_id).exists():
+                obj_location_program = location_program.objects.filter(program_id=program_id,
+                                                                       location_id=obj_location.location_id). \
+                    values('location_program_id', 'date_of_implementation', 'notes', 'location_id_id')
+                # obj_location_program = obj_location_programs['program_name'].capitalize()
+                # print("\n\n\n %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n",obj_location_program)
+                before_after_images = {}
+                before_images = []
+                after_images = []
+                for i in obj_location_program:
+                    # print(i)
+
+                    if location_program_image.objects.filter(location_program_id=i['location_program_id']).exists():
+                        before_image_name = location_program_image.objects.filter\
+                            (location_program_id=i['location_program_id'],\
+                             image_type_code_id = numeric_constants.before_images).values_list('image_name', flat=True)
+                        # print("###############################################################BEFORE", before_image_name)
+                        for image in before_image_name:
+                            before_image_path = image_constants.localhost+image_constants.before_afterDirStatic + image
+                            # print(before_image_path)
+                            before_images.append(before_image_path)
+                            before_after_images['before'] = before_images
+
+                        after_image_name = location_program_image.objects.filter \
+                            (location_program_id=i['location_program_id'], \
+                             image_type_code_id=numeric_constants.after_images).values_list('image_name', flat=True)
+                        # print("###############################################################AFTER", after_image_name)
+                        for image in after_image_name:
+                            after_image_path = image_constants.localhost + image_constants.before_afterDirStatic + image
+                            # print(after_image_path)
+                            after_images.append(after_image_path)
+                            before_after_images['after'] = after_images
+                        # print("======================================================================", before_after_images)
+                        i.update(before_after_images)
+                    item.update(i)
+
+            else:
+                program_list.remove(item)
+            # program_list = (program_list['program_name'].capitalize())
+            # print("\n\n\n %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n", program_list)
         domain_program_list.append(program_list)
     value_list = list(zip(color_index,domain_program_list))
 
@@ -192,5 +254,31 @@ def html_to_pdf_generation(request,pk): #weasyprint pdf generatiosurvey_idn comm
 
 
 
-
+# <div class="col-12">
+#                     <h3> Programs implemented for {{key}} domain</h3>
+#                 </div>
+#                 <div class="col-6">
+#                     <dl>
+#                         <dt>Program name</dt>
+#                         <dd>{{program.program_name}}</dd>
+#                     </dl>
+#                 </div>
+#                 <div class="col-6">
+#                     <dl>
+#                         <dt>Date of implementation</dt>
+#                         <dd>{{ program.date_of_implementation }}</dd>
+#                     </dl>
+#                 </div>
+#                 <div class="col-12">
+#                     <dl>
+#                         <dt>Description</dt>
+#                         <dd>{{ program.description }}</dd>
+#                     </dl>
+#                 </div>
+#                 <div class="col-12">
+#                     <dl>
+#                         <dt>Notes</dt>
+#                         <dd>{{ program.notes }}</dd>
+#                     </dl>
+#                 </div>
 

@@ -75,3 +75,19 @@ dd {
     border:1px solid rgba(0,0,0,.125);
     border-radius:.25rem
     }
+.domain-card {
+    width: 250px;
+    height: 150px;
+}
+.text-success{
+    color:#28a745!important
+    }
+.text-danger{
+    color:#dc3545!important
+    }
+.text-warning{
+    color:#ffc107!important
+    }
+.page-break {
+    page-break-before: always
+}
