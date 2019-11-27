@@ -155,12 +155,13 @@ def html_to_pdf_generation(request,pk): #weasyprint pdf generatiosurvey_idn comm
     # Get list of domain objects based on distinct domain list above
     domain_list = domain.objects.filter(domain_id__in=[item['domain_id'] for item in distinct_domain_ids])
 
-
+   # get location object
     obj_location = location.objects.get(location_id=objsurvey.location_id.location_id)
 
 
     data_json = serializers.serialize('json', domain_list)
     data_list = json.loads(data_json)
+    # Insert vulnerability index and location id in domain object
     for item in data_list:
         index_value = response_views.get_domain_index(item, pk)
         item.update({"index": index_value})
@@ -170,6 +171,7 @@ def html_to_pdf_generation(request,pk): #weasyprint pdf generatiosurvey_idn comm
     domain_name_list = list(map(itemgetter('domain_name'), field_list))
     color_bg = []
     color_text_list =[]
+    # Assign color-codes according to index value for domain
     for i in index:
         color_code = 'bg-flat-color-2'
         color_text = 'bg-flat-color-2'
@@ -188,56 +190,50 @@ def html_to_pdf_generation(request,pk): #weasyprint pdf generatiosurvey_idn comm
         color_bg.append(color_code)
         color_text_list.append(color_text)
     # print(color_bg)
-
+    # get tuple of (index_value, ba_color, text_color) for domain
     color_index = tuple(zip(index, color_bg, color_text_list))
     # print(color_index)
-
+    # Get implemented program list for domain
     domain_program_list = []
     for domains in domain_list:
         program_list = domain_program.objects.filter(domain_id=domains.domain_id).values('domain_program_id','program_name','description')
-        for item in program_list:
+        for item in program_list: # for each program
             program_id = item['domain_program_id']
             if location_program.objects.filter(program_id=program_id, location_id=obj_location.location_id).exists():
                 obj_location_program = location_program.objects.filter(program_id=program_id,
                                                                        location_id=obj_location.location_id). \
                     values('location_program_id', 'date_of_implementation', 'notes', 'location_id_id')
-                # obj_location_program = obj_location_programs['program_name'].capitalize()
-                # print("\n\n\n %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n",obj_location_program)
+
                 before_after_images = {}
                 before_images = []
                 after_images = []
-                for i in obj_location_program:
+                for i in obj_location_program: # for each implemented program
                     # print(i)
-
+                    # Get before After images
                     if location_program_image.objects.filter(location_program_id=i['location_program_id']).exists():
                         before_image_name = location_program_image.objects.filter\
                             (location_program_id=i['location_program_id'],\
                              image_type_code_id = numeric_constants.before_images).values_list('image_name', flat=True)
-                        # print("###############################################################BEFORE", before_image_name)
+
                         for image in before_image_name:
                             before_image_path = image_constants.localhost+image_constants.before_afterDirStatic + image
-                            # print(before_image_path)
                             before_images.append(before_image_path)
                             before_after_images['before'] = before_images
 
                         after_image_name = location_program_image.objects.filter \
                             (location_program_id=i['location_program_id'], \
                              image_type_code_id=numeric_constants.after_images).values_list('image_name', flat=True)
-                        # print("###############################################################AFTER", after_image_name)
                         for image in after_image_name:
                             after_image_path = image_constants.localhost + image_constants.before_afterDirStatic + image
-                            # print(after_image_path)
+
                             after_images.append(after_image_path)
                             before_after_images['after'] = after_images
-                        # print("======================================================================", before_after_images)
-                        i.update(before_after_images)
+                        i.update(before_after_images) # insert images in implemented program list
                     item.update(i)
 
             else:
                 program_list.remove(item)
-            # program_list = (program_list['program_name'].capitalize())
-            # print("\n\n\n %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n", program_list)
-        domain_program_list.append(program_list)
+        domain_program_list.append(program_list) # assign program list to respective domain
     value_list = list(zip(color_index,domain_program_list))
 
     data = dict(zip(domain_name_list, value_list))
@@ -253,32 +249,4 @@ def html_to_pdf_generation(request,pk): #weasyprint pdf generatiosurvey_idn comm
     return response
 
 
-
-# <div class="col-12">
-#                     <h3> Programs implemented for {{key}} domain</h3>
-#                 </div>
-#                 <div class="col-6">
-#                     <dl>
-#                         <dt>Program name</dt>
-#                         <dd>{{program.program_name}}</dd>
-#                     </dl>
-#                 </div>
-#                 <div class="col-6">
-#                     <dl>
-#                         <dt>Date of implementation</dt>
-#                         <dd>{{ program.date_of_implementation }}</dd>
-#                     </dl>
-#                 </div>
-#                 <div class="col-12">
-#                     <dl>
-#                         <dt>Description</dt>
-#                         <dd>{{ program.description }}</dd>
-#                     </dl>
-#                 </div>
-#                 <div class="col-12">
-#                     <dl>
-#                         <dt>Notes</dt>
-#                         <dd>{{ program.notes }}</dd>
-#                     </dl>
-#                 </div>
 
