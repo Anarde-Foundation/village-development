@@ -1,0 +1,131 @@
+{% extends 'home.html' %}
+
+{% block page-title %}
+  Add Funder Program
+{% endblock %} <!-- end of block page-title -->
+
+{% block page-title-path %}
+<ol class="breadcrumb text-right">
+    <li><a href="/funders/">Funders</a></li>
+    <li class="active">Add program</li>
+</ol>
+{% endblock %} <!-- end of block page-title-path -->
+{% block right-pane-content %}
+<div class="content mt-3">
+    <div class="animated fadeIn">
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-body  px-3 py-4">
+                        <form  method="post" action="">
+                            {% csrf_token %}
+                            <div class="form-group col-lg-6 col-md-6 col-sm-12 ">
+                                <label class="form-control-label">Organization</label>
+                                <input type="text" disabled class="form-control" value="{{object.organization_name}}">
+                            </div>
+
+                            <div class="form-group col-lg-6 col-md-6 col-sm-12">
+                                <label class="form-control-label">Select Location</label>
+                                {{form.location_id}}
+                                {% for error in form.location_id.errors %}
+                                <small class="form-text text-danger">{{error}}</small>
+                                {% endfor %}
+                            </div>
+                            <!--<div class="form-group col-lg-6 col-md-6 col-sm-12">
+                                <label class="form-control-label">Program name</label>
+                                <input id="{{form.program_name.id_for_lable}}" name="{{ form.program_name.html_name }}"
+                                       type="text" class="form-control" data-val="true" placeholder="Enter program name "
+                                       aria-required="true" aria-invalid="false" >
+                                {% for error in form.program_name.errors %}
+                                <small class="form-text text-danger">{{error}}</small>
+                                {% endfor %}
+                            </div>-->
+                            <div class="form-group col-lg-6 col-md-6 col-sm-12">
+                                <label class="form-control-label">Select Program</label>
+                                {{form.location_program_id}}
+                                {% for error in form.location_program_id.errors %}
+                                <small class="form-text text-danger">{{error}}</small>
+                                {% endfor %}
+                            </div>
+                            <div class="form-group col-lg-6 col-md-6 col-sm-12">
+                                <label class="form-control-label">Funding Amount</label>
+                                <input id="{{form.funding_amount.id_for_labe}}" name="{{ form.funding_amount.html_name }}"
+                                       type="text" class="form-control" data-val="true" placeholder="Enter funding amount"
+                                       aria-required="true" aria-invalid="false" />
+                            </div>
+
+
+                            <div>
+                                <div class="col-lg-12 col-md-12 col-sm-12">
+                                    <button id=btnSave" type="submit" value="add" class="btn btn-info">Add</button>
+                                     <a href="{% url 'funder_view' object.funder_id %}" id="btnCancel"  class="ml-2 btn btn-outline-info">Cancel</a>
+                                </div>
+                            </div>
+
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %} <!-- end of right-pane-content -->
+
+{% block page_script %}
+<script type="text/javascript">
+
+
+    function populatePrograms(location_id){
+        console.log(location_id);
+        var populateProgramsSuccessCB = function (response) {
+            console.log(response);
+            console.log(response.length);
+
+            for(var i=0;i < response.length;i++){
+                console.log(response[i]);
+                console.log(response[i]['fields']['program_id'])
+                $('#id_location_program_id').append($('<option>', {
+                    value: response[i]['fields']['program_id'],
+                    text: response[i]['fields']['program_id']
+            }));
+            }
+            /*$("#id_location_program_id").html(response);*/
+        };
+
+        var populateProgramsErrorCB = function (response) {
+            console.log('In error');
+            console.log(response);
+        };
+
+        ajaxURL = '/funders/load_location_programs/'+location_id;
+        console.log(ajaxURL);
+
+        $.ajax({
+            /*type: "POST",*/
+            url: ajaxURL,
+            processData: false,
+            contentType: false,
+            success: populateProgramsSuccessCB,
+            error: populateProgramsErrorCB
+        });
+    };
+
+
+    jQuery(document).ready(function($) {
+        $('#id_date_of_implementation_month').chosen({width: "30%"});
+        $('#id_date_of_implementation_day').chosen({width: "16%"});
+        $('#id_date_of_implementation_year').chosen({width: "20%"});
+        $('select').chosen({width:'100%'});
+
+        $("#id_location_id").change(function () {
+            var location_id = $(this).val();
+            //console.log(location_id);
+            //populatePrograms(location_id);
+        });
+    });
+  </script>
+
+{% endblock %}

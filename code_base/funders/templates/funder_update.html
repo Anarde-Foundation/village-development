@@ -1,0 +1,94 @@
+{% extends 'home.html' %}
+{% block page-title %}
+Update Funder
+{% endblock %}
+{% block page-title-path %}
+<ol class="breadcrumb text-right">
+    <li><a href="/funders/">Funders</a></li>
+    <li><a href="/funders/">Details</a></li>
+    <li class="active">Update Funder</li>
+</ol>
+{% endblock %}
+
+
+
+{% block right-pane-content %}
+<div class="content mt-3">
+    <div class="animated fadeIn">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-body px-3 py-4">
+                        <form  method="post" action="">
+                            {% csrf_token %}
+                            <div class="form-group col-lg-6 col-md-6 col-sm-12">
+                                <label class="form-control-label" for="{{form.organization_name.id_for_label}}">Organization name</label>
+                                <input id="{{form.organization_name.id_for_label}}" name="{{ form.organization_name.html_name }}"
+                                       value="{{form.organization_name.value}}" type="text" class="form-control" aria-required="true"
+                                        placeholder="Enter organization name "
+                                       aria-invalid="false" >
+                                {% for error in form.organization_name.errors %}
+                                    <small class="form-text text-danger">{{error}}</small>
+                                {% endfor %}
+                            </div>
+
+                            <div class="form-group col-lg-6 col-md-6 col-sm-12">
+                                <label class="form-control-label">Funder</label>
+                                {{form.user_id}}
+                                {% for error in form.user_id.errors %}
+                                <small class="form-text text-danger">{{error}}</small>
+                                {% endfor %}
+                            </div>
+
+                            <div class="form-group col-lg-6 col-md-6 col-sm-12 date-picker">
+                                <label class="form-control-label">Date of Funding</label><br/>
+                                {{form.funding_date}}
+                                {% for error in form.funding_date.errors %}
+                                    <small class="form-text text-danger">{{error}}</small>
+                                {% endfor %}
+                            </div>
+
+                            <div class="form-group col-lg-6 col-md-6 col-sm-12">
+                                <label class="form-control-label"> Funding Amount(in INR) </label>
+                                <input id="{{form.funding_amount.id_for_label}}" name="{{ form.funding_amount.html_name }}"
+                                       type="text" class="form-control" data-val="true" placeholder="Enter amount"
+                                       aria-required="true" aria-invalid="false" value="{{form.funding_amount.value}}">
+                                {% for error in form.funding_amount.errors %}
+                                <small class="form-text text-danger">{{error}}</small>
+                                {% endfor %}
+                            </div>
+
+
+
+                            <div class="col-lg-12 col-md-12 col-sm-12">
+                                <button id="btnSave" type="submit" value="Update" class="btn btn-info">Save Funder</button>
+                                <a href="{% url 'funder_view' form.pk %}"  id="btnCancel" value="cancel" class="ml-2 btn btn-outline-info">Cancel</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+{% endblock %} <!-- end of right-pane-content -->
+
+{% block page_script %}
+<script type="text/javascript">
+    jQuery(document).ready(function($) {
+
+        /*set default text for empty option*/
+        $('.date-picker select[id $="_month"]').find('option:eq(0)[selected]').html('Select Month');
+        $('.date-picker select[id $="_day"]').find('option:eq(0)[selected]').html('Day');
+        $('.date-picker select[id $="_year"]').find('option:eq(0)[selected]').html('Year');
+
+        $('#id_funding_date_month').chosen({width: "45%"});
+        $('#id_funding_date_day').chosen({width: "25%"});
+        $('#id_funding_date_year').chosen({width: "30%"});
+
+        $('select').chosen({width:'100%'});
+    });
+</script>
+{% endblock %}

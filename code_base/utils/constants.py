@@ -22,6 +22,7 @@ class numeric_constants:
 
 class code_group_names:
     survey_type = 100
+    funder = "Funder"
 
 class report_css_path:
     stylesheet = [CSS(settings.BASE_DIR +'/static/css/reportStyle.css'),
@@ -34,3 +35,4 @@ class report_css_path:
     # height: calc(297
     # mm * 1.25);
     # padding: 0
+

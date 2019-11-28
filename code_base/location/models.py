@@ -46,6 +46,12 @@ class location_program(models.Model):
     modified_on = models.DateTimeField(default=datetime.now)
 
 
+    def natural_key(self):
+        return self.program_id.program_name
+
+    def __str__(self):
+        return "%s" % (self.program_id.program_name)
+
     class Meta:
         db_table = 'loc_location_program'
         get_latest_by = 'location_program_id'
