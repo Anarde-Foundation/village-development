@@ -7,6 +7,10 @@ from django.views.decorators.csrf import csrf_exempt
 from django.core import serializers
 from itertools import chain
 
+# from django_xhtml2pdf.utils import generate_pdf
+from PyPDF2 import PdfFileMerger
+from easy_pdf.views import PDFTemplateView
+
 from django_datatables_view.base_datatable_view import BaseDatatableView
 from django.views.generic import TemplateView
 from django.utils.timezone import datetime
@@ -177,7 +181,6 @@ def get_kobo_form(request,pk):
 @login_required
 def survey_view(request, pk, template_name='survey_detail.html'):
     objsurvey = get_object_or_404(survey, pk=pk)
-
     # Pull kobo form data
     if request.method == 'POST':
         #print(request.POST)
@@ -304,8 +307,10 @@ def get_location_program_list_for_datatable(request, pk, location_id):
 
 @login_required
 @csrf_exempt
-def location_program_update_image_upload(request, location_id):
-    objlocation = location_program.objects.get(pk = location_id)
+def location_program_update_image_upload(request, location_id, domain_id):
+    obj_program = domain_program.objects.get(pk=domain_id)
+    objlocation = location_program.objects.get(location_id=location_id, program_id=obj_program)
+
     print(objlocation)
     print("in upload image")
     if request.is_ajax():
@@ -414,13 +419,13 @@ def location_program_update(request, pk, location_id, template_name='survey_loca
     print("--------")
     print(after_images)
     return render(request, template_name, {'form': form, 'obj_program': obj_program, 'location_name': location_name,
-                                           'location_id': location_id,
+                                           'location_id': location_id, 'domain_id': pk,
                                            'path': image_constants.localhost+image_constants.before_afterDirStatic,
                                            'before_photos': before_images, 'after_photos': after_images})
 
 
 @login_required
-def survey_question_list(request, pk, domain_id, template_name='survey_question_list.html'):
+def survey_question_list(request,pk, domain_id, template_name='survey_question_list.html'):
     obj_domain = domain.objects.get(pk = domain_id)
     obj_survey = survey.objects.get(pk=pk)
     return render(request, template_name, {'obj_domain': obj_domain, 'obj_survey': obj_survey})
@@ -430,4 +435,7 @@ def get_survey_question_list_for_datatable(request, pk, domain_id):
     survey_questions_list = survey_question.objects.filter(survey_id = pk , domain_id= domain_id)
     data = serializers.serialize('json', survey_questions_list)
     return HttpResponse(data, content_type='application/json')
+
+# ===================> for pdf <==============================
+
 

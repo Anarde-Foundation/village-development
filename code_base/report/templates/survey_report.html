@@ -1,0 +1,141 @@
+{% extends 'report.html' %}
+{% block page-title %}
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="text-center1">{{object.survey_name}} report</h1>
+            <hr/>
+        </div>
+
+        <div class="col-12">
+            <h2>Survey details</h2>
+        </div>
+        <div class="col-6">
+            <dl>
+                <dt>Survey type</dt>
+                <dd>{{ object.survey_type_code_id.code_name }}</dd>
+            </dl>
+        </div>
+        <div class="col-6">
+            <dl>
+                <dt>Publish date</dt>
+                <dd>{{ object.publish_date }}</dd>
+            </dl>
+        </div>
+        <div class="col-6">
+            <dl>
+                <dt>Location</dt>
+                <dd>{{ object.location_id.location_name }}</dd>
+            </dl>
+        </div>
+        <div class="col-6">
+            <dl>
+                <dt>Survey created by</dt>
+                <dd>{{ object.created_by }}</dd>
+            </dl>
+        </div>
+    </div>
+
+
+    <!--    Survey analysis-->
+    <div class="row">
+        <div class="col-12 pt-4">
+            <h2 class=""> Domainwise vulnerability</h2>
+        </div>
+
+        <!--  Vulnerability index  -->
+        {% for key,value in domain_index.items%}
+        <div class="col-6 pb-4">
+
+            <div  class="card domain-card text-white {{value.0.1}} "  >
+                <div class="card-body pb-0">
+                    <p class="text-light">{{key}}</p>
+                    <div class="chart-wrapper px-0 stat-widget-one">
+                         <h2 class="count stat-digit text-white">{{value.0.0}} %</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {%endfor%} <!--    end of for domain list    -->
+
+    </div>
+
+    <!-- For each domain, repeat vulnerability index and program list   -->
+    {% for key,value in domain_index.items%}
+    <div class="row page-break">
+        <!--  Vulnerability index  -->
+        <div class="col-12">
+            <h2 class="mb-3">{{key}} domain</h2>
+            <p> Vulnerability index <strong class="{{value.0.2}} ">{{value.0.0}} %</strong></p>
+        </div>
+
+        <!--  Program list, display only if available  -->
+        {% if value.1 %}
+
+                <div class="col-12">
+                    <h3> Programs implemented for {{key}} domain</h3>
+                    <ol>
+                        {% for program in value.1 %}
+                        <li>
+
+                            {{program.program_name}}
+
+                        <div class="col-6">
+                            <dl>
+                                <dt>Date of implementation</dt>
+                                <dd>{{ program.date_of_implementation }}</dd>
+                            </dl>
+                        </div>
+                        <div class="col-12">
+                            <dl>
+                                <dt>Description</dt>
+                                <dd>{{ program.description }}</dd>
+                            </dl>
+                        </div>
+                        <div class="col-12">
+                            <dl>
+                                <dt>Notes</dt>
+                                <dd>{{ program.notes }}</dd>
+                            </dl>
+                        </div>
+                                     <!--  Add program before / after photos -->
+                        {% if program.before %}
+                            {% for image in program.before %}<!-- List of before photos -->
+                        <div class="col-6">
+                            <dl>
+                                 <dt>Before</dt>
+                                <dd><img src="{{image}}" class="img-thumbnail rounded program-images"></dd>
+                            </dl>
+                        </div>
+                            {%endfor %} <!-- end of before photo list -->
+                        {%endif%}<!--    end of if before photos available    -->
+
+                        {% if program.after %}
+                            {% for image in program.after %} <!-- List of after photos -->
+                        <div class="col-6">
+                            <dt>After</dt>
+                            <dd><img src="{{image}}" class="img-thumbnail rounded program-images"></dd>
+                        </div>
+                            {%endfor %} <!-- end of after photo list -->
+                        {%endif%}<!--    end of if after photos available    -->
+
+                        </li>
+                        {% endfor %}<!--    end of for program list    -->
+                    </ol>
+                </div>
+
+
+
+
+        {%endif%} <!--  end if program list i.e. (if value.1)     -->
+    </div>
+    {%endfor%} <!--    end of for domain list    -->
+
+</div>
+
+{% endblock %}
+
+

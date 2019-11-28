@@ -17,7 +17,7 @@ urlpatterns = [
     path('survey_question_list/<int:pk>/<int:domain_id>', views.survey_question_list, name='survey_question_list'),
     path('survey_location_program_update/<int:pk>/<int:location_id>',
          views.location_program_update, name='survey_location_program_update'),
-    path('survey_location_program_update_image_upload/<int:location_id>',
+    path('survey_location_program_update_image_upload/<int:location_id>/<int:domain_id>',
          views.location_program_update_image_upload, name='survey_location_program_update_image_upload'),
     path('survey_location_program_update_image_delete/<str:image_name>',
          views.survey_location_program_update_image_delete, name='survey_location_program_update_image_delete'),
