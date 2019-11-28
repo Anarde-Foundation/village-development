@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+{% load i18n static %}
+{% load static %}
+{% load staticfiles %}
+{% get_current_language as LANGUAGE_CODE %}{% get_current_language_bidi as LANGUAGE_BIDI %}
+<html lang="{{ LANGUAGE_CODE|default:"en-us" }}" {% if LANGUAGE_BIDI %}dir="rtl"{% endif %}>
+    <head>
+
+
+        <link rel="stylesheet" href="http://127.0.0.1:8000/static/css/report_bootstrap.min.css">
+        <link rel="stylesheet" href="http://127.0.0.1:8000/static/css/reportStyle.css">
+
+        <title> {% block title %}{% endblock %}</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <style type="text/css">
+        @page {
+            size: A4 ;
+
+            margin: 20mm 5mm 20mm  5mm;
+            counter-increment: page;
+            @bottom-center {
+                content: 'Survey report - Page ' counter(page);
+                white-space: pre;
+                color: grey;
+            }
+        }
+
+        html {
+
+            font-family: Helvetica;
+            font-size: 12px;
+            font-weight: normal;
+            color: #000000;
+            background-color: transparent;
+            margin: 20;
+            padding: 0;
+            line-height: 150%;
+            display: inline;
+            width: auto;
+            height: auto;
+            white-space: normal;
+        }
+    </style>
+    </head>
+    <body>
+        {% block content %}{% endblock %}
+    </body>
+</html>
+
