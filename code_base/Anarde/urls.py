@@ -27,5 +27,6 @@ urlpatterns = [
     path('location/', include('location.urls')),
     path('survey/', include('survey_form.urls')),
     path('domain/', include('domain.urls')),
+    path('funders/', include('funders.urls'))
 
 ]

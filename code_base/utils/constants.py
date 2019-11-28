@@ -20,3 +20,4 @@ class numeric_constants:
 
 class code_group_names:
     survey_type = 100
+    funder = "Funder"
