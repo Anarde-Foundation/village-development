@@ -9,14 +9,7 @@ from itertools import chain
 
 from django_datatables_view.base_datatable_view import BaseDatatableView
 from django.views.generic import TemplateView
-from django.utils.timezone import datetime
 
-from django import forms
-from django.forms import ModelForm
-
-
-import re
-import requests
 import json
 import jwt
 
@@ -26,7 +19,8 @@ from utils.constants import kobo_form_constants, numeric_constants, code_group_n
 from common.models import code, code_group
 from location.models import location, location_program, location_program_image
 from domain.models import domain, domain_program
-from .models import survey, survey_question, survey_question_options
+from .models import survey, survey_question
+from .forms import get_kobo_form_date, SurveyForm, LocationProgram_Form
 from survey_response.models import survey_response, survey_response_detail
 from survey_response import views as response_views
 
@@ -48,78 +42,15 @@ def get_survey_list_for_datatable(request):
     return HttpResponse(data, content_type='application/json')
 
 
-def get_kobo_forms(surveyID=None):
-    base_response = requests.get(kobo_constants.kobo_form_link,
-                                 headers={'Authorization': kobo_constants.authorization_token}).json()
-    list_res = []
-    for i in range(len(base_response)):
-        surveyObj=survey.objects.filter(kobo_form_id=base_response[i]['formid']).first()
-        if surveyObj:
-            survey_ID = surveyObj.survey_id
-            if survey_ID == surveyID:
-                print(base_response[i]['formid'], " ", base_response[i]['title'], " ", base_response[i]['date_created'])
-                match = re.search(r'\d{4}-\d{2}-\d{2}', base_response[i]['date_created'])
-                date = datetime.strptime(match.group(), '%Y-%m-%d').date()
-                res = (base_response[i]['formid'], base_response[i]['title'] + " (" + str(date) + ")")
-                list_res.append(res)
-
-        else:
-            print(base_response[i]['formid'], " ", base_response[i]['title'], " ", base_response[i]['date_created'])
-            match = re.search(r'\d{4}-\d{2}-\d{2}', base_response[i]['date_created'])
-            date = datetime.strptime(match.group(), '%Y-%m-%d').date()
-            res = (base_response[i]['formid'], base_response[i]['title'] + " (" + str(date) + ")")
-            list_res.append(res)
-    
-    return sorted(tuple(list_res), reverse=True)
-
-
-def get_kobo_form_date(kobo_id):
-    base_response = requests.get(kobo_constants.kobo_form_link,
-                                 headers={'Authorization': kobo_constants.authorization_token}).json()
-    publish_date = datetime.now()
-    for i in range(len(base_response)):
-        if kobo_id == base_response[i]['formid']:
-            match = re.search(r'\d{4}-\d{2}-\d{2}', base_response[i]['date_created'])
-            publish_date = datetime.strptime(match.group(), '%Y-%m-%d').date()
-
-    return publish_date
-
-
-class SurveyForm(ModelForm):
-
-    location_queryset = location.objects.all()
-    location_id = forms.ModelChoiceField(queryset=location_queryset, empty_label='Select an Option',
-                                         label='Location', required=True)
-
-    kobo_forms = get_kobo_forms()
-    kobo_form_id = forms.ChoiceField(required=True,label='Select Kobo Form', choices=kobo_forms)
-
-    survey_name = forms.CharField(required= True, label='Survey name', max_length=100)
-
-    code_group_id = code_group.objects.filter(code_group_id=code_group_names.survey_type)
-    code_queryset = code.objects.filter(code_group_id=code_group_id[0])
-    survey_type_code_id = forms.ModelChoiceField(queryset=code_queryset, empty_label='Select an Option',
-                                                 label='Select Survey Type', required=True)
-
-    def __init__(self, *args, **kwargs):
-        surveyID = kwargs.pop('surveyID')
-        super(SurveyForm, self).__init__(*args, **kwargs)
-        self.fields['kobo_form_id'] = forms.ChoiceField(choices=get_kobo_forms(surveyID))
-
-    class Meta:
-        model = survey
-        fields = ['location_id', 'kobo_form_id', 'survey_name', 'survey_type_code_id']
-
-
 @login_required
 def survey_create(request, template_name='survey_create.html'):
     if request.method == 'POST':
-        form = SurveyForm(request.POST)
+        form = SurveyForm(request.POST, surveyID=None)
         print(form.data)
         if form.is_valid():
             publish_date = get_kobo_form_date(int(form.cleaned_data['kobo_form_id']))
             info = form.save(commit=False)
-            info.publish_date=publish_date
+            info.publish_date = publish_date
             info.created_by = request.user
             info.modified_by = request.user
             info.save()
@@ -135,8 +66,8 @@ def survey_create(request, template_name='survey_create.html'):
 
 @login_required
 def survey_delete(request, pk, template_name='survey_delete.html'):
-    surveys=get_object_or_404(survey, pk=pk)
-    if request.method=='POST':
+    surveys = get_object_or_404(survey, pk=pk)
+    if request.method == 'POST':
         surveys.delete()
         return redirect('/survey/')
 
@@ -179,10 +110,10 @@ def survey_view(request, pk, template_name='survey_detail.html'):
     objsurvey = get_object_or_404(survey, pk=pk)
     # Pull kobo form data
     if request.method == 'POST':
-        #print(request.POST)
+        # print(request.POST)
 
         if 'pull-form-data' in request.POST:
-            #print("kobo form data")
+            # print("kobo form data")
             response_views.pull_kobo_form_data(objsurvey)
 
         elif 'pull-response-data' in request.POST:
@@ -209,7 +140,7 @@ def show_domainwise_metabase_graph(request, survey_id, domain_id):
     except domain.DoesNotExist:
         objDomain = None
 
-    if (objDomain == None or objDomain.metabase_dashboard_id == None):
+    if objDomain == None or objDomain.metabase_dashboard_id == None:
         responseData = {}
         responseData['iframeUrl'] = ''
     else:
@@ -258,22 +189,6 @@ def survey_domain_suggestion(request, survey_id):
     data = json.dumps(data_list)
 
     return HttpResponse(data, content_type='application/json')
-
-
-# location program list form
-class LocationProgram_Form(ModelForm):
-    YEARS = [x for x in range(1990, 2021)]
-
-    date_of_implementation = forms.DateField(required=True,
-                                           label='Date of implementation', initial= datetime.now(),
-                                           widget=forms.SelectDateWidget(empty_label="", years=YEARS))
-
-    before_image_upload = forms.ImageField(required=False, widget=forms.widgets.ClearableFileInput())
-    after_image_upload = forms.ImageField(required=False, widget=forms.widgets.ClearableFileInput())
-
-    class Meta:
-        model = location_program
-        fields = ['date_of_implementation', 'before_image_upload', 'after_image_upload', 'notes']
 
 
 @login_required
@@ -351,14 +266,14 @@ def survey_location_program_update_image_delete(request, image_name):
     print(image_name)
     images = location_program_image.objects.filter(image_name=image_name).first()
     print(images)
-    #images = get_object_or_404(location_program_image, image_name=image_name)
+    # images = get_object_or_404(location_program_image, image_name=image_name)
     if images:
         images.delete()
         print('deleted')
 
         data = {'is_valid': True, 'image_id': image_name}
     else:
-        data= {'is_valid': False}
+        data = {'is_valid': False}
 
     data = json.dumps(data)
     return HttpResponse(data, content_type='application/json')
@@ -367,7 +282,7 @@ def survey_location_program_update_image_delete(request, image_name):
 # function for updating implemented programs
 @login_required
 def location_program_update(request, pk, location_id, template_name='survey_location_program_update.html'):
-    location_name = location.objects.get(pk = location_id)
+    location_name = location.objects.get(pk=location_id)
     obj_program = domain_program.objects.get(pk=pk)
 
     before_images = []
@@ -415,16 +330,16 @@ def location_program_update(request, pk, location_id, template_name='survey_loca
     print("--------")
     print(after_images)
     return render(request, template_name, {'form': form, 'obj_program': obj_program, 'location_name': location_name,
-                                           'location_id': location_id, 'domain_id': pk,
                                            'path': image_constants.localhost+image_constants.before_afterDirStatic,
                                            'before_photos': before_images, 'after_photos': after_images})
 
 
 @login_required
 def survey_question_list(request,pk, domain_id, template_name='survey_question_list.html'):
-    obj_domain = domain.objects.get(pk = domain_id)
+    obj_domain = domain.objects.get(pk=domain_id)
     obj_survey = survey.objects.get(pk=pk)
     return render(request, template_name, {'obj_domain': obj_domain, 'obj_survey': obj_survey})
+
 
 @login_required
 def get_survey_question_list_for_datatable(request, pk, domain_id):
