@@ -85,9 +85,19 @@ dd {
 .text-danger{
     color:#dc3545!important
     }
-.text-warning{
-    color:#ffc107!important
+.text-danger-light{
+    color:#f98048!important
     }
+.bg-danger-light{
+    background-color:#f98048!important
+    }
+.text-color-2{
+    color:#63c2de!important
+    }
+.bg-color-2{
+    background-color:#63c2de!important
+    }
+
 .page-break {
     page-break-before: always
 }

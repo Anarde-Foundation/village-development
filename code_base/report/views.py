@@ -123,17 +123,17 @@ def html_to_pdf_generation(request,pk): #weasyprint pdf generatiosurvey_idn comm
     color_text_list =[]
     # Assign color-codes according to index value for domain
     for i in index:
-        color_code = 'bg-flat-color-2'
-        color_text = 'bg-flat-color-2'
+        color_code = 'bg-color-2'
+        color_text = 'text-color-2'
         if float(i) < 25:
             color_code = 'bg-danger'
             color_text = 'text-danger'
         elif float(i) >= 25 and float(i) < 50:
-            color_code = 'bg-warning'
-            color_text = 'text-warning'
+            color_code = 'bg-danger-light'
+            color_text = 'text-danger-light'
         elif float(i) >= 50 and float(i) < 75:
-            color_code = 'bg-flat-color-2'
-            color_text = 'bg-flat-color-2'
+            color_code = 'bg-color-2'
+            color_text = 'text-color-2'
         else:
             color_code = 'bg-success'
             color_text = 'text-success'
@@ -142,7 +142,7 @@ def html_to_pdf_generation(request,pk): #weasyprint pdf generatiosurvey_idn comm
     # print(color_bg)
     # get tuple of (index_value, ba_color, text_color) for domain
     color_index = tuple(zip(index, color_bg, color_text_list))
-    # print(color_index)
+    print(color_index)
     # Get implemented program list for domain
     domain_program_list = []
     for domains in domain_list:
