@@ -53,13 +53,17 @@
                                 <input id="{{form.funding_amount.id_for_labe}}" name="{{ form.funding_amount.html_name }}"
                                        type="text" class="form-control" data-val="true" placeholder="Enter funding amount"
                                        aria-required="true" aria-invalid="false" />
+
+                                {% for error in form.funding_amount.errors %}
+                                <small class="form-text text-danger">{{error}}</small>
+                                {% endfor %}
                             </div>
 
 
                             <div>
                                 <div class="col-lg-12 col-md-12 col-sm-12">
                                     <button id=btnSave" type="submit" value="add" class="btn btn-info">Add</button>
-                                     <a href="{% url 'funder_view' object.funder_id %}" id="btnCancel"  class="ml-2 btn btn-outline-info">Cancel</a>
+                                    <a href="{% url 'funder_view' object.funder_id %}" id="btnCancel"  class="ml-2 btn btn-outline-info">Cancel</a>
                                 </div>
                             </div>
 

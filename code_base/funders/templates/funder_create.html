@@ -54,7 +54,7 @@
                                 <label class="form-control-label"> Funding Amount(in INR) </label>
                                 <input id="{{form.funding_amount.id_for_label}}" name="{{ form.funding_amount.html_name }}"
                                        type="text" class="form-control" data-val="true" placeholder="Enter amount"
-                                       aria-required="true" aria-invalid="false" >
+                                       aria-required="true" aria-invalid="false" required>
                                 {% for error in form.funding_amount.errors %}
                                 <small class="form-text text-danger">{{error}}</small>
                                 {% endfor %}
