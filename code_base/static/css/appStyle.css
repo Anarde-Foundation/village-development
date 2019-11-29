@@ -50,6 +50,9 @@ dd {
     width: 200px;
     height:200px;
 }
+.bg-danger-light{
+    background-color:#f98048!important
+    }
 .btn-delete{
     padding: 10px;
     border: 1px solid red;
