@@ -7,10 +7,6 @@ from django.views.decorators.csrf import csrf_exempt
 from django.core import serializers
 from itertools import chain
 
-# from django_xhtml2pdf.utils import generate_pdf
-from PyPDF2 import PdfFileMerger
-from easy_pdf.views import PDFTemplateView
-
 from django_datatables_view.base_datatable_view import BaseDatatableView
 from django.views.generic import TemplateView
 from django.utils.timezone import datetime
