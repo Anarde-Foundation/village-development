@@ -13,7 +13,7 @@ from django.views.generic import TemplateView
 import json
 import jwt
 
-from utils.configuration import kobo_constants, metabase_constants, image_constants
+from utils.configuration import kobo_constants, metabase_constants, image_constants, aws_bucket_constants
 from utils.constants import kobo_form_constants, numeric_constants, code_group_names
 
 from common.models import code, code_group
@@ -247,10 +247,14 @@ def location_program_update_image_upload(request, location_id, domain_id):
 
             image_id = location_program_image.objects.last().location_program_image_id
             image_list.append(image_id)
-            localhost_location = image_constants.localhost + location1
-            location_names.append(localhost_location)
-            image_names.append(image_name)
+            if image_constants.is_production:
+                location_names.append(location1)
+            else:
+                localhost_location = image_constants.localhost + location1
+                location_names.append(localhost_location)
 
+            image_names.append(image_name)
+        print(location_names)
         data = {'is_valid': True, 'name': image_names, 'url': location_names, 'images':image_list}
     else:
         data = {'is_valid': False}
@@ -329,8 +333,13 @@ def location_program_update(request, pk, location_id, template_name='survey_loca
     print(before_images)
     print("--------")
     print(after_images)
+    if image_constants.is_production:
+        path = aws_bucket_constants.s3_bucket_path + aws_bucket_constants.bucket_name + "/" + \
+                      image_constants.image_dir
+    else:
+        path = image_constants.localhost+image_constants.before_afterDirStatic
     return render(request, template_name, {'form': form, 'obj_program': obj_program, 'location_name': location_name,
-                                           'path': image_constants.localhost+image_constants.before_afterDirStatic,
+                                           'path': path,
                                            'before_photos': before_images, 'after_photos': after_images})
 
 
