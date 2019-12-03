@@ -15,10 +15,10 @@
     <div class="animated fadeIn">
 
         <div class="row">
-            <div class="col-md-12">
+            <div class="col-12">
                 <div class="card">
                     <div class="card-body  px-3 py-4">
-                        <form  method="post" action="">
+                        <form  method="post" action="" class="row">
                             {% csrf_token %}
                             <div class="form-group col-lg-6 col-md-6 col-sm-12 ">
                                 <label class="form-control-label">Organization</label>
@@ -32,15 +32,6 @@
                                 <small class="form-text text-danger">{{error}}</small>
                                 {% endfor %}
                             </div>
-                            <!--<div class="form-group col-lg-6 col-md-6 col-sm-12">
-                                <label class="form-control-label">Program name</label>
-                                <input id="{{form.program_name.id_for_lable}}" name="{{ form.program_name.html_name }}"
-                                       type="text" class="form-control" data-val="true" placeholder="Enter program name "
-                                       aria-required="true" aria-invalid="false" >
-                                {% for error in form.program_name.errors %}
-                                <small class="form-text text-danger">{{error}}</small>
-                                {% endfor %}
-                            </div>-->
                             <div class="form-group col-lg-6 col-md-6 col-sm-12">
                                 <label class="form-control-label">Select Program</label>
                                 {{form.location_program_id}}

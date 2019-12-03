@@ -2,7 +2,7 @@ from django.shortcuts import render
 
 import requests, re, json, os
 
-from utils.configuration import kobo_constants, metabase_constants, image_constants
+from utils.configuration import kobo_constants, metabase_constants, image_constants, aws_bucket_constants
 from utils.constants import kobo_form_constants, numeric_constants
 
 from common.models import code
@@ -11,6 +11,7 @@ from domain.models import domain
 from survey_form.models import survey, survey_question, survey_question_options
 from .models import survey_response, survey_response_detail
 from django.utils.timezone import datetime
+import boto3
 
 def pull_kobo_form_data(surveyID):
 
@@ -237,22 +238,40 @@ def get_domain_index(item, survey_id):
     return index
 
 
+# function to save images directly to s3 bucket
+def move_to_s3(image, imageName, image_dir):
+
+    session = boto3.Session(
+        aws_access_key_id=aws_bucket_constants.aws_access_key_id,
+        aws_secret_access_key=aws_bucket_constants.aws_secret_access_key,
+        region_name=aws_bucket_constants.region_name
+    )
+
+    s3 = session.resource('s3')
+    bucket = s3.Bucket(aws_bucket_constants.bucket_name)
+
+    path_on_bucket = image_dir+imageName
+    print(path_on_bucket)
+    bucket.put_object(Key=path_on_bucket, Body=image, ContentType='image/jpeg')
+
+                      #ACL="'private'|'public-read'|'public-read-write'|'authenticated-read'|'aws-exec-read'|'bucket-owner-read'|'bucket-owner-full-control'")
+
+
 # function to save images
 def save_images(image, type_image):
 
     if image is not None:
         imageName, fileLocation, static_path = createImageName(image, type_image)
         print("location is ", fileLocation, " and image name is ", imageName)
-        print("static path is ", str(image_constants.localhost + static_path))
+        print("static path is ", static_path)
 
-        # if production.constants.is_production:
-        #     move_to_s3(image, imageName, location)
-        #     print('successfully stored in s3 bucket')
-        # else:
-        #     # open the file in chunks and write it the to the destination
-        with open(fileLocation, 'wb+') as destination:
-            for chunk in image.chunks():
-                destination.write(chunk)
+        if image_constants.is_production:
+            move_to_s3(image, imageName, image_constants.image_dir)
+            print('successfully stored in s3 bucket')
+        else:
+            with open(fileLocation, 'wb+') as destination:
+                for chunk in image.chunks():
+                    destination.write(chunk)
 
         return static_path, imageName
 
@@ -269,7 +288,20 @@ def createImageName(image, type_image):
         imageName = (r"after_" + currentDateTime + fileExtension)
 
     fileLocation = str(image_constants.before_afterDir) + str(imageName)
-    static_path = image_constants.before_afterDirStatic + str(imageName)
-
+    if image_constants.is_production:
+        static_path = aws_bucket_constants.s3_bucket_path + aws_bucket_constants.bucket_name + "/" + \
+                      image_constants.image_dir + str(imageName)
+        print(static_path)
+    else:
+        static_path = image_constants.before_afterDirStatic + str(imageName)
+    print(static_path)
     return imageName, fileLocation, static_path
 
+
+def image_path(image_path, image):
+    if image_constants.is_production:
+        baseURL = aws_bucket_constants.s3_bucket_path + aws_bucket_constants.bucket_name + "/"
+    else:
+        baseURL = settings.DOMAIN_NAME + settings.STATIC_URL
+    url = baseURL + image_path + image
+    return url
