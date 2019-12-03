@@ -37,8 +37,9 @@ class image_constants:
 
 
 class aws_bucket_constants:
-    s3_bucket_path = "https://s3.ap-south-1.amazonaws.com/"
-    aws_access_key_id = 'AKIAXA4XKQHMUHSZTCFK'
-    aws_secret_access_key = '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'
-    region_name = 'ap-south-1'
-    bucket_name = 'media.anarde'
+    s3_bucket_path = "<bucket path>"
+    aws_access_key_id = '<aws key id>'
+    aws_secret_access_key = '<aws secret key>'
+    region_name = '<bucket path>'
+    bucket_name = '<bucket name>'
+
