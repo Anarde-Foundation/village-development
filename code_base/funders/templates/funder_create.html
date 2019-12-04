@@ -27,14 +27,14 @@
                                 <label class="form-control-label">Organization name</label>
                                 <input id="{{form.organization_name.id_for_label}}" name="{{ form.organization_name.html_name }}"
                                        type="text" class="form-control" data-val="true" placeholder="Enter organization name"
-                                       aria-required="true" aria-invalid="false" >
+                                       aria-required="true" aria-invalid="false" required>
                                 {% for error in form.organization_name.errors %}
-                                <small class="form-text text-danger">{{error}}</small>
+                                    <small class="form-text text-danger">{{error}}</small>
                                 {% endfor %}
                             </div>
 
                             <div class="form-group col-lg-6 col-md-6 col-sm-12">
-                                <label class="form-control-label">Funder</label>
+                                <label class="form-control-label">Reporting Contact</label>
                                 {{form.user_id}}
                                 {% for error in form.user_id.errors %}
                                 <small class="form-text text-danger">{{error}}</small>
@@ -82,6 +82,9 @@
 <script type="text/javascript">
     jQuery(document).ready(function($) {
 
+        $('.date-picker select[id $="_month"]').find('option:eq(0)[selected]').html('Select Month');
+        $('.date-picker select[id $="_day"]').find('option:eq(0)[selected]').html('Day');
+        $('.date-picker select[id $="_year"]').find('option:eq(0)[selected]').html('Year');
         $('#id_funding_date_month').chosen({width: "30%"});
         $('#id_funding_date_day').chosen({width: "20%"});
         $('#id_funding_date_year').chosen({width: "20%"});

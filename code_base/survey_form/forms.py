@@ -78,7 +78,7 @@ class LocationProgram_Form(ModelForm):
     YEARS = [x for x in range(1990, 2021)]
 
     date_of_implementation = forms.DateField(required=True,
-                                           label='Date of implementation', initial= datetime.now(),
+                                           label='Date of implementation',
                                            widget=forms.SelectDateWidget(empty_label="", years=YEARS))
 
     before_image_upload = forms.ImageField(required=False, widget=forms.widgets.ClearableFileInput())
