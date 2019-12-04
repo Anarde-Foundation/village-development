@@ -180,7 +180,6 @@ def html_to_pdf_generation(request,pk): #weasyprint pdf generatiosurvey_idn comm
                             before_after_images['after'] = after_images
                         i.update(before_after_images) # insert images in implemented program list
                     item.update(i)
-
             else:
                 program_list.remove(item)
         domain_program_list.append(program_list) # assign program list to respective domain
@@ -193,7 +192,6 @@ def html_to_pdf_generation(request,pk): #weasyprint pdf generatiosurvey_idn comm
 
     html = render_to_string('survey_report.html', {'object': objsurvey,
                                              'domain_index':data})
-    font_config = FontConfiguration()
     print(set.BASE_DIR)
     HTML(string=html).write_pdf(response, stylesheets=report_css_path.stylesheet)#, font_config=font_config, stylesheets=[CSS('/home/aishwarya/Project/Anarde/Anarde/village-development/code_base/static/theme/vendors/bootstrap/dist/css/bootstrap.min.css')])
     return response
