@@ -101,3 +101,8 @@ dd {
 .page-break {
     page-break-before: always
 }
+
+.program-images {
+    width: 600px;
+    height:400px;
+}
