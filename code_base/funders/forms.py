@@ -14,7 +14,7 @@ class FunderForm(ModelForm):
                                      label='User', required=True)
 
     YEARS = [x for x in range(1990, 2021)]
-    funding_date = forms.DateField(required=True, label='Date of Funding',
+    funding_date = forms.DateField(required=False, label='Date of Funding',
                                       widget=forms.SelectDateWidget(empty_label="", years=YEARS))
 
     class Meta:

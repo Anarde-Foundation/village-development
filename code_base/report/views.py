@@ -80,7 +80,7 @@ def survey_html(request,pk,template_name='survey_report.html'):
                                               image_constants.image_dir + image
 
                             else:
-                                before_image_path = image_constants.before_afterDirStatic + image
+                                before_image_path = image_constants.localhost+image_constants.before_afterDirStatic + image
                             print(before_image_path)
                             before_after_images['before'] = before_image_path
                         after_image_name = location_program_image.objects.filter \
@@ -91,7 +91,7 @@ def survey_html(request,pk,template_name='survey_report.html'):
                                 after_image_path = aws_bucket_constants.s3_bucket_path + aws_bucket_constants.bucket_name + "/" + \
                                               image_constants.image_dir + image
                             else:
-                                after_image_path = image_constants.before_afterDirStatic + image
+                                after_image_path = image_constants.localhost+image_constants.before_afterDirStatic + image
                             print(after_image_path)
                             before_after_images['after'] = after_image_path
                         i.update(before_after_images)
@@ -179,7 +179,7 @@ def html_to_pdf_generation(request,pk): #weasyprint pdf generatiosurvey_idn comm
                                 before_image_path = aws_bucket_constants.s3_bucket_path + aws_bucket_constants.bucket_name + "/" + \
                                               image_constants.image_dir + image
                             else:
-                                before_image_path = image_constants.before_afterDirStatic + image
+                                before_image_path = image_constants.localhost+image_constants.before_afterDirStatic + image
                             before_images.append(before_image_path)
                             before_after_images['before'] = before_images
 
@@ -191,7 +191,7 @@ def html_to_pdf_generation(request,pk): #weasyprint pdf generatiosurvey_idn comm
                                 after_image_path = aws_bucket_constants.s3_bucket_path + aws_bucket_constants.bucket_name + "/" + \
                                               image_constants.image_dir + image
                             else:
-                                after_image_path = image_constants.before_afterDirStatic + image
+                                after_image_path = image_constants.localhost+image_constants.before_afterDirStatic + image
 
                             after_images.append(after_image_path)
                             before_after_images['after'] = after_images

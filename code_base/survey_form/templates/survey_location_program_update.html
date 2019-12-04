@@ -204,6 +204,11 @@
     };
 
     jQuery(document).ready(function($) {
+
+        $('.date-picker select[id $="_month"]').find('option:eq(0)[selected]').html('Select Month');
+        $('.date-picker select[id $="_day"]').find('option:eq(0)[selected]').html('Day');
+        $('.date-picker select[id $="_year"]').find('option:eq(0)[selected]').html('Year');
+
         $('#id_date_of_implementation_month').chosen({width: "30%"});
         $('#id_date_of_implementation_day').chosen({width: "16%"});
         $('#id_date_of_implementation_year').chosen({width: "20%"});
