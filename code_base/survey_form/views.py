@@ -253,7 +253,7 @@ def location_program_update_image_upload(request, location_id, domain_program_id
                 if image_constants.is_production:
                     location_names.append(location1)
                 else:
-                    localhost_location = image_constants.localhost + location1
+                    localhost_location = location1
                     location_names.append(localhost_location)
                 print(location_names)
                 image_names.append(image_name)
@@ -344,7 +344,7 @@ def location_program_update(request, pk, location_id, template_name='survey_loca
         path = aws_bucket_constants.s3_bucket_path + aws_bucket_constants.bucket_name + "/" + \
                       image_constants.image_dir
     else:
-        path = image_constants.localhost+image_constants.before_afterDirStatic
+        path = image_constants.before_afterDirStatic
     return render(request, template_name, {'form': form, 'obj_program': obj_program, 'location_name': location_name,
                                            'path': path, 'program_implemented': program_implemented,
                                            'before_photos': before_images, 'after_photos': after_images})
