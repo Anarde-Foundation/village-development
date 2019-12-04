@@ -218,48 +218,53 @@ def get_location_program_list_for_datatable(request, pk, location_id):
 
 @login_required
 @csrf_exempt
-def location_program_update_image_upload(request, location_id, domain_id):
-    obj_program = domain_program.objects.get(pk=domain_id)
-    objlocation = location_program.objects.get(location_id=location_id, program_id=obj_program)
+def location_program_update_image_upload(request, location_id, domain_program_id):
+    obj_program = domain_program.objects.get(pk=domain_program_id)
+    print(obj_program)
 
-    print(objlocation)
-    print("in upload image")
-    if request.is_ajax():
-        print(request.FILES)
-        location_names = []
-        image_names = []
-        image_list = []
-        for filename, file in request.FILES.items():
-            single_image = request.FILES[filename]
-            print(single_image)
+    if location_program.objects.filter(location_id=location_id, program_id=obj_program).exists():
+        objlocation = location_program.objects.get(location_id=location_id, program_id=obj_program)
 
-            if 'before' in filename.lower():
-                location1, image_name = response_views.save_images(single_image, image_constants.image_type_before)
+        print(objlocation)
+        print("in upload image")
+        if request.is_ajax():
+            print(request.FILES)
+            location_names = []
+            image_names = []
+            image_list = []
+            for filename, file in request.FILES.items():
+                single_image = request.FILES[filename]
+                print(single_image)
 
-                image_type = code.objects.filter(code_id=numeric_constants.before_images).first()
-                print(image_type)
-            else:
-                location1, image_name = response_views.save_images(single_image, image_constants.image_type_after)
-                image_type = code.objects.filter(code_id=numeric_constants.after_images).first()
+                if 'before' in filename.lower():
+                    location1, image_name = response_views.save_images(single_image, image_constants.image_type_before)
 
-            location_program_image(image_name=image_name, created_by=request.user, location_program_id=objlocation,
-                                   image_type_code_id=image_type).save()
+                    image_type = code.objects.filter(code_id=numeric_constants.before_images).first()
+                    print(image_type)
+                else:
+                    location1, image_name = response_views.save_images(single_image, image_constants.image_type_after)
+                    image_type = code.objects.filter(code_id=numeric_constants.after_images).first()
 
-            image_id = location_program_image.objects.last().location_program_image_id
-            image_list.append(image_id)
-            if image_constants.is_production:
-                location_names.append(location1)
-            else:
-                localhost_location = image_constants.localhost + location1
-                location_names.append(localhost_location)
+                location_program_image(image_name=image_name, created_by=request.user, location_program_id=objlocation,
+                                       image_type_code_id=image_type).save()
 
-            image_names.append(image_name)
-        print(location_names)
-        data = {'is_valid': True, 'name': image_names, 'url': location_names, 'images':image_list}
+                image_id = location_program_image.objects.last().location_program_image_id
+                image_list.append(image_id)
+                if image_constants.is_production:
+                    location_names.append(location1)
+                else:
+                    localhost_location = image_constants.localhost + location1
+                    location_names.append(localhost_location)
+                print(location_names)
+                image_names.append(image_name)
+            print(location_names)
+            data = {'is_valid': True, 'name': image_names, 'url': location_names, 'images': image_list}
+        else:
+            data = {'is_valid': False}
     else:
-        data = {'is_valid': False}
-
+        data = {'is_valid': False, 'message': "program not yet implemented. please set implementation date"}
     data = json.dumps(data)
+    print(data)
     return HttpResponse(data, content_type='application/json')
 
 
@@ -293,6 +298,7 @@ def location_program_update(request, pk, location_id, template_name='survey_loca
     after_images = []
 
     if location_program.objects.filter(program_id=pk, location_id=location_id).exists():
+        program_implemented = "true"
         obj_loc_program = location_program.objects.get(program_id=obj_program, location_id=location_id)
         location_images = location_program_image.objects.filter(location_program_id=obj_loc_program)
 
@@ -315,6 +321,7 @@ def location_program_update(request, pk, location_id, template_name='survey_loca
                 print(form.errors)
         form.pk = pk
     else:
+        program_implemented = "false"
         if request.method == 'POST':
             form = LocationProgram_Form(request.POST)
             print(request.POST)
@@ -339,7 +346,7 @@ def location_program_update(request, pk, location_id, template_name='survey_loca
     else:
         path = image_constants.localhost+image_constants.before_afterDirStatic
     return render(request, template_name, {'form': form, 'obj_program': obj_program, 'location_name': location_name,
-                                           'path': path,
+                                           'path': path, 'program_implemented': program_implemented,
                                            'before_photos': before_images, 'after_photos': after_images})
 
 
