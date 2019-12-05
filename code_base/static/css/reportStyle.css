@@ -46,10 +46,7 @@ dd {
    top: 0;
    width: 100%;
 }
-.program-images {
-    width: 200px;
-    height:200px;
-}
+
 .btn-delete{
     padding: 10px;
     border: 1px solid red;
@@ -103,6 +100,7 @@ dd {
 }
 
 .program-images {
+
     width: 600px;
     height:400px;
 }
