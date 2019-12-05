@@ -105,7 +105,7 @@
                         {% if program.before %}
                              <div class="col-6">
                                   <dl>
-                                      <dt>Before</dt>
+                                      <h5><b> Photos before program implementation</b></h5>
                                   </dl>
                                   {% for image in program.before %}<!-- List of before photos -->
                                  <dl>
@@ -115,9 +115,9 @@
                              </div>
                         {%endif%}<!--    end of if before photos available    -->
                         {% if program.after %}
-                             <div class="col-6">
+                             <div class="col-6 page-break">
                                 <dl>
-                                    <dt>After</dt>
+                                    <h5><b> Photos after program implementation</b></h5>
                                 </dl>
                                 {% for image in program.after %} <!-- List of after photos -->
                                  <dl>
