@@ -83,7 +83,7 @@ class LocationProgram_Form(ModelForm):
 
     before_image_upload = forms.ImageField(required=False, widget=forms.widgets.ClearableFileInput())
     after_image_upload = forms.ImageField(required=False, widget=forms.widgets.ClearableFileInput())
-
+    notes = forms.CharField(required=True, label='notes')
     class Meta:
         model = location_program
         fields = ['date_of_implementation', 'before_image_upload', 'after_image_upload', 'notes']
