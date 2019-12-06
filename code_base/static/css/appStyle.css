@@ -47,22 +47,22 @@ dd {
    width: 100%;
 }
 .program-images {
-    width: 300px;
-    height:200px;
+    width: 300px !important;
+    height:200px !important;
+    padding: 0px !important;
 }
 .bg-danger-light{
     background-color:#f98048!important
     }
 .btn-delete{
-    padding: 10px;
-    border: 1px solid red;
-    background-color: red;
+    padding: 5px;
+    border: 1px solid rgba(255,0,0,0.8);
+    background-color: rgba(255,0,0,0.8);
     color: #fff;
-    border-radius: 3px;
-    height: 20px;
-    width: 20px;
-    position: relative;
-    top: -75px;
-    right: 40px;
-}
+    border-radius: 5px;
+    height: 40px;
+    width: 40px;
+    position: absolute;
+    top: 10px;
+    right: 35px;
 }
