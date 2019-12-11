@@ -20,6 +20,58 @@ from weasyprint import HTML
 from django.template.loader import render_to_string
 from weasyprint.fonts import FontConfiguration
 from operator import itemgetter
+from cairosvg import svg2png
+from bs4 import BeautifulSoup
+# import cairo
+# import rsvg
+
+
+def get_svg(template_name):
+    with open(template_name, 'r') as file:
+        data = file.read()
+        # print(data)
+    soup = BeautifulSoup(data, 'html.parser')
+    svg_string=[]
+    svg_list = soup.find_all('svg')
+    for svg in svg_list:
+        svg_string.append(str(svg))
+    print('#####################################################')
+    # print(soup.prettify())
+    # print(svg_string)
+    return svg_string
+
+def svg_convert(request):
+    svg_string = get_svg('hello.html')
+    print(svg_string)
+    string_svg =[]
+    for svg in svg_string:
+        print("000000000000000000000000000000000000000000000000000000",str(svg))
+        string_svg.append(str(svg))
+        print("/////////////////", string_svg)
+        svg_code = """<svg class="_2Gb1p m1" style="max-width: 550px; max-height: 550px;" viewbox="0 0 100 100">
+         <g transform="translate(50,50)">
+         <path class="" d="M0.508840086996788,-49.99741075061653A50,50 0 1,1 -49.9910665913336,0.9451248916675062L-29.990101830857306,0.7705791165151957A30,30 0 1,0 0.5088400869967876,-29.99568438568897Z" fill="#88BF4D" opacity="1"></path>
+         <path class="" d="M-49.99994741349795,-0.07251653218338412A50,50 0 0,1 -0.5088400869967941,-49.99741075061653L-0.5088400869967913,-29.99568438568897A30,30 0 0,0 -29.998982653021653,-0.24706230733569653Z" fill="#7172AD" opacity="1"></path>
+         </g>
+         </svg>
+        """
+        svg2png(bytestring=svg_code,write_to='o2.png')
+
+# parser = new DOMParser();
+# doc = parser.parseFromString(stringContainingSVGSource, "image/svg+xml")
+
+# def svg_convert(request):
+#     img = cairo.ImageSurface(cairo.FORMAT_ARGB32, 640,480)
+#
+#     ctx = cairo.Context(img)
+#     svg_string = get_svg('hello.html')
+#     print(svg_string)
+#     for svg in svg_string:
+#
+#         handle= rsvg.Handle(None, str(svg))
+#         handle.render_cairo(ctx)
+#         img.write_to_png("svg.png")
+
 
 
 def survey_html(request,pk,template_name='survey_report.html'):
