@@ -13,6 +13,7 @@ from .models import survey_response, survey_response_detail
 from django.utils.timezone import datetime
 import boto3
 
+
 def pull_kobo_form_data(surveyID):
 
     print(surveyID)
@@ -20,7 +21,7 @@ def pull_kobo_form_data(surveyID):
     data_link = kobo_constants.kobo_form_link+ "/" + str(kobo_form_id) + kobo_form_constants.data_format
     print(data_link)
     survey_form_data = requests.get(data_link, headers={'Authorization': kobo_constants.authorization_token}).json()
-    #print(json.dumps(survey_data, indent=4))
+    # print(json.dumps(survey_data, indent=4))
     survey_children = survey_form_data['children']
     print("survey_name: ", survey_form_data['title'])
 
@@ -197,8 +198,7 @@ def pull_kobo_response_data(surveyID):
         print()
 
 
-def get_domain_index(item, survey_id):
-    domain_name = item['fields']['kobo_group_key']
+def get_domain_index(domain_name, survey_id):
     print(domain_name)
     objdomain = domain.objects.filter(kobo_group_key=domain_name).first()
     questions_in_group = survey_question.objects.filter(domain_id=objdomain, survey_id=survey_id)
@@ -296,12 +296,3 @@ def createImageName(image, type_image):
         static_path = image_constants.before_afterDirStatic + str(imageName)
     print(static_path)
     return imageName, fileLocation, static_path
-
-
-def image_path(image_path, image):
-    if image_constants.is_production:
-        baseURL = aws_bucket_constants.s3_bucket_path + aws_bucket_constants.bucket_name + "/"
-    else:
-        baseURL = settings.DOMAIN_NAME + settings.STATIC_URL
-    url = baseURL + image_path + image
-    return url

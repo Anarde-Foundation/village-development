@@ -21,13 +21,14 @@ class metabase_constants:
 class image_constants:
 
     is_production = False
-
-    localhost = "<machine ip>"
+    localhost = "<machine_ip>"
     STATIC_URL = '/code_base/static/'
     currentDir = os.path.normpath(os.getcwd() + os.sep + os.pardir)
     before_afterDir = currentDir + STATIC_URL + r"before_after/"
-
     before_afterDirStatic = "/static/before_after/"
+
+    metabase_images = currentDir + STATIC_URL + r"metabase_images/"
+    metabase_images_localhost = "/static/metabase_images/"
 
     image_type_before = "before"
     image_type_after = "after"

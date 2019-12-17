@@ -132,6 +132,23 @@ def survey_view(request, pk, template_name='survey_detail.html'):
                                            'iframeUrl': '', 'domain_id':1})
 
 
+def get_iframeURL(objDomain, survey_id):
+    # Payload for metabase graphs
+    payload = {
+        "resource": {"dashboard": objDomain.metabase_dashboard_id},
+        "params": {
+            "survey_id": survey_id
+        }
+    }
+
+    # Build iframe url
+    token = jwt.encode(payload, metabase_constants.metabase_secret_key, algorithm="HS256")
+    iframeUrl = metabase_constants.metabase_site_url + "/embed/dashboard/" + token.decode(
+        "utf8") + "#bordered=false&titled=false"
+
+    return iframeUrl
+
+
 def show_domainwise_metabase_graph(request, survey_id, domain_id):
     # Get domain object
     # objDomain = get_object_or_404(domain, pk=domain_id)
@@ -144,19 +161,7 @@ def show_domainwise_metabase_graph(request, survey_id, domain_id):
         responseData = {}
         responseData['iframeUrl'] = ''
     else:
-        # Payload for metabase graphs
-        payload = {
-            "resource": {"dashboard": objDomain.metabase_dashboard_id},
-            "params": {
-                "survey_id": survey_id
-            }
-        }
-
-        # Build iframe url
-        token = jwt.encode(payload, metabase_constants.metabase_secret_key, algorithm="HS256")
-        iframeUrl = metabase_constants.metabase_site_url + "/embed/dashboard/" + token.decode(
-            "utf8") + "#bordered=false&titled=false"
-
+        iframeUrl = get_iframeURL(objDomain, survey_id)
         responseData = {}
         responseData['iframeUrl'] = iframeUrl
 
@@ -182,7 +187,7 @@ def survey_domain_suggestion(request, survey_id):
     data_json = serializers.serialize('json', domain_list)
     data_list = json.loads(data_json)
     for item in data_list:
-        index_value = response_views.get_domain_index(item, survey_id)
+        index_value = response_views.get_domain_index(item['fields']['kobo_group_key'], survey_id)
         item.update({"index": index_value})
         item.update({"location_id": obj_location.location_id}) # location id of conducted survey
 
