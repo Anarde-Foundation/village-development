@@ -385,8 +385,8 @@ def html_to_pdf_generation(request, pk):         # weasyprint pdf generation
                             before_after_images['after'] = after_images
                         i.update(before_after_images) # insert images in implemented program list
                     item.update(i)
-            else:
-                program_list.remove(item)
+            # else:
+            #     program_list.remove(item)
 
         # print("*********", program_list)
         domain_report_values['program_list'] = program_list
