@@ -154,6 +154,8 @@ def pull_kobo_response_data(surveyID):
 
                 for key in list_of_keys:
                     new_key = key.lower()
+                    if new_key in kobo_form_constants.names_not_allowed:
+                        continue
                     #print(question.question_name, " ",new_key)
                     if question.question_name == new_key:
                         print("direct question")
@@ -164,35 +166,38 @@ def pull_kobo_response_data(surveyID):
                         pattern = question.question_name+"$"
                         questionname = re.search(pattern, new_key)
                         if questionname:
-                            print("question in group")
+                            print("question in group - ", key)
                             #print(pattern," ", survey_form_data[response_entry][key])
                             survey_question_response = survey_form_data[response_entry][key]
 
-                survey_question_response_lower = survey_question_response.lower()
-                optionweight = re.search(numeric_constants.pattern_for_weights, survey_question_response_lower)
-                if optionweight:
-                    survey_question_response_lower = re.split(numeric_constants.pattern_for_weights,
-                                                              survey_question_response_lower)[-1]
+                if survey_question_response:
+                    survey_question_response_lower = survey_question_response.lower()
+                    optionweight = re.search(numeric_constants.pattern_for_weights, survey_question_response_lower)
+                    if optionweight:
+                        survey_question_response_lower = re.split(numeric_constants.pattern_for_weights,
+                                                                  survey_question_response_lower)[-1]
 
-                optionID = survey_question_options.objects.filter(survey_question_id=question,
-                                                                  option_name=survey_question_response_lower).first()
-                question_type = question.question_type
+                    optionID = survey_question_options.objects.filter(survey_question_id=question,
+                                                                      option_name=survey_question_response_lower).first()
+                    question_type = question.question_type
 
-                if len(survey_question_response.split()) > numeric_constants.one and \
-                        question_type in kobo_form_constants.questions_not_having_space:     # for select many questions
+                    if len(survey_question_response.split()) > numeric_constants.one and \
+                            question_type in kobo_form_constants.questions_not_having_space:     # for select many questions
 
-                    split_responses = survey_question_response_lower.split()
-                    for response in range(len(split_responses)):
+                        split_responses = survey_question_response_lower.split()
+                        for response in range(len(split_responses)):
+                            survey_response_detail(survey_question_id=question, survey_question_options_id=optionID,
+                                                   survey_response_id=survey_response_id,
+                                                   survey_response_value=split_responses[response]).save()
+                    else:
                         survey_response_detail(survey_question_id=question, survey_question_options_id=optionID,
                                                survey_response_id=survey_response_id,
-                                               survey_response_value=split_responses[response]).save()
-                else:
-                    survey_response_detail(survey_question_id=question, survey_question_options_id=optionID,
-                                           survey_response_id=survey_response_id,
-                                           survey_response_value=survey_question_response_lower).save()
+                                               survey_response_value=survey_question_response_lower).save()
 
-                print("question ID is ", question, " option id is", optionID)
-                print("saved successfully")
+                    print("question ID is ", question, " option id is", optionID)
+                    print("saved successfully")
+                else:
+                    print("Empty response")
 
         #print(question.question_name," ",[value for key, value in survey_form_data[response_entry].items() if question.question_name in key.lower()])
         print()

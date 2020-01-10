@@ -1,5 +1,5 @@
 
-from weasyprint import  CSS
+#from weasyprint import  CSS
 from Anarde import settings
 
 class kobo_form_constants:
@@ -7,7 +7,7 @@ class kobo_form_constants:
     data_format = "/form.json"
     question_type = ['text', 'calculate', 'integer']
     question_type_having_options = ['select one', 'select all that apply']
-    names_not_allowed = ['start', 'end', 'meta', '__version__', 'instanceID']
+    names_not_allowed = ['start', 'end', 'meta', '__version__', 'instanceID', '_geolocation']
 
     questions_not_having_space = ['select all that apply']
 
@@ -25,8 +25,11 @@ class code_group_names:
     funder = "Funder"
 
 class report_css_path:
-    stylesheet = [CSS(settings.BASE_DIR +'/static/css/reportStyle.css'),
-                  CSS(settings.BASE_DIR + '/static/css/report_bootstrap.min.css')]
+    stylesheet = [ '/static/css/reportStyle.css',
+                   '/static/css/report_bootstrap.min.css']
+
+    # stylesheet = [CSS(settings.BASE_DIR +'/static/css/reportStyle.css'),
+    #               CSS(settings.BASE_DIR + '/static/css/report_bootstrap.min.css')]
     # position: relative;
     # border: 0
     # px;
