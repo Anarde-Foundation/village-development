@@ -81,11 +81,11 @@
 
         <!--  Metabase images  -->
         <div class="col-12 pt-4">
-            <h3 class=""> Domain Graph</h3>
+            <h4 class=""> Analysis</h4>
         </div>
-        <div class="col-6 pb-4">
+        <div class="col-10 pb-4">
             <dl>
-                <dd><img src="{{value.iframe_image_path}}" class="program-images"></dd>
+                <dd><img src="{{value.iframe_image_path}}" style="width:100%; height:auto;"></dd>
             </dl>
         </div>
         <!--  Metabase images end  -->
@@ -93,7 +93,7 @@
         <!--  Program list, display only if available  -->
         {% if value.program_list %}
             <div class="col-12">
-            <h3> Programs implemented for {{key}} </h3>
+            <h4> Programs implemented for {{key}} </h4>
             <ol>
                 {% for program in value.program_list %}
                 <li>
