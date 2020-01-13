@@ -35,7 +35,7 @@ async def render_iframe(iframe_name, domain_name, survey_id):
     await page.goto(iframe_name, timeout=100000)
     path = image_constants.metabase_images
     name = domain_name + "_" + str(survey_id) + '.png'
-    await asyncio.sleep(10)
+    await asyncio.sleep(5)
     await page.screenshot({'path': path + name, 'fullPage': True})
     await browser.close()
     print("-----------------")
