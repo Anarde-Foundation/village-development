@@ -84,7 +84,7 @@ def survey_update(request, pk, template_name='survey_update.html'):
             print('cancelling request')
             return redirect('/survey/view/'+ str(pk))
 
-        form = SurveyForm(request.POST, instance=surveyForUpdate)
+        form = SurveyForm(request.POST, instance=surveyForUpdate, surveyID=pk)
         if form.is_valid():
             info = form.save()
             info.modified_by = request.user
@@ -108,17 +108,19 @@ def get_kobo_form(request,pk):
 @login_required
 def survey_view(request, pk, template_name='survey_detail.html'):
     objsurvey = get_object_or_404(survey, pk=pk)
+    error_log = []
     # Pull kobo form data
     if request.method == 'POST':
         # print(request.POST)
 
         if 'pull-form-data' in request.POST:
             # print("kobo form data")
-            response_views.pull_kobo_form_data(objsurvey)
+            error_log = response_views.pull_kobo_form_data(objsurvey)
 
         elif 'pull-response-data' in request.POST:
             response_views.pull_kobo_response_data(objsurvey)
 
+    print(error_log)
     # Show / Hide delete button
     show_delete_survey_button = True
     survey_response_exists = survey_response.objects.filter(survey_id=objsurvey).first()
@@ -129,7 +131,7 @@ def survey_view(request, pk, template_name='survey_detail.html'):
             show_delete_survey_button = False
 
     return render(request, template_name, {'object': objsurvey, 'show_delete': show_delete_survey_button,
-                                           'iframeUrl': '', 'domain_id':1})
+                                           'error_log':error_log , 'iframeUrl': '', 'domain_id':1})
 
 
 def get_iframeURL(objDomain, survey_id):
