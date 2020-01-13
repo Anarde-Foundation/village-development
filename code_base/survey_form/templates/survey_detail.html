@@ -132,6 +132,17 @@ Survey Details
                     </li>
                 </ul>
             </div>
+            {% if error_log %}
+            <div class="pl-2">Following errors encountered</div>
+            <ul class="pl-4">
+                {% for error in error_log %}
+                <li>
+                    <small> {{ error }}</small>
+                </li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+
             <div class="tab-content pl-3 py-5" id="nav-tabContent">
                 <!--Content for domainwise index tab -->
                 <div class="tab-pane fade active show" id="tab-domain-index-content" role="tabpanel" aria-labelledby="tab-domain-index-content">
@@ -182,6 +193,7 @@ Survey Details
                 </div>
 
             </div>
+
         </div>
     </div>
 </div>
