@@ -24,31 +24,38 @@ def pull_kobo_form_data(surveyID):
     # print(json.dumps(survey_data, indent=4))
     survey_children = survey_form_data['children']
     print("survey_name: ", survey_form_data['title'])
-
+    error_log = []
     for i in range(len(survey_children)):
         if survey_children[i]['type'] == 'group':
             grp_name = survey_children[i]['name'].lower()
             print("****************")
             for j in range(len(survey_children[i]['children'])):
-                get_kobo_questions_and_options(survey_children[i]['children'], j, surveyID, grp_name)
+                error_log = get_kobo_questions_and_options(survey_children[i]['children'], j, surveyID, error_log, grp_name)
 
         else:
             print("----------------")
-            get_kobo_questions_and_options(survey_children, i, surveyID)
+            error_log = get_kobo_questions_and_options(survey_children, i, surveyID, error_log)
+
+    return error_log
 
 
-def get_kobo_questions_and_options(survey_children, i, surveyID, grp_name=None):
-    #print(grp_name)
+def get_kobo_questions_and_options(survey_children, i, surveyID, error_log, grp_name=None):
+    # print(grp_name)
     question_label = ""
     option_label = ""
     grp_key = ""
     question_weight = 0
     option_weight = 0
+    domainID = 0
     if grp_name:
         domainname = re.search('_(.+?)_', grp_name)
         if domainname:
             grp_key = domainname.group(1)
-
+            if not domain.objects.filter(kobo_group_key=grp_key):
+                error_log.append('group name ' + grp_name + ' not in domain')
+        else:
+            if grp_name != 'meta':
+                error_log.append('group name ' + grp_name + ' not in domain')
     domainID = domain.objects.filter(kobo_group_key=grp_key).first()
 
     if survey_children[i]['type'] != 'group':
@@ -63,9 +70,10 @@ def get_kobo_questions_and_options(survey_children, i, surveyID, grp_name=None):
 
             else:
                 question_weight = 1
+                error_log.append('Question: ' + question_name + ' has no weight assigned. Default weight 1 assigned')
 
-            #print('question weight ',question_weight)
-            #print("question name: ", question_name)
+            # print('question weight ',question_weight)
+            # print("question name: ", question_name)
             survey_questionID = survey_question.objects.filter(survey_id=surveyID, question_name=question_name)
 
             if 'label' in survey_children[i].keys():
@@ -103,6 +111,9 @@ def get_kobo_questions_and_options(survey_children, i, surveyID, grp_name=None):
                         print(option_weight, " ", option_name)
                     else:
                         option_weight = 1
+                        error_log.append(
+                            'Question: ' + question_name + ' having option: '+ option_name +
+                            ' has no weight assigned. Default weight 1 assigned')
 
                     if 'label' in question_children[k].keys():
                         option_label = question_children[k]['label']
@@ -120,6 +131,9 @@ def get_kobo_questions_and_options(survey_children, i, surveyID, grp_name=None):
                     else:                   # save as new option for the question
                         survey_question_options(survey_question_id=questionID, option_name=option_name,
                                                 option_label=option_label, option_weightage=option_weight).save()
+
+    print(error_log)
+    return error_log
 
 
 def pull_kobo_response_data(surveyID):
@@ -150,16 +164,15 @@ def pull_kobo_response_data(surveyID):
             survey_response_question_exists = survey_response_details.filter(survey_question_id=question).first()
 
             if not survey_response_question_exists:
-                print('survey response exists but question does not exist')
 
                 for key in list_of_keys:
                     new_key = key.lower()
                     if new_key in kobo_form_constants.names_not_allowed:
                         continue
-                    #print(question.question_name, " ",new_key)
+                    # print(question.question_name, " ",new_key)
                     if question.question_name == new_key:
                         print("direct question")
-                        #print(question.question_name, " ",survey_form_data[response_entry][question.question_name])
+                        # print(question.question_name, " ",survey_form_data[response_entry][question.question_name])
                         survey_question_response = survey_form_data[response_entry][key]
 
                     else:

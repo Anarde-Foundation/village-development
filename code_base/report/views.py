@@ -32,9 +32,10 @@ from django.forms.models import model_to_dict
 async def render_iframe(iframe_name, domain_name, survey_id):
     browser = await launch(handleSIGINT=False, handleSIGTERM=False, handleSIGHUP=False)
     page = await browser.newPage()
-    await page.goto(iframe_name)
+    await page.goto(iframe_name, timeout=100000)
     path = image_constants.metabase_images
     name = domain_name + "_" + str(survey_id) + '.png'
+    await asyncio.sleep(10)
     await page.screenshot({'path': path + name, 'fullPage': True})
     await browser.close()
     print("-----------------")
